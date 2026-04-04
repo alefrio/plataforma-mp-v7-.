@@ -1,0 +1,2842 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#0c1017">
+<!-- Em produção na Internet: deixe vazio para usar o mesmo domínio da página. Para API noutro host: https://api.seudominio.gov.br -->
+<meta name="pm-api-base" content="">
+<title>PlataformaMP · Buriticupu-MA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Source+Serif+4:opsz,wght@8..60,300;8..60,400;8..60,500;8..60,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+/* ══════════════════════════════════════════════════
+   DESIGN SYSTEM — PlataformaMP v7.0
+   Tipografia: Cormorant Garamond · Source Serif 4 · IBM Plex Mono
+   Paleta institucional: Pergaminho / Tinta / Vermelho MP / Ouro
+══════════════════════════════════════════════════ */
+:root{
+  --ink:#0c1017;--parchment:#f6f2ec;--cream:#ece5d8;--linen:#d8cfc1;
+  --red:#9b2a1b;--red-lite:#fdf0ed;--blue:#1a3d78;--blue-lite:#e8f0fb;
+  --gold:#8a6820;--gold-lite:#faf4e2;--muted:#6b6058;
+  --success:#175a36;--warn:#7a4d0a;--danger:#9b2a1b;
+  --online:#16a34a;--sw:260px;--th:54px;
+  --f-display:Arial,Helvetica,sans-serif;
+  --f-body:Arial,Helvetica,sans-serif;
+  --f-mono:Arial,Helvetica,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{font-size:15px;scroll-behavior:smooth;}::selection{background:rgba(155,42,27,.15);color:var(--ink);}
+body{font-family:var(--f-body);background:var(--parchment);color:var(--ink);min-height:100vh;line-height:1.6;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--cream);}
+::-webkit-scrollbar-thumb{background:var(--linen);border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:var(--muted);}
+
+/* ── LOGIN ── */
+@keyframes loginFadeIn{from{opacity:0;transform:translateY(22px);}to{opacity:1;transform:none;}}
+#login-screen{position:fixed;inset:0;background:var(--ink);display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:16px;overflow-y:auto;padding:20px 0;background-image:radial-gradient(ellipse at 20% 20%,rgba(155,42,27,.22) 0,transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(26,61,120,.18) 0,transparent 50%);}
+#login-screen::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 59px,rgba(255,255,255,.012) 60px),repeating-linear-gradient(90deg,transparent,transparent 59px,rgba(255,255,255,.012) 60px);pointer-events:none;}
+.login-box{width:440px;max-width:calc(100vw - 20px);background:var(--parchment);box-shadow:0 80px 160px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.05);overflow:hidden;animation:loginFadeIn .55s cubic-bezier(.22,1,.36,1) both;flex-shrink:0;}
+.login-hd{background:linear-gradient(145deg,#0e1420,#121a28);padding:34px 36px 28px;color:#fff;position:relative;overflow:hidden;}
+.login-hd::before{content:'';position:absolute;width:280px;height:280px;top:-80px;right:-80px;border-radius:50%;border:1px solid rgba(255,255,255,.04);}
+.login-hd::after{content:'';position:absolute;width:120px;height:120px;top:15px;right:15px;border-radius:50%;border:1px solid rgba(255,255,255,.04);}
+.login-hd-bar{position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--red),var(--gold),var(--blue));opacity:.7;}
+.login-seal{font-size:44px;margin-bottom:16px;position:relative;z-index:1;filter:drop-shadow(0 4px 12px rgba(155,42,27,.4));}
+.login-hd h1{font-family:var(--f-display);font-size:21px;font-weight:700;line-height:1.35;position:relative;z-index:1;}
+.login-sub{font-family:var(--f-mono);font-size:9px;letter-spacing:1.8px;text-transform:uppercase;opacity:.35;margin-top:8px;position:relative;z-index:1;}
+.login-badges{display:flex;gap:6px;margin-top:12px;position:relative;z-index:1;flex-wrap:wrap;}
+.login-badge{font-family:var(--f-mono);font-size:8px;letter-spacing:.8px;text-transform:uppercase;padding:3px 8px;border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.38);background:rgba(255,255,255,.04);}
+.lnk-banner{background:#0c1f3a;border-left:3px solid var(--blue);color:#a5bfee;font-size:12px;padding:12px 18px;max-width:440px;width:calc(100% - 20px);display:none;line-height:1.75;font-family:var(--f-body);box-shadow:0 8px 32px rgba(0,0,0,.4);}
+.lnk-banner strong{color:#fff;}
+.login-bd{padding:28px 36px 32px;}
+.login-field{margin-bottom:18px;}
+.login-field label{display:block;font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.4px;color:var(--muted);margin-bottom:6px;font-family:var(--f-mono);}
+.login-bd select,.login-bd input{width:100%;border:1.5px solid var(--linen);background:#fdfbf8;padding:11px 14px;font-family:var(--f-body);font-size:13.5px;outline:none;color:var(--ink);transition:border-color .2s,box-shadow .2s;-webkit-appearance:none;}
+.login-bd select:focus,.login-bd input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,61,120,.08);}
+.login-bd select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b6058'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;}
+.btn-login{width:100%;background:var(--ink);color:#fff;border:none;padding:14px;font-family:var(--f-display);font-size:17px;font-weight:700;cursor:pointer;letter-spacing:.6px;transition:all .22s;margin-top:6px;}
+.btn-login:hover{background:var(--red);}
+.btn-login:active{transform:scale(.99);}
+.login-note{font-size:9px;color:rgba(255,255,255,.2);text-align:center;max-width:440px;line-height:2.1;font-family:var(--f-mono);letter-spacing:.3px;}
+.login-note em{color:rgba(255,255,255,.36);font-style:normal;}
+
+/* ── TOPBAR ── */
+#app{display:none;min-height:100vh;}
+.topbar{min-height:var(--th);background:linear-gradient(180deg,#0f1520,var(--ink));display:flex;align-items:center;flex-wrap:wrap;padding:8px 14px;gap:10px;position:sticky;top:0;z-index:300;border-bottom:2px solid var(--red);box-shadow:0 4px 20px rgba(0,0,0,.3);}
+.hamburger{display:none;background:none;border:none;color:#fff;font-size:22px;cursor:pointer;padding:4px;}
+.topbar-brand{font-family:var(--f-display);color:#fff;font-size:18px;flex:1;display:flex;align-items:center;gap:9px;font-weight:600;letter-spacing:.3px;}
+.topbar-brand .sep{color:rgba(155,42,27,.7);}
+.topbar-brand .ver{font-family:var(--f-mono);font-size:9px;color:rgba(255,255,255,.5);background:rgba(155,42,27,.35);border:1px solid rgba(155,42,27,.4);padding:2px 8px;border-radius:99px;letter-spacing:.5px;}
+.topbar-meta{display:flex;align-items:center;gap:14px;font-size:11px;color:rgba(255,255,255,.38);font-family:var(--f-body);}
+.topbar-meta .ws-live{color:#4ade80;font-size:10px;display:flex;align-items:center;gap:5px;}
+.pwa-btn{display:none;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.7);padding:4px 11px;font-size:10px;cursor:pointer;font-family:var(--f-body);transition:all .2s;letter-spacing:.3px;}
+.pwa-btn:hover{background:var(--blue);border-color:var(--blue);color:#fff;}
+.topbar-user{display:flex;align-items:center;gap:10px;color:#fff;}
+.av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0;font-family:var(--f-body);}
+.uname{font-family:var(--f-body);font-size:12.5px;font-weight:500;}
+.rbadge{font-size:9px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.5);padding:2px 7px;border-radius:99px;text-transform:uppercase;letter-spacing:.6px;font-family:var(--f-body);}
+.btn-logout{background:transparent;border:1px solid rgba(255,255,255,.14);color:rgba(255,255,255,.55);padding:4px 12px;font-size:11px;cursor:pointer;font-family:var(--f-body);transition:all .18s;}
+.btn-logout:hover{border-color:var(--red);color:#fff;}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(22,163,74,.4);}50%{box-shadow:0 0 0 6px rgba(22,163,74,0);}}
+.online-dot{width:7px;height:7px;background:var(--online);border-radius:50%;display:inline-block;animation:pulse 2s infinite;}
+
+/* ── LAYOUT ── */
+.layout{display:flex;min-height:calc(100vh - var(--th));}
+.sidebar{width:var(--sw);background:#fff;border-right:1px solid var(--linen);flex-shrink:0;position:sticky;top:var(--th);height:calc(100vh - var(--th));overflow-y:auto;transition:transform .28s;}
+.sb-hd{padding:14px 18px 10px;border-bottom:1px solid var(--cream);}
+.sb-hd-lbl{font-family:var(--f-display);font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1.6px;}
+.sb-section{padding:7px 0;border-bottom:1px solid var(--cream);}
+.sb-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.4px;color:var(--muted);padding:5px 18px 2px;font-family:var(--f-body);}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 18px;font-size:12.5px;cursor:pointer;border-left:3px solid transparent;color:var(--ink);transition:all .15s cubic-bezier(.22,1,.36,1);user-select:none;font-family:var(--f-body);}
+.nav-item:hover{background:var(--cream);padding-left:22px;}
+.nav-item.active{background:var(--cream);border-left-color:var(--red);font-weight:600;}
+.nav-item .ni{width:17px;text-align:center;opacity:.65;font-size:13px;}
+.nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:99px;min-width:18px;text-align:center;font-family:var(--f-mono);}
+.nav-item.hidden-item{display:none;}
+.sb-online{padding:4px 18px 8px;}
+.sb-user{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:11.5px;font-family:var(--f-body);}
+.sb-user .av{width:22px;height:22px;font-size:9px;}
+.sdot{width:6px;height:6px;border-radius:50%;margin-left:auto;flex-shrink:0;}
+.sdot.on{background:var(--online);}
+.sdot.idle{background:var(--warn);}
+.ws-dot{width:6px;height:6px;background:var(--online);border-radius:50%;animation:pulse 1.5s infinite;}
+.sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:150;}
+.main{flex:1;padding:26px 28px;max-width:1220px;width:100%;min-width:0;}
+
+/* ── PAGE HEADER ── */
+.ph{margin-bottom:22px;display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;}
+.ph-title{font-family:var(--f-display);font-size:27px;font-weight:600;line-height:1;letter-spacing:.2px;}
+.ph-sub{font-size:11.5px;color:var(--muted);margin-top:3px;font-family:var(--f-body);}
+
+/* ── BUTTONS ── */
+.btn-primary{background:var(--red);color:#fff;border:none;padding:9px 18px;font-family:var(--f-display);font-size:15px;font-weight:600;cursor:pointer;letter-spacing:.4px;transition:all .2s;}.btn-primary:active{transform:scale(.98);}
+.btn-primary:hover{background:#7d2215;}
+.btn-ghost{background:#fff;border:1.5px solid var(--linen);padding:8px 15px;font-family:var(--f-body);font-size:11.5px;font-weight:600;cursor:pointer;transition:all .2s cubic-bezier(.22,1,.36,1);color:var(--ink);text-transform:uppercase;letter-spacing:.5px;}.btn-ghost:active{transform:scale(.97);}
+.btn-ghost:hover{background:var(--ink);color:#fff;border-color:var(--ink);}
+.btn-blue{background:var(--blue);color:#fff;border:none;padding:8px 16px;font-family:var(--f-body);font-size:12px;font-weight:600;cursor:pointer;transition:background .18s;}
+.btn-blue:hover{background:#132e5d;}
+.sel{border:1px solid var(--linen);background:#fff;padding:8px 11px;font-family:var(--f-body);font-size:12.5px;outline:none;color:var(--ink);cursor:pointer;}
+.sel:focus{border-color:var(--blue);outline:none;box-shadow:0 0 0 2px rgba(26,61,120,.1);}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;font-size:9.5px;font-weight:700;padding:2px 8px;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;font-family:var(--f-body);}
+.b-novo{background:#dbeafe;color:#1e3a8a;}
+.b-analise{background:#fef3c7;color:#78350f;}
+.b-respondido{background:#dcfce7;color:#14532d;}
+.b-urgente{background:#fee2e2;color:#7f1d1d;}
+.b-atrasada{background:#fecaca;color:#7f1d1d;border:1px solid #ef4444;}
+.b-gray{background:var(--cream);color:var(--muted);}
+
+/* ── STAT CARDS ── */
+.stats-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:13px;margin-bottom:22px;}
+.stat-card{background:#fff;border:1px solid var(--linen);padding:18px 20px;position:relative;overflow:hidden;transition:box-shadow .18s,transform .18s;}.stat-card:hover{box-shadow:0 6px 24px rgba(0,0,0,.08);transform:translateY(-2px);}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.sc-n::before{background:var(--blue);}
+.sc-a::before{background:var(--warn);}
+.sc-u::before{background:var(--danger);}
+.sc-r::before{background:var(--success);}
+.sc-at::before{background:#991b1b;}
+.sc-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-family:var(--f-body);}
+.sc-val{font-family:var(--f-display);font-size:38px;font-weight:600;line-height:1;margin-top:4px;}
+.sc-sub{font-size:10.5px;margin-top:3px;color:var(--muted);font-family:var(--f-body);}
+
+/* ── SEARCH / PILLS ── */
+.search-bar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center;}
+.sw{position:relative;flex:1;min-width:200px;}
+.sw input{width:100%;border:1px solid var(--linen);background:#fff;padding:9px 14px 9px 36px;font-family:var(--f-body);font-size:13px;outline:none;transition:border-color .18s;}
+.sw input:focus{border-color:var(--blue);}
+.si{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;pointer-events:none;}
+.filter-pills{display:flex;gap:5px;margin-bottom:14px;flex-wrap:wrap;}
+.pill{padding:5px 13px;font-size:10px;font-weight:700;cursor:pointer;border-radius:99px;border:1.5px solid var(--linen);background:#fff;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;transition:all .2s cubic-bezier(.22,1,.36,1);font-family:var(--f-body);}.pill:active{transform:scale(.95);}
+.pill:hover{border-color:var(--ink);color:var(--ink);}
+.pill.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+
+/* ── NOTIF CARDS ── */
+.notif-list{display:flex;flex-direction:column;gap:1px;}
+.nc{background:#fff;border:1px solid var(--linen);padding:15px 20px;cursor:pointer;transition:all .18s cubic-bezier(.22,1,.36,1);border-left:4px solid transparent;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start;min-width:0;}
+.nc:hover{border-left-color:var(--blue);transform:translateX(3px);box-shadow:0 4px 20px rgba(0,0,0,.09);background:var(--parchment);}
+.nc.status-novo{border-left-color:var(--blue);background:var(--blue-lite);}
+.nc.status-urgente{border-left-color:var(--danger);background:var(--red-lite);}
+.nc.status-analise{border-left-color:#c57b28;}
+.nc.status-respondido{border-left-color:var(--success);}
+.nc.status-atrasada{border-left-color:#991b1b;background:#fef2f2;}
+.nc-top{display:flex;align-items:center;gap:7px;margin-bottom:5px;flex-wrap:wrap;}
+.nid{font-family:var(--f-mono);font-size:10px;color:var(--muted);background:var(--cream);padding:2px 7px;}
+.nt{font-family:var(--f-display);font-size:15px;font-weight:600;line-height:1.35;}
+.nm{font-size:11.5px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap;margin-top:5px;font-family:var(--f-body);}
+.nr{text-align:right;font-size:11px;color:var(--muted);min-width:100px;font-family:var(--f-body);}
+.p-ok{color:var(--success);font-weight:600;}
+.p-warn{color:var(--warn);font-weight:600;}
+.p-danger{color:var(--danger);font-weight:700;animation:blink 1.4s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.38;}}
+.vt{display:inline-flex;font-size:9.5px;color:var(--blue);background:var(--blue-lite);padding:2px 7px;font-family:var(--f-body);}
+.nrt{display:inline-flex;font-size:9.5px;color:#7f1d1d;background:#fee2e2;padding:2px 7px;font-weight:700;font-family:var(--f-body);}
+.pdf-ok{display:inline-flex;font-size:9.5px;color:var(--success);background:#dcfce7;padding:2px 7px;font-family:var(--f-body);}
+.signed-ok{display:inline-flex;font-size:9.5px;color:var(--gold);background:var(--gold-lite);padding:2px 7px;font-family:var(--f-body);}
+.ws-flash{animation:wsflash .5s ease;}
+@keyframes wsflash{0%{background:var(--blue-lite);}100%{background:inherit;}}
+.empty{text-align:center;padding:48px 20px;color:var(--muted);font-family:var(--f-body);}
+.empty-ico{font-size:38px;margin-bottom:12px;}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(12,16,23,.84);z-index:500;display:none;align-items:flex-start;justify-content:center;padding:30px 14px;overflow-y:auto;backdrop-filter:blur(4px);}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--parchment);width:100%;max-width:840px;max-height:calc(100vh - 24px);box-shadow:0 50px 100px rgba(0,0,0,.5);overflow:hidden;display:flex;flex-direction:column;animation:mup .22s ease;}
+@keyframes mup{from{transform:translateY(20px) scale(.99);opacity:0;}to{transform:none;opacity:1;}}
+.modal-hd{background:var(--ink);padding:20px 24px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+.modal-hd-title{font-family:var(--f-display);color:#fff;font-size:18px;font-weight:600;line-height:1.3;}
+.modal-hd-sub{font-size:10.5px;color:rgba(255,255,255,.4);margin-top:3px;font-family:var(--f-body);}
+.modal-hd-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.ws-badge-sm{display:inline-flex;align-items:center;gap:4px;font-size:9.5px;color:#4ade80;font-family:var(--f-mono);}
+.modal-close{background:rgba(255,255,255,.1);border:none;color:#fff;width:30px;height:30px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:background .15s;}
+.modal-close:hover{background:var(--red);}
+.modal-viewers{background:#111826;padding:7px 24px;font-size:11px;color:rgba(255,255,255,.48);font-family:var(--f-body);}
+.modal-bd{padding:24px;overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1;min-height:0;}
+.ig{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-bottom:16px;}
+.ig label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);display:block;margin-bottom:3px;font-family:var(--f-body);}
+.ig .v{font-size:13.5px;font-weight:500;font-family:var(--f-body);}
+.desc-box{background:#fff;border:1px solid var(--linen);padding:16px 18px;font-size:13px;line-height:1.75;margin-bottom:16px;font-family:var(--f-body);}
+.desc-box h4{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px;font-weight:700;font-family:var(--f-body);}
+.ai-box{background:linear-gradient(135deg,#0c1017,#0e1e3a);padding:16px 18px;margin-bottom:16px;border:1px solid rgba(26,61,120,.3);}
+.ai-box h4{font-size:9px;text-transform:uppercase;letter-spacing:1.2px;color:#5a8dd8;margin-bottom:10px;font-weight:700;font-family:var(--f-body);}
+.ai-tags{display:flex;flex-wrap:wrap;gap:6px;}
+.aitag{background:rgba(255,255,255,.07);color:#c5d6ef;font-size:10.5px;padding:3px 10px;border:1px solid rgba(255,255,255,.1);font-family:var(--f-body);}
+.aitag strong{color:#7aaef0;}
+.sec-title{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:10px;font-weight:700;font-family:var(--f-body);}
+.tl-item{display:flex;gap:12px;margin-bottom:10px;font-size:12.5px;font-family:var(--f-body);}
+.tl-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0;margin-top:5px;}
+.tl-item.done .tl-dot{background:var(--success);}
+.tl-item.current .tl-dot{background:#c57b28;animation:pulse 1.5s infinite;}
+.tl-item.alerta .tl-dot{background:var(--danger);}
+.tl-time{color:var(--muted);font-family:var(--f-mono);font-size:10px;min-width:110px;}
+.access-log{background:var(--gold-lite);border:1px solid rgba(212,184,90,.3);padding:14px 16px;margin-bottom:16px;}
+.access-log h4{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--gold);margin-bottom:10px;font-weight:700;font-family:var(--f-body);}
+.ar{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid rgba(212,184,90,.2);}
+.ar:last-child{border-bottom:none;}
+.ar .av{width:24px;height:24px;font-size:9px;}
+.ar-info{flex:1;font-size:12px;font-family:var(--f-body);}
+.as{font-size:9.5px;font-weight:700;padding:2px 8px;font-family:var(--f-body);}
+.as-y{background:#dcfce7;color:#14532d;}
+.as-n{background:#fee2e2;color:#7f1d1d;}
+.as-c{background:#e0e7ff;color:#312e81;}
+.comment{background:#fff;border:1px solid var(--linen);border-left:3px solid var(--blue);padding:10px 14px;margin-bottom:7px;font-size:12.5px;font-family:var(--f-body);}
+.comment-hd{display:flex;justify-content:space-between;font-size:10.5px;color:var(--muted);margin-bottom:4px;}
+.ca{font-weight:700;color:var(--ink);}
+.ci-row{display:flex;gap:7px;margin-top:10px;}
+.ci{flex:1;border:1px solid var(--linen);background:#fff;padding:9px 12px;font-family:var(--f-body);font-size:13px;outline:none;resize:none;height:42px;}
+.ci:focus{border-color:var(--blue);}
+.btn-send{background:var(--blue);color:#fff;border:none;padding:9px 16px;font-family:var(--f-body);font-size:12px;font-weight:600;cursor:pointer;}
+.btn-send:hover{background:#132e5d;}
+.sa{display:flex;gap:7px;padding-top:16px;border-top:1px solid var(--linen);flex-wrap:wrap;}
+.bs{padding:8px 14px;font-family:var(--f-body);font-size:10.5px;font-weight:700;cursor:pointer;border:none;text-transform:uppercase;letter-spacing:.5px;transition:opacity .15s;}
+.bs:hover{opacity:.82;}
+.bs-a{background:var(--warn);color:#fff;}
+.bs-r{background:var(--success);color:#fff;}
+.bs-e{background:var(--danger);color:#fff;}
+.bs-pdf{background:var(--ink);color:#fff;}
+.bs-sign{background:var(--gold);color:#fff;}
+.bs-of{background:var(--blue);color:#fff;}
+.pdf-auto-banner{background:#f0fdf4;border:1px solid #bbf7d0;padding:12px 16px;margin-bottom:16px;font-size:13px;display:flex;align-items:flex-start;gap:10px;font-family:var(--f-body);}
+.pdf-viewer-wrap{background:#181e2a;overflow:hidden;margin-bottom:16px;}
+.pdf-toolbar{background:#0c1017;padding:10px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;border-bottom:1px solid rgba(255,255,255,.08);}
+.pdf-tb-title{color:rgba(255,255,255,.42);font-size:11px;flex:1;min-width:120px;font-family:var(--f-body);}
+.pdf-btn{background:rgba(255,255,255,.1);border:none;color:#fff;padding:5px 12px;font-size:10.5px;cursor:pointer;font-family:var(--f-body);font-weight:600;transition:background .15s;text-decoration:none;display:inline-block;letter-spacing:.3px;}
+.pdf-btn:hover{background:var(--red);}
+.pdf-embed-block{margin-bottom:16px;}
+.pdf-toggle-hd{font-weight:600;}
+.pdf-iframe-wrap{position:relative;width:100%;-webkit-overflow-scrolling:touch;overflow:auto;max-height:min(70vh,560px);}
+.pdf-iframe-wrap iframe{width:100%;height:min(62vh,520px);min-height:280px;border:none;display:block;background:#2a2f3a;}
+.pdf-foot{background:#0c1017;color:rgba(255,255,255,.32);font-size:10px;text-align:center;padding:6px;font-family:var(--f-body);}
+.chat-msg{font-size:12.5px;margin-bottom:8px;padding:8px 10px;background:var(--cream);border-radius:6px;border-left:3px solid var(--linen);}
+.chat-msg .cm-meta{font-size:10px;color:var(--muted);margin-bottom:4px;font-family:var(--f-mono);}
+
+/* ── DASHBOARD / CHARTS ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-bottom:18px;}
+.kp{background:#fff;border:1px solid var(--linen);padding:16px 18px;}
+.kp-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-family:var(--f-body);}
+.kp-val{font-family:var(--f-display);font-size:30px;font-weight:600;line-height:1;margin-top:4px;}
+.kp-sub{font-size:11px;color:var(--muted);margin-top:3px;font-family:var(--f-body);}
+.charts-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+.cc{background:#fff;border:1px solid var(--linen);padding:18px;}
+.cc h4{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:13px;font-family:var(--f-body);}
+.cc canvas{max-height:200px;}
+
+/* ── PAINEL EXECUTIVO ── */
+.exec-hero{background:linear-gradient(135deg,var(--ink),#172540);padding:24px 28px;margin-bottom:20px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
+.exec-hero h2{font-family:var(--f-display);color:#fff;font-size:22px;font-weight:600;}
+.exec-hero p{color:rgba(255,255,255,.42);font-size:12px;margin-top:3px;font-family:var(--f-body);}
+.exec-risk-val{font-family:var(--f-display);font-size:34px;font-weight:600;color:#f87171;line-height:1;}
+.exec-risk-lbl{font-size:9.5px;color:rgba(255,255,255,.38);font-family:var(--f-body);text-transform:uppercase;letter-spacing:.9px;margin-top:3px;}
+.exec-kpi-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:18px;}
+.exec-kpi-card{background:#fff;border:1px solid var(--linen);border-radius:6px;padding:14px 16px;}
+.exec-kpi-val{font-family:var(--f-display);font-size:26px;font-weight:700;line-height:1.1;}
+.exec-kpi-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.85px;color:var(--muted);margin-top:6px;font-family:var(--f-body);}
+.exec-kpi-sub{font-size:11px;color:var(--muted);margin-top:4px;font-family:var(--f-body);}
+.nc.nc-sema-red{border-left:4px solid #dc2626;}
+.nc.nc-sema-amber{border-left:4px solid #ea580c;}
+.nc.nc-sema-green{border-left:4px solid #16a34a;}
+.online-list{font-size:11px;line-height:1.45;color:var(--muted);font-family:var(--f-body);max-height:120px;overflow:auto;}
+.online-list strong{color:var(--ink);}
+.sema-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px;}
+.sema-card{background:#fff;border:1px solid var(--linen);padding:16px;text-align:center;}
+.sema-light{width:26px;height:26px;border-radius:50%;margin:0 auto 10px;}
+.sl-r{background:#ef4444;box-shadow:0 0 14px rgba(239,68,68,.55);}
+.sl-y{background:#f59e0b;box-shadow:0 0 14px rgba(245,158,11,.55);}
+.sl-g{background:#22c55e;box-shadow:0 0 14px rgba(34,197,94,.55);}
+.sema-sec{font-family:var(--f-display);font-size:14px;font-weight:600;}
+.sema-cnt{font-size:10.5px;color:var(--muted);margin-top:3px;font-family:var(--f-body);}
+.sema-multa{font-size:11px;color:var(--danger);font-weight:700;margin-top:4px;font-family:var(--f-mono);}
+.exec-charts{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;}
+.exec-extras-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin-bottom:14px;}
+.exec-extras-grid .cc{margin-bottom:0;}
+.exec-table-wrap{background:#fff;border:1px solid var(--linen);}
+.exec-table-wrap table{width:100%;border-collapse:collapse;font-size:12.5px;}
+.exec-table-wrap th{background:var(--cream);padding:9px 14px;text-align:left;font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:700;border-bottom:1px solid var(--linen);font-family:var(--f-body);}
+.exec-table-wrap td{padding:9px 14px;border-bottom:1px solid var(--cream);font-family:var(--f-body);}
+
+/* ── CALENDAR ── */
+.cal-wrap{background:#fff;border:1px solid var(--linen);overflow:hidden;}
+.cal-hd{background:var(--ink);padding:13px 22px;display:flex;align-items:center;justify-content:space-between;}
+.cal-hd h3{color:#fff;font-family:var(--f-display);font-size:17px;font-weight:600;}
+.cal-nav button{background:rgba(255,255,255,.1);border:none;color:#fff;width:28px;height:28px;cursor:pointer;font-size:14px;transition:background .15s;margin-left:6px;}
+.cal-nav button:hover{background:rgba(255,255,255,.22);}
+.cal-nav button:disabled{opacity:.2;cursor:not-allowed;}
+.cal-wd{display:grid;grid-template-columns:repeat(7,1fr);background:var(--cream);border-bottom:1px solid var(--linen);}
+.cal-wday{padding:7px 4px;text-align:center;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);font-family:var(--f-body);}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);}
+.cal-cell{border-right:1px solid var(--cream);border-bottom:1px solid var(--cream);padding:7px 8px;min-height:80px;transition:background .12s;}
+.cal-cell:nth-child(7n){border-right:none;}
+.cal-cell.past{background:#f9f6f1;pointer-events:none;}
+.cal-cell.other{background:var(--parchment);pointer-events:none;opacity:.3;}
+.cal-cell.today{background:var(--blue-lite);}
+.cal-cell:not(.past):not(.other):hover{background:var(--cream);cursor:pointer;}
+.cal-date{font-size:12px;font-weight:600;margin-bottom:4px;font-family:var(--f-body);}
+.today-b{width:22px;height:22px;background:var(--blue);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;font-family:var(--f-body);}
+.cal-ev{font-size:9px;padding:2px 5px;margin-bottom:2px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;font-family:var(--f-body);}
+.cal-ev:hover{opacity:.75;}
+.cev-novo{background:#dbeafe;color:#1e3a8a;}
+.cev-analise{background:#fef3c7;color:#78350f;}
+.cev-urgente{background:#fee2e2;color:#7f1d1d;font-weight:700;}
+.cev-respondido{background:#dcfce7;color:#14532d;}
+.cev-atrasada{background:#fecaca;color:#7f1d1d;font-weight:700;border:1px solid #ef4444;}
+.cal-ev.cal-hoje{box-shadow:0 0 0 2px #dc2626;}
+.cal-ev.cal-proximo{background:#fef08a!important;color:#713f12!important;}
+.cal-ev.cal-ok{border-left:3px solid #22c55e;}
+.cal-leg{display:flex;gap:14px;padding:9px 18px;border-top:1px solid var(--linen);flex-wrap:wrap;background:var(--cream);}
+.cl-item{display:flex;align-items:center;gap:5px;font-size:10.5px;font-weight:600;color:var(--muted);font-family:var(--f-body);}
+.cl-dot{width:10px;height:10px;flex-shrink:0;}
+
+/* ── REENVIO ── */
+.rs-card{background:#fff;border:1px solid var(--linen);overflow:hidden;margin-bottom:14px;}
+.rs-hd{background:var(--ink);padding:13px 20px;display:flex;align-items:center;justify-content:space-between;}
+.rs-hd h3{color:#fff;font-family:var(--f-display);font-size:16px;font-weight:600;}
+.rs-run{display:flex;align-items:center;gap:7px;font-size:11px;color:#4ade80;font-family:var(--f-body);}
+.rs-dot{width:7px;height:7px;background:#4ade80;border-radius:50%;animation:pulse 1.5s infinite;}
+.rs-bd{padding:18px 20px;}
+.rs-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
+.rs-m{padding:13px;text-align:center;}
+.rs-m-val{font-family:var(--f-display);font-size:28px;font-weight:600;line-height:1;}
+.rs-m-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);font-family:var(--f-body);margin-top:3px;}
+.rs-ai-note{background:var(--gold-lite);border:1px solid rgba(212,184,90,.3);padding:12px 16px;font-size:12.5px;font-family:var(--f-body);line-height:1.65;margin-bottom:0;}
+.rs-step{display:flex;gap:12px;position:relative;}
+.rs-step:not(:last-child)::before{content:'';position:absolute;left:10px;top:22px;bottom:0;width:2px;background:var(--linen);z-index:0;}
+.rs-c{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;color:#fff;z-index:1;position:relative;}
+.rsp{background:var(--linen);color:var(--muted);}
+.rsd{background:var(--success);}
+.rsa{background:#c57b28;animation:pulse 1.5s infinite;}
+.rsc{background:var(--danger);}
+.rs-info{padding:2px 0 16px;}
+.rs-info strong{font-family:var(--f-display);font-size:13.5px;font-weight:600;display:block;margin-bottom:2px;}
+.rs-info span{font-size:11.5px;color:var(--muted);font-family:var(--f-body);}
+.rs-eta{font-size:9.5px;font-family:var(--f-mono);background:var(--cream);padding:2px 7px;color:var(--muted);margin-top:4px;display:inline-block;}
+.rs-ai-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;background:var(--gold-lite);border:1px solid rgba(212,184,90,.3);color:var(--gold);padding:2px 9px;margin-top:4px;font-family:var(--f-body);}
+.nsg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
+.nsi{border:1px solid var(--linen);padding:10px 14px;cursor:pointer;font-size:12px;transition:all .14s;font-family:var(--f-body);}
+.nsi:hover{border-color:var(--blue);}
+.nsi.selected{border-color:var(--red);background:var(--red-lite);}
+.ns-id{font-family:var(--f-mono);font-size:9.5px;color:var(--muted);}
+.ns-t{font-family:var(--f-display);font-weight:600;font-size:13.5px;margin:3px 0 5px;}
+
+/* ── TCE / SAGRES ── */
+.tce-card{background:#fff;border:1px solid var(--linen);overflow:hidden;margin-bottom:14px;}
+.tce-hd{background:#0e2040;padding:13px 20px;display:flex;align-items:center;justify-content:space-between;}
+.tce-hd h3{color:#fff;font-family:var(--f-display);font-size:16px;font-weight:600;}
+.tce-st{font-size:10px;color:#93c5fd;display:flex;align-items:center;gap:6px;font-family:var(--f-body);}
+.tce-bd{padding:18px 20px;}
+.tce-row{display:flex;align-items:flex-start;gap:14px;padding:12px 0;border-bottom:1px solid var(--cream);}
+.tce-row:last-child{border-bottom:none;}
+.tce-ico{width:34px;height:34px;background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.tce-info{flex:1;}
+.tce-info strong{display:block;font-family:var(--f-display);font-size:14px;font-weight:600;margin-bottom:3px;}
+.tce-info p{font-size:12px;color:var(--muted);font-family:var(--f-body);line-height:1.55;}
+.tcebadge{font-size:9.5px;font-weight:700;padding:3px 9px;font-family:var(--f-body);}
+.tceb-ok{background:#dcfce7;color:#14532d;}
+.tceb-no{background:var(--cream);color:var(--muted);}
+.tceb-alerta{background:#fee2e2;color:#7f1d1d;}
+.tce-kpi-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:14px;}
+.tce-kpi-cell{background:#fff;border:1px solid var(--linen);padding:14px 16px;text-align:center;border-radius:6px;}
+.tce-kpi-val{font-family:var(--f-display);font-size:22px;font-weight:700;line-height:1.1;}
+.tce-kpi-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.75px;color:var(--muted);margin-top:6px;font-family:var(--f-body);}
+.tce-link-official{font-size:11px;color:var(--blue);word-break:break-all;}
+
+/* ── TABELA GERAL ── */
+.dt{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--linen);font-size:12px;}
+.dt th{background:var(--cream);padding:9px 14px;text-align:left;font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:700;border-bottom:1px solid var(--linen);font-family:var(--f-body);}
+.dt td{padding:9px 14px;border-bottom:1px solid var(--cream);vertical-align:middle;font-family:var(--f-body);}
+.dt tr:hover td{background:var(--cream);}
+.mono{font-family:var(--f-mono);font-size:10px;}
+.tk{font-family:var(--f-mono);font-size:10px;background:#f0fdf4;color:var(--success);border:1px solid #bbf7d0;padding:2px 7px;}
+.tk-exp{background:#fff1f2;color:var(--danger);border-color:#fecdd3;}
+
+/* ── RELATÓRIOS ── */
+.rep-tabs{display:flex;background:#fff;border:1px solid var(--linen);overflow:hidden;width:fit-content;margin-bottom:14px;}
+.rep-tab{padding:9px 20px;font-size:11px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);border:none;background:none;font-family:var(--f-body);transition:all .15s;}
+.rep-tab.active{background:var(--ink);color:#fff;}
+.rep-filters{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;}
+.rep-preview{background:#fff;border:1px solid var(--linen);padding:30px;font-family:var(--f-body);font-size:13px;line-height:1.75;}
+.rph1{font-family:var(--f-display);font-size:24px;font-weight:600;margin-bottom:3px;}
+.rpsub{color:var(--muted);font-size:11.5px;margin-bottom:18px;}
+.rph3{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin:16px 0 9px;border-top:1px solid var(--linen);padding-top:13px;font-family:var(--f-body);}
+.rpkpi{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:11px;margin-bottom:18px;}
+.rpkpi-item{padding:12px;text-align:center;}
+.rpkpi-val{font-family:var(--f-display);font-size:24px;font-weight:600;}
+.rpkpi-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);font-family:var(--f-body);}
+.rpt{width:100%;border-collapse:collapse;font-size:12px;}
+.rpt th{background:var(--cream);padding:8px 12px;text-align:left;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);font-family:var(--f-body);}
+.rpt td{padding:8px 12px;border-bottom:1px solid var(--cream);font-family:var(--f-body);}
+.prod-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:16px;}
+.prod-card{background:var(--cream);padding:14px;text-align:center;}
+.prod-val{font-family:var(--f-display);font-size:26px;font-weight:600;}
+.prod-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);font-family:var(--f-body);}
+.resp-bar-lbl{font-size:11.5px;margin-bottom:4px;display:flex;justify-content:space-between;font-family:var(--f-body);}
+.resp-bar{height:7px;background:var(--cream);overflow:hidden;margin-bottom:10px;}
+.resp-bar-fill{height:100%;transition:width .5s;}
+
+/* ── ASSINATURA ── */
+.sign-overlay{position:fixed;inset:0;background:rgba(12,16,23,.86);z-index:600;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.sign-overlay.open{display:flex;}
+.sign-box{background:var(--parchment);width:500px;overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.5);animation:mup .22s ease;}
+.sign-hd{background:var(--gold);padding:16px 22px;}
+.sign-hd h3{font-family:var(--f-display);color:#fff;font-size:17px;font-weight:600;}
+.sign-hd p{font-size:10.5px;color:rgba(255,255,255,.7);font-family:var(--f-body);margin-top:3px;}
+.sign-bd{padding:22px;}
+.sfield{margin-bottom:14px;}
+.sfield label{display:block;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1.1px;color:var(--muted);margin-bottom:5px;font-family:var(--f-body);}
+.sfield input,.sfield select{width:100%;border:1px solid var(--linen);background:#fff;padding:9px 13px;font-family:var(--f-body);font-size:13px;outline:none;}
+.sfield input:focus,.sfield select:focus{border-color:var(--gold);}
+.sign-cert-preview{background:var(--gold-lite);border:1px solid rgba(212,184,90,.3);padding:12px;margin-bottom:16px;font-size:11px;font-family:var(--f-mono);line-height:1.8;}
+.sign-cert-lbl{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--gold);margin-bottom:7px;font-weight:700;font-family:var(--f-body);}
+.sign-actions{display:flex;gap:8px;}
+
+/* ── OFÍCIO ── */
+.oficio-wrap{background:#fff;padding:28px;font-family:var(--f-body);font-size:12.5px;line-height:1.8;position:relative;}
+.oficio-header{text-align:center;margin-bottom:22px;border-bottom:2px solid var(--ink);padding-bottom:16px;}
+.oficio-header h2{font-family:var(--f-display);font-size:17px;font-weight:600;}
+.oficio-header p{font-size:11px;color:var(--muted);}
+.oficio-numero{font-family:var(--f-display);font-size:15px;font-weight:600;margin-bottom:14px;}
+.oficio-body{margin-bottom:20px;}
+.oficio-assin{text-align:center;margin-top:32px;padding-top:20px;border-top:1px solid var(--linen);}
+.oficio-assin p{font-size:11px;color:var(--muted);}
+.oficio-assin strong{font-family:var(--f-display);font-size:14px;display:block;margin-bottom:3px;}
+.oficio-stamp{position:absolute;bottom:22px;right:22px;font-size:9px;color:var(--muted);text-align:right;font-family:var(--f-mono);}
+.oficio-qr{position:absolute;bottom:22px;left:22px;width:48px;height:48px;background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:22px;}
+
+/* ── JURI ── */
+.juri-wrap{display:grid;grid-template-columns:1fr 310px;gap:16px;min-height:500px;}
+.juri-chat{background:#fff;border:1px solid var(--linen);display:flex;flex-direction:column;}
+.juri-chat-hd{background:var(--ink);padding:14px 18px;display:flex;align-items:center;gap:13px;}
+.juri-logo{width:38px;height:38px;background:linear-gradient(135deg,var(--gold),var(--red));display:flex;align-items:center;justify-content:center;font-family:var(--f-display);font-size:16px;font-weight:700;color:#fff;border-radius:50%;flex-shrink:0;}
+.juri-hd-txt h3{font-family:var(--f-display);color:#fff;font-size:15px;font-weight:600;}
+.juri-hd-txt p{font-size:10px;color:rgba(255,255,255,.42);font-family:var(--f-body);}
+.juri-live{margin-left:auto;display:flex;align-items:center;gap:5px;font-size:10px;color:#4ade80;font-family:var(--f-body);}
+.juri-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;max-height:440px;}
+.jmsg{max-width:90%;}
+.jmsg.user{align-self:flex-end;}
+.jmsg.juri{align-self:flex-start;}
+.jmsg-bubble{padding:11px 15px;font-family:var(--f-body);font-size:13px;}
+.jmsg.user .jmsg-bubble{background:var(--blue);color:#fff;}
+.jmsg.juri .jmsg-bubble{background:var(--cream);color:var(--ink);border-left:3px solid var(--gold);}
+.jmsg-meta{font-size:9.5px;color:var(--muted);margin-top:3px;font-family:var(--f-mono);}
+.jmsg.user .jmsg-meta{text-align:right;}
+.juri-input-row{display:flex;border-top:1px solid var(--linen);}
+.juri-input{flex:1;border:none;padding:13px 15px;font-family:var(--f-body);font-size:13px;outline:none;resize:none;height:50px;color:var(--ink);}
+.juri-send{background:var(--gold);border:none;color:#fff;padding:0 22px;font-size:18px;cursor:pointer;transition:all .18s;letter-spacing:.5px;}
+.juri-send:hover{background:var(--red);}
+.juri-send:disabled{opacity:.35;cursor:not-allowed;}
+.juri-panel{display:flex;flex-direction:column;gap:10px;}
+.jp-card{background:#fff;border:1px solid var(--linen);padding:14px 16px;}
+.jp-card h4{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:10px;font-family:var(--f-body);}
+.jp-tpl{font-size:11.5px;padding:7px 10px;border:1px solid var(--linen);cursor:pointer;margin-bottom:5px;transition:all .14s;line-height:1.45;font-family:var(--f-body);}
+.jp-tpl:hover{background:var(--cream);border-color:var(--gold);}
+.jp-tpl strong{display:block;font-size:10px;color:var(--gold);margin-bottom:2px;font-family:var(--f-body);text-transform:uppercase;letter-spacing:.5px;}
+.jp-nota{background:var(--gold-lite);border:1px solid rgba(212,184,90,.28);padding:11px 13px;font-size:11px;line-height:1.75;color:#5a4010;font-family:var(--f-body);}
+.typing{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);}
+.typing-dot{width:6px;height:6px;background:var(--gold);border-radius:50%;animation:ty 1.2s infinite;}
+.typing-dot:nth-child(2){animation-delay:.2s;}
+.typing-dot:nth-child(3){animation-delay:.4s;}
+@keyframes ty{0%,80%,100%{transform:translateY(0);}40%{transform:translateY(-6px);}}
+
+/* ── TOAST ── */
+.tc{position:fixed;bottom:20px;right:20px;z-index:4000;display:flex;flex-direction:column;gap:8px;max-width:330px;}
+.toast{background:#0e1521;color:#fff;padding:13px 17px;font-size:12.5px;border-left:4px solid var(--blue);opacity:0;transform:translateY(10px) translateX(8px);transition:all .3s cubic-bezier(.22,1,.36,1);pointer-events:none;font-family:var(--f-body);box-shadow:0 8px 32px rgba(0,0,0,.4);}
+.toast.show{opacity:1;transform:none;pointer-events:auto;}
+.toast-title{font-weight:700;font-size:9.5px;text-transform:uppercase;letter-spacing:.6px;margin-bottom:2px;color:rgba(255,255,255,.5);font-family:var(--f-body);}
+.toast.ws{border-left-color:var(--online);}
+.toast.urg{border-left-color:var(--danger);}
+.toast.gold{border-left-color:var(--gold);}
+
+/* ── PAGES ── */
+.sp{display:none;}
+.sp.active{display:block;}
+
+/* ── MOBILE ── */
+@media(max-width:768px){
+  .hamburger{display:flex;}
+  .topbar-brand{font-size:15px;}
+  .ph-title{font-size:21px;}
+  .modal-overlay{padding:12px 8px;align-items:stretch;}
+  .modal{max-height:calc(100dvh - 16px);max-width:100%;}
+  .modal-hd{padding:14px 16px;}
+  .modal-bd{padding:14px 16px;}
+  .pdf-iframe-wrap{max-height:min(55dvh,420px);}
+  .pdf-iframe-wrap iframe{height:min(50dvh,400px);min-height:220px;}
+  .sa{flex-direction:column;}
+  .sa .bs{width:100%;min-height:44px;}
+  .ci-row{flex-direction:column;}
+  .btn-send{width:100%;min-height:44px;}
+  .sidebar{position:fixed;top:var(--th);left:0;bottom:0;z-index:160;transform:translateX(-100%);height:calc(100dvh - var(--th));}
+  .sidebar.open{transform:translateX(0);}
+  .sb-overlay.open{display:block;}
+  .main{padding:14px;}
+  .nc{grid-template-columns:1fr;}
+  .nc .nr{text-align:left;}
+  .stats-row{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .kpi-grid,.rpkpi,.prod-grid{grid-template-columns:1fr 1fr;}
+  .charts-grid,.nsg,.exec-charts,.sema-grid,.exec-extras-grid,.exec-kpi-row,.tce-kpi-grid{grid-template-columns:1fr;}
+  .ig{grid-template-columns:1fr 1fr;}
+  .juri-wrap{grid-template-columns:1fr;}
+  .topbar-meta{display:none;}
+  .sign-box{width:calc(100vw - 28px);}
+}
+@media(max-width:480px){
+  .login-box{width:calc(100vw - 20px);}
+  .stats-row,.kpi-grid{grid-template-columns:1fr 1fr;}
+  .sema-grid{grid-template-columns:1fr 1fr;}
+}
+body.modo-crise{--parchment:#faf6f0;}
+body.modo-crise .topbar{border-bottom-width:3px;border-bottom-color:#dc2626;box-shadow:0 4px 24px rgba(220,38,38,.2);}
+.crisis-bar{display:none;background:linear-gradient(90deg,#7f1d1d,#b45309,#7f1d1d);color:#fff;text-align:center;padding:10px 16px;font-size:12.5px;font-weight:700;font-family:var(--f-body);letter-spacing:.2px;}
+body.modo-crise .crisis-bar{display:block;}
+.legal-disclaimer{font-size:11px;line-height:1.5;color:var(--muted);background:var(--cream);border-bottom:1px solid var(--linen);padding:8px 18px;font-family:var(--f-body);text-align:center;}
+.legal-disclaimer strong{color:var(--ink);font-weight:600;}
+.modal-legal-note{font-size:11px;line-height:1.55;color:var(--muted);background:var(--cream);border:1px solid var(--linen);border-radius:6px;padding:10px 12px;margin-bottom:14px;font-family:var(--f-body);}
+.mpma-ocorrencias-wrap .mpma-oc-card{border:1px solid var(--linen);border-radius:8px;padding:12px 14px;margin-bottom:12px;background:#fff;}
+.mpma-ocorrencias-wrap .mpma-oc-hd{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:baseline;margin-bottom:8px;font-family:var(--f-body);}
+.mpma-ocorrencias-wrap .mpma-oc-hd strong{font-size:14px;color:var(--ink);}
+.mpma-ocorrencias-wrap .mpma-oc-cargo{font-size:12px;color:var(--muted);}
+.mpma-ocorrencias-wrap .mpma-oc-trecho{white-space:pre-wrap;font-size:12px;line-height:1.55;max-height:240px;overflow:auto;background:var(--cream);padding:10px 12px;border-radius:6px;border:1px solid var(--linen);font-family:var(--f-body);color:var(--ink);}
+.mpma-ocorrencias-wrap .mpma-oc-actions{margin-top:10px;}
+.prio-flag{display:inline-flex;align-items:center;background:linear-gradient(135deg,#ea580c,#c2410c);color:#fff;font-size:8px;font-weight:800;padding:2px 8px;border-radius:4px;margin-right:6px;text-transform:uppercase;letter-spacing:.55px;}
+.grav-inline{font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;margin-left:6px;}
+.grav-CRIT{background:#fecaca;color:#7f1d1d;}
+.grav-ALTA{background:#fed7aa;color:#9a3412;}
+.grav-MED{background:#fef3c7;color:#78350f;}
+.grav-BAIXA{background:#dcfce7;color:#14532d;}
+.grav-crit{background:#fecaca;color:#7f1d1d;}
+.grav-warn{background:#fed7aa;color:#9a3412;}
+.grav-ok{background:#dcfce7;color:#14532d;}
+.cd-live{font-variant-numeric:tabular-nums;font-weight:700;font-family:var(--f-mono);font-size:12px;}
+.inactive-warn{color:#b45309;font-size:10px;font-weight:700;}
+.grav-panel{border:1px solid var(--linen);border-radius:8px;padding:14px 16px;margin-bottom:14px;background:#fff;font-family:var(--f-body);}
+.grav-panel .grav-hd{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;margin:0 0 10px;color:var(--muted);}
+.grav-sinais{margin:0;padding-left:18px;font-size:12px;line-height:1.5;color:var(--text);}
+.inactive-banner{background:#fff7ed;border:1px solid #fdba74;color:#9a3412;padding:10px 14px;border-radius:6px;margin-bottom:14px;font-size:12.5px;font-family:var(--f-body);}
+.prio-lbl{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-family:var(--f-body);margin:0;}
+.tl-flow .tl-item{margin-bottom:10px;}
+.bs-wa{background:linear-gradient(180deg,#25d366,#128c3a);color:#fff;border:none;}
+.bs-wa:hover{filter:brightness(1.05);}
+.orig-badge{font-size:9px;font-weight:800;padding:2px 8px;border-radius:4px;margin-right:6px;vertical-align:middle;font-family:var(--f-body);letter-spacing:.3px;}
+.orig-MPMA{background:#fee2e2;color:#991b1b;}
+.orig-DOU{background:#dbeafe;color:#1e40af;}
+.orig-DOE{background:#dcfce7;color:#14532d;}
+.orig-DOM{background:#fef3c7;color:#92400e;}
+.rec-card{background:#fff;border:1px solid var(--linen);padding:14px 18px;margin-bottom:16px;font-family:var(--f-body);}
+.rec-card h4{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:10px;}
+</style>
+</head>
+<body>
+
+<!-- ══════════ LOGIN ══════════ -->
+<div id="login-screen">
+  <div class="lnk-banner" id="lnk-banner">
+    🔗 Você recebeu um <strong>link seguro de notificação do MPMA</strong>:<br>
+    <strong id="lnk-name">—</strong><br>
+    <span style="opacity:.68;font-size:11px">Faça login para acessar o documento oficial automaticamente.</span>
+  </div>
+  <div class="login-box">
+    <div class="login-hd">
+      <div class="login-hd-bar"></div>
+      <div class="login-seal">⚖️</div>
+      <h1>Procuradoria Municipal<br>de Buriticupu — Maranhão</h1>
+      <div class="login-sub">Plataforma Inteligente de Notificações · MPMA · v7.0</div>
+      <div class="login-badges">
+        <span class="login-badge">LGPD Art. 46</span>
+        <span class="login-badge">WebSocket</span>
+        <span class="login-badge">IA Jurídica</span>
+        <span class="login-badge">TCE-MA</span>
+      </div>
+    </div>
+    <form class="login-bd" id="login-form" action="#" method="post" autocomplete="on" onsubmit="event.preventDefault();doLogin();return false;">
+      <div class="login-field">
+      <label for="login-user">Usuário</label>
+      <input type="text" id="login-user" name="username" autocomplete="username" placeholder="ex.: alef.mendes" autocapitalize="none" spellcheck="false">
+      </div>
+      <div class="login-field">
+      <label for="login-pass">Senha</label>
+      <input type="password" id="login-pass" name="password" autocomplete="current-password" placeholder="••••••••">
+      </div>
+      <p id="login-msg" style="display:none;font-size:12px;color:var(--danger);margin-bottom:8px;font-family:var(--f-body)"></p>
+      <button type="submit" class="btn-login" id="btn-login">Acessar Sistema ›</button>
+      <p style="font-size:11px;color:var(--muted);margin-top:14px;line-height:1.55;font-family:var(--f-body)">A sessão mantém-se neste dispositivo após atualizar a página (token em armazenamento local), até expirar ou sair.</p>
+    </form>
+  </div>
+  <div class="login-note">
+    Acesso restrito a servidores autorizados · LGPD Art. 46<br>
+    <em>Criado por Alef Rodrigo Rio Mendes</em> · TI / Desenvolvimento Institucional<br>
+    PlataformaMP v7.0 · Procuradoria Municipal de Buriticupu-MA
+  </div>
+</div>
+
+<!-- ══════════ APP ══════════ -->
+<div id="app">
+  <div class="topbar">
+    <button class="hamburger" onclick="toggleSb()">☰</button>
+    <div class="topbar-brand">PlataformaMP <span class="sep">·</span> Buriticupu <span class="ver">v7.0</span></div>
+    <div class="topbar-meta">
+      <span><span class="online-dot"></span> <span id="on-n">4</span> online</span>
+      <span class="ws-live"><span class="ws-dot"></span><span id="ws-txt">Tempo real ativo</span></span>
+      <span id="clock">—</span>
+    </div>
+    <button class="pwa-btn" id="pwa-btn" onclick="installPWA()">⬇ Instalar App</button>
+    <div class="topbar-user">
+      <div class="av" id="u-av" style="background:var(--red)">?</div>
+      <div><div class="uname" id="u-name">—</div><div class="rbadge" id="u-role">—</div></div>
+    </div>
+    <button class="btn-logout" onclick="doLogout()">Sair</button>
+  </div>
+  <div class="crisis-bar" id="crisis-bar" role="status">⚠ Modo crise — volume elevado de processos críticos. Priorize respostas e acompanhamento executivo.</div>
+  <div class="legal-disclaimer" role="note">Este sistema exibe informações públicas extraídas automaticamente de documentos oficiais, <strong>sem interpretação</strong>. Confira sempre o documento original (PDF).</div>
+  <div class="sb-overlay" id="sb-overlay" onclick="closeSb()"></div>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sb-hd" style="display:flex;align-items:center;justify-content:space-between;"><div class="sb-hd-lbl">Navegação</div><span style="font-family:var(--f-mono);font-size:8px;color:var(--muted);background:var(--cream);padding:2px 6px;">v7.0</span></div>
+      <div class="sb-section">
+        <div class="sb-label">Principal</div>
+        <div class="nav-item active" onclick="sp('inbox',this)"><span class="ni">📥</span>Caixa de Entrada <span class="nav-badge" id="badge-inbox">—</span></div>
+        <div class="nav-item exec-only hidden-item" onclick="sp('executivo',this)"><span class="ni">🎯</span>Painel Executivo</div>
+        <div class="nav-item usuario-hide" onclick="sp('dashboard',this)"><span class="ni">📊</span>Dashboard</div>
+        <div class="nav-item" onclick="sp('calendar',this)"><span class="ni">📅</span>Calendário de Prazos</div>
+        <div class="nav-item usuario-hide" onclick="sp('reenvio',this)"><span class="ni">🔄</span>Reenvio Inteligente</div>
+        <div class="nav-item usuario-hide" onclick="sp('tce',this)"><span class="ni">🏛️</span>TCE-MA / SAGRES</div>
+        <div class="nav-item usuario-hide" onclick="sp('audit',this)"><span class="ni">🔍</span>Auditoria</div>
+        <div class="nav-item usuario-hide" onclick="sp('links',this)"><span class="ni">🔗</span>Tokens de Acesso</div>
+        <div class="nav-item proc-only hidden-item" onclick="sp('relatorio',this)"><span class="ni">📄</span>Relatórios</div>
+        <div class="nav-item user-mgmt-nav hidden-item" onclick="sp('usuarios',this)"><span class="ni">👥</span>Usuários</div>
+        <div class="nav-item usuario-hide" onclick="sp('juri',this)"><span class="ni">⚖️</span>JURI — IA Jurídica</div>
+      </div>
+      <div class="sb-section">
+        <div class="sb-label">Filtrar Secretaria</div>
+        <div class="nav-item" onclick="fSec('todas')"><span class="ni">◈</span>Todas</div>
+        <div class="nav-item" onclick="fSec('Saúde')"><span class="ni">🏥</span>Saúde</div>
+        <div class="nav-item" onclick="fSec('Administração')"><span class="ni">🏛</span>Administração</div>
+        <div class="nav-item" onclick="fSec('Finanças')"><span class="ni">💰</span>Finanças</div>
+        <div class="nav-item" onclick="fSec('Gabinete')"><span class="ni">📋</span>Gabinete</div>
+      </div>
+      <div class="sb-section">
+        <div class="sb-label">Usuários Online</div>
+        <div class="sb-online" id="sb-online-wrap" style="font-size:11px;color:var(--muted);padding:4px 0">Conectando…</div>
+      </div>
+      <div class="sb-section" style="padding:10px 18px;">
+        <div class="sb-label" style="padding:0;margin-bottom:6px">WebSocket</div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:11px;font-family:var(--f-body);color:var(--muted)">
+          <div class="ws-dot"></div><span id="ws-sb">Aguardando eventos…</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+
+      <!-- ══ INBOX ══ -->
+      <div class="sp active" id="page-inbox">
+        <div class="ph">
+          <div><div class="ph-title">Caixa de Entrada</div><div class="ph-sub" id="inbox-sub">—</div></div>
+          <button class="btn-primary" onclick="toast('Sistema','Cadastro via protocolo disponível após integração.')">+ Registrar</button>
+        </div>
+        <div class="stats-row">
+          <div class="stat-card sc-n"><div class="sc-lbl">Novas</div><div class="sc-val" id="cnt-novo">—</div><div class="sc-sub">aguardando triagem</div></div>
+          <div class="stat-card sc-a"><div class="sc-lbl">Em Análise</div><div class="sc-val" id="cnt-analise">—</div><div class="sc-sub">em andamento</div></div>
+          <div class="stat-card sc-u"><div class="sc-lbl">Urgentes</div><div class="sc-val" id="cnt-urgente">—</div><div class="sc-sub" style="color:var(--danger)">⚠ ação imediata</div></div>
+          <div class="stat-card sc-at"><div class="sc-lbl">Atrasadas</div><div class="sc-val" id="cnt-atrasada">—</div><div class="sc-sub">prazo vencido</div></div>
+          <div class="stat-card sc-r"><div class="sc-lbl">Respondidas</div><div class="sc-val" id="cnt-respondido">—</div><div class="sc-sub">concluídas</div></div>
+        </div>
+        <div class="search-bar">
+          <div class="sw"><span class="si">🔍</span><input type="text" id="srch" placeholder="Nome, secretaria, palavra-chave ou texto da denúncia…" oninput="renderNots()"></div>
+          <select class="sel" id="sel-sec" onchange="renderNots()"><option value="">Todas as secretarias</option><option>Saúde</option><option>Administração</option><option>Finanças</option><option>Gabinete</option></select>
+          <select class="sel" id="sel-urg" onchange="renderNots()"><option value="">Qualquer urgência</option><option>Alta</option><option>Média</option><option>Baixa</option></select>
+          <select class="sel" id="sel-ord" onchange="renderNots()"><option value="r">Mais recentes</option><option value="p">Prazo mais próximo</option></select>
+          <select class="sel" id="sel-resp" onchange="renderNots()" title="Filtrar por responsável"><option value="">Todos os responsáveis</option><option value="__sem__">Sem responsável</option></select>
+          <select class="sel" id="sel-origem" onchange="renderNots()" title="Diário / origem"><option value="">Todas as origens</option><option value="MPMA">MPMA — denúncias</option><option value="DOU">DOU — federal</option><option value="DOE">DOE — estadual</option></select>
+        </div>
+        <div class="filter-pills">
+          <div class="pill active" onclick="setPill(this,'todas')">Todas</div>
+          <div class="pill" onclick="setPill(this,'novo')">Novas</div>
+          <div class="pill" onclick="setPill(this,'urgente')">Urgentes</div>
+          <div class="pill" onclick="setPill(this,'analise')">Em Análise</div>
+          <div class="pill" onclick="setPill(this,'respondido')">Respondidas</div>
+          <div class="pill" onclick="setPill(this,'atrasada')">Atrasadas</div>
+        </div>
+        <div id="recorrentes-wrap" class="rec-card exec-only hidden-item" style="display:none"><h4>Inteligência · Nomes recorrentes (≥2 processos)</h4><div id="recorrentes-body" style="font-size:12.5px">—</div></div>
+        <div class="notif-list" id="notif-list"></div>
+      </div>
+
+      <!-- ══ EXECUTIVO ══ -->
+      <div class="sp" id="page-executivo">
+        <div class="ph"><div><div class="ph-title">Painel Executivo</div><div class="ph-sub">Visão de Gestão — Prefeito e Chefe de Gabinete</div></div></div>
+        <div class="exec-hero">
+          <div><h2>Situação Atual — Buriticupu, MA</h2><p id="exec-dt">—</p></div>
+          <div style="margin-left:auto;text-align:right"><div class="exec-risk-val" id="exec-risk">R$ 0</div><div class="exec-risk-lbl">Risco de Multa Acumulado</div></div>
+        </div>
+        <div class="exec-kpi-row" id="exec-kpi-row"></div>
+        <div class="sb-label" style="padding:0 0 9px;font-size:9px">Semáforo por Secretaria</div>
+        <div class="sema-grid" id="sema-grid"></div>
+        <div class="exec-extras-grid" id="exec-extras"></div>
+        <div class="exec-charts">
+          <div class="cc"><h4>Volume de processos — últimos 6 meses (índice %)</h4><canvas id="cExecTrend"></canvas></div>
+          <div class="cc"><h4>Processos por Urgência</h4><canvas id="cExecUrg"></canvas></div>
+        </div>
+        <div class="exec-table-wrap">
+          <table><thead><tr><th>Processo</th><th>Secretaria</th><th>Status</th><th>Risco de Multa</th><th>Prazo</th><th>Ação</th></tr></thead>
+          <tbody id="exec-table"></tbody></table>
+        </div>
+      </div>
+
+      <!-- ══ DASHBOARD ══ -->
+      <div class="sp" id="page-dashboard">
+        <div class="ph"><div><div class="ph-title">Dashboard Analítico</div><div class="ph-sub">Indicadores gerenciais — 2025 / 2026</div></div></div>
+        <div class="kpi-grid">
+          <div class="kp"><div class="kp-lbl">Tempo Médio de Resposta</div><div class="kp-val">5,8<span style="font-size:16px">d</span></div><div class="kp-sub">meta: ≤ 3 dias</div></div>
+          <div class="kp"><div class="kp-lbl">Taxa no Prazo</div><div class="kp-val" style="color:var(--danger)">58<span style="font-size:16px">%</span></div><div class="kp-sub">meta: ≥ 80%</div></div>
+          <div class="kp"><div class="kp-lbl">Ações Judicializadas</div><div class="kp-val" style="color:var(--danger)">4</div><div class="kp-sub">pelo MPMA em 2026</div></div>
+        </div>
+        <div class="charts-grid">
+          <div class="cc"><h4>Status dos Processos</h4><canvas id="cSt"></canvas></div>
+          <div class="cc"><h4>Por Secretaria</h4><canvas id="cSec"></canvas></div>
+          <div class="cc"><h4>Volume Mensal 2025–2026</h4><canvas id="cMes"></canvas></div>
+          <div class="cc"><h4>Nível de Urgência</h4><canvas id="cUrg"></canvas></div>
+        </div>
+      </div>
+
+      <!-- ══ CALENDAR ══ -->
+      <div class="sp" id="page-calendar">
+        <div class="ph"><div><div class="ph-title">Calendário de Prazos</div><div class="ph-sub">Apenas datas ativas · clique para abrir o processo</div></div></div>
+        <div class="cal-wrap">
+          <div class="cal-hd"><h3 id="cal-lbl">—</h3><div class="cal-nav"><button onclick="calNav(-1)" id="cal-prev">‹</button><button onclick="calNav(1)">›</button></div></div>
+          <div class="cal-wd"><div class="cal-wday">Dom</div><div class="cal-wday">Seg</div><div class="cal-wday">Ter</div><div class="cal-wday">Qua</div><div class="cal-wday">Qui</div><div class="cal-wday">Sex</div><div class="cal-wday">Sáb</div></div>
+          <div class="cal-grid" id="cal-grid"></div>
+          <div class="cal-leg">
+            <div class="cl-item"><div class="cl-dot" style="background:#dc2626"></div>Vence hoje</div>
+            <div class="cl-item"><div class="cl-dot" style="background:#fef08a"></div>Até 3 dias</div>
+            <div class="cl-item"><div class="cl-dot" style="background:#22c55e"></div>Prazo folgado</div>
+            <div class="cl-item"><div class="cl-dot" style="background:#fecaca"></div>Atrasada (status)</div>
+            <div class="cl-item" style="margin-left:auto"><div class="cl-dot" style="background:#e5e7eb"></div>Célula passada</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ REENVIO ══ -->
+      <div class="sp" id="page-reenvio">
+        <div class="ph"><div><div class="ph-title">Reenvio Inteligente</div><div class="ph-sub">Motor com IA adaptativa — intervalos ajustados conforme tipo de infração</div></div></div>
+        <div class="rs-card">
+          <div class="rs-hd"><h3>Motor de Reenvio — IA Adaptativa</h3><div class="rs-run"><div class="rs-dot"></div>Rodando em segundo plano</div></div>
+          <div class="rs-bd">
+            <div class="rs-metrics">
+              <div class="rs-m" style="background:var(--cream)"><div class="rs-m-val" id="m-env">2</div><div class="rs-m-lbl">Reenvios hoje</div></div>
+              <div class="rs-m" style="background:var(--red-lite)"><div class="rs-m-val" style="color:var(--danger)" id="m-pend">0</div><div class="rs-m-lbl">Pendentes</div></div>
+              <div class="rs-m" style="background:#f0fdf4"><div class="rs-m-val" style="color:var(--success)" id="m-esc">0</div><div class="rs-m-lbl">Escalados</div></div>
+              <div class="rs-m" style="background:var(--gold-lite)"><div class="rs-m-val" style="color:var(--gold)" id="m-ai">5</div><div class="rs-m-lbl">Ajustes por IA</div></div>
+            </div>
+            <div class="rs-ai-note">
+              <strong style="font-family:var(--f-display);font-size:14px">✦ IA Adaptativa:</strong> O sistema analisa o tipo de infração e histórico para ajustar automaticamente os intervalos de reenvio. Nepotismo com ação judicial → T+6h · Fraude em licitação → T+8h · Casos padrão → T+24h.
+            </div>
+          </div>
+        </div>
+        <div class="rs-card">
+          <div class="rs-hd"><h3>Acompanhar Processo</h3></div>
+          <div class="rs-bd">
+            <div class="nsg" id="nsg"></div>
+            <div id="rs-detail" style="display:none">
+              <hr style="border:none;border-top:1px solid var(--linen);margin-bottom:16px">
+              <div class="sec-title">Etapas — executadas automaticamente pelo sistema</div>
+              <div id="rs-steps"></div>
+            </div>
+          </div>
+        </div>
+        <div class="rs-card">
+          <div class="rs-hd"><h3>Log de Reenvios</h3></div>
+          <table class="dt"><thead><tr><th>Processo</th><th>Etapa</th><th>Canal</th><th>Horário</th><th>Status</th><th>IA</th></tr></thead>
+          <tbody id="rs-log"></tbody></table>
+        </div>
+      </div>
+
+      <!-- ══ TCE ══ -->
+      <div class="sp" id="page-tce">
+        <div class="ph"><div><div class="ph-title">TCE-MA / SAGRES</div><div class="ph-sub">Dados públicos do site oficial tcema.tc.br filtrados para Buriticupu (atualização automática a cada 30 min)</div></div></div>
+        <div class="tce-kpi-grid" id="tce-kpi-row"></div>
+        <div class="tce-card">
+          <div class="tce-hd"><h3>Painel TCE-MA — Buriticupu</h3><div class="tce-st"><div class="ws-dot"></div><span id="tce-status-txt">A carregar…</span></div></div>
+          <div class="tce-bd" id="tce-body"></div>
+        </div>
+        <div class="rs-card">
+          <div class="rs-hd"><h3>Recomendações de Consistência</h3></div>
+          <div class="rs-bd"><div id="tce-recs" style="font-size:13px;font-family:var(--f-body);line-height:1.75"></div></div>
+        </div>
+      </div>
+
+      <!-- ══ AUDITORIA ══ -->
+      <div class="sp" id="page-audit">
+        <div class="ph"><div><div class="ph-title">Auditoria</div><div class="ph-sub">Registro imutável — acessos, PDFs, assinaturas, reenvios, tempo real</div></div></div>
+        <table class="dt"><thead><tr><th>Data/Hora</th><th>Usuário</th><th>Ação</th><th>Processo</th><th>IP</th><th>Observação</th></tr></thead>
+        <tbody id="audit-body"></tbody></table>
+      </div>
+
+      <!-- ══ TOKENS ══ -->
+      <div class="sp" id="page-links">
+        <div class="ph"><div><div class="ph-title">Tokens de Acesso</div><div class="ph-sub">JWT ao login · validade 12h · controla API e tempo real</div></div><button class="btn-primary" onclick="gerarToken()">+ Gerar Token</button></div>
+        <table class="dt"><thead><tr><th>Token</th><th>Processo</th><th>Destinatário</th><th>Gerado</th><th>Expira</th><th>Acessado</th><th>Status</th></tr></thead>
+        <tbody id="links-body"></tbody></table>
+      </div>
+
+      <!-- ══ RELATÓRIOS ══ -->
+      <div class="sp" id="page-relatorio">
+        <div class="ph"><div><div class="ph-title">Relatórios Gerenciais</div><div class="ph-sub">Acesso exclusivo — Procurador Geral do Município</div></div><button class="btn-primary" onclick="expPDF()">⬇ Exportar PDF</button></div>
+        <div class="rep-tabs">
+          <button class="rep-tab active" onclick="setRepTab(this,'semanal')">Semanal</button>
+          <button class="rep-tab" onclick="setRepTab(this,'mensal')">Mensal</button>
+          <button class="rep-tab" onclick="setRepTab(this,'produtividade')">Produtividade</button>
+          <button class="rep-tab" onclick="setRepTab(this,'desempenho')">Desempenho</button>
+        </div>
+        <div class="rep-filters">
+          <select class="sel" id="rep-desempenho-periodo" onchange="renderRep()" style="display:none">
+            <option value="dia">Hoje (dia)</option>
+            <option value="semana" selected>Esta semana</option>
+            <option value="mes">Este mês</option>
+          </select>
+          <select class="sel" id="rep-periodo" onchange="renderRep()">
+            <option>Semana 08 — 17 a 23/02/2026</option>
+            <option>Semana 07 — 10 a 16/02/2026</option>
+            <option>Semana 06 — 03 a 09/02/2026</option>
+          </select>
+          <select class="sel" id="rep-sec" onchange="renderRep()"><option value="">Todas as secretarias</option><option>Saúde</option><option>Administração</option><option>Finanças</option><option>Gabinete</option></select>
+          <select class="sel" id="rep-status" onchange="renderRep()"><option value="">Todos os status</option><option>Urgentes</option><option>Em Análise</option><option>Respondidas</option></select>
+        </div>
+        <div class="rep-preview" id="rep-preview"></div>
+      </div>
+
+      <!-- ══ USUÁRIOS (admin) ══ -->
+      <div class="sp" id="page-usuarios">
+        <div class="ph"><div><div class="ph-title">Usuários do Sistema</div><div class="ph-sub">Criar e editar contas — perfil administrativo</div></div></div>
+        <div id="usuarios-admin-wrap" style="display:none">
+          <p style="font-size:12.5px;color:var(--muted);margin-bottom:14px;font-family:var(--f-body)">Senha padrão inicial para novos usuários pode ser definida abaixo. <strong>admin_master</strong> pode alterar a senha de qualquer usuário.</p>
+          <div class="search-bar" style="margin-bottom:18px">
+            <input type="text" id="nu-user" placeholder="username (login)" class="sel" style="flex:1;min-width:140px;padding:10px 12px">
+            <input type="text" id="nu-nome" placeholder="Nome completo" class="sel" style="flex:1;min-width:140px;padding:10px 12px">
+            <input type="password" id="nu-pass" placeholder="Senha" class="sel" style="max-width:160px;padding:10px 12px">
+            <input type="text" id="nu-whatsapp" placeholder="WhatsApp (DDD+número)" class="sel" style="max-width:160px;padding:10px 12px">
+            <select class="sel" id="nu-role"><option value="usuario">usuario</option><option value="executivo">executivo</option><option value="prefeito">prefeito</option><option value="admin">admin</option><option value="admin_master">admin_master</option></select>
+            <button class="btn-primary" onclick="criarUsuario()">+ Criar</button>
+          </div>
+          <table class="dt"><thead><tr><th>Username</th><th>Nome</th><th>Role</th><th>WhatsApp</th><th>Senha</th></tr></thead>
+          <tbody id="usuarios-body"></tbody></table>
+        </div>
+        <div id="usuarios-denied" class="empty" style="display:none"><div class="empty-ico">🔒</div>Acesso restrito a administradores ou prefeito (criação limitada).</div>
+      </div>
+
+      <!-- ══ JURI ══ -->
+      <div class="sp" id="page-juri">
+        <div class="ph"><div><div class="ph-title">JURI — Assistente Jurídico de IA</div><div class="ph-sub">IA especializada · Doutorado em Direito Administrativo, Licitações, Improbidade e Controle Externo</div></div></div>
+        <div class="juri-wrap">
+          <div class="juri-chat">
+            <div class="juri-chat-hd">
+              <div class="juri-logo">J</div>
+              <div class="juri-hd-txt"><h3>JURI</h3><p>Assistente de IA Jurídica · Nível Doutoral · Buriticupu-MA</p></div>
+              <div class="juri-live"><div class="rs-dot"></div>Online</div>
+            </div>
+            <div class="juri-messages" id="juri-msgs"></div>
+            <div class="juri-input-row">
+              <textarea class="juri-input" id="juri-input" placeholder="Digite sua consulta jurídica… (Enter para enviar)" onkeydown="juriKey(event)"></textarea>
+              <button class="juri-send" id="juri-send-btn" onclick="juriSend()">➤</button>
+            </div>
+          </div>
+          <div class="juri-panel">
+            <div class="jp-card">
+              <h4>Consultas Rápidas</h4>
+              <div class="jp-tpl" onclick="juriQ(this)"><strong>Nepotismo / TAC</strong>Análise do descumprimento do TAC nº 1-2025 e linhas de defesa ou acusação com fundamentos legais</div>
+              <div class="jp-tpl" onclick="juriQ(this)"><strong>Fraude em Licitação</strong>Elementos do crime de fraude ao caráter competitivo (art. 337-E CP) e improbidade correlata no Pregão 019/2025</div>
+              <div class="jp-tpl" onclick="juriQ(this)"><strong>Improbidade Administrativa</strong>Requisitos da Lei 8.429/92 após reforma pela Lei 14.230/2021 — análise de dolo específico</div>
+              <div class="jp-tpl" onclick="juriQ(this)"><strong>Funcionário Fantasma</strong>Tipificação penal e civil do servidor nomeado sem exercício — responsabilidade solidária</div>
+              <div class="jp-tpl" onclick="juriQ(this)"><strong>GAECO — Busca e Apreensão</strong>Direitos do investigado em operação do GAECO e limites constitucionais da diligência</div>
+              <div class="jp-tpl" onclick="juriQ(this)"><strong>Dados Falsos — SINAN</strong>Responsabilidade penal por inserção de dados falsos em sistema público (art. 299 CP)</div>
+            </div>
+            <div class="jp-card">
+              <h4>Sobre JURI</h4>
+              <div class="jp-nota">
+                Especialização doutoral em:<br><br>
+                ✦ Licitações — Lei 14.133/2021<br>
+                ✦ Direito Penal Administrativo<br>
+                ✦ Direito Constitucional — CF/88<br>
+                ✦ Improbidade — Lei 8.429/92<br>
+                ✦ Controle Externo TCE-MA/TCU<br>
+                ✦ Atuação do MP — Lei 8.625/93<br><br>
+                <strong>JURI não elabora peças finais nem emite pareceres vinculantes.</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- ══ MODAL PRINCIPAL ══ -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-hd">
+      <div><div class="modal-hd-title" id="m-title">—</div><div class="modal-hd-sub" id="m-sub">—</div></div>
+      <div class="modal-hd-actions">
+        <span class="ws-badge-sm"><span class="ws-dot" style="width:5px;height:5px"></span>Ao vivo</span>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+    </div>
+    <div class="modal-viewers" id="m-viewers"></div>
+    <div class="modal-bd" id="m-body"></div>
+  </div>
+</div>
+
+<!-- ══ MODAL ASSINATURA ══ -->
+<div class="sign-overlay" id="sign-overlay">
+  <div class="sign-box">
+    <div class="sign-hd">
+      <h3>✦ Assinatura Digital — ICP-Brasil</h3>
+      <p>MP 2.200-2/2001 · Lei 14.063/2020 · Validade Jurídica Plena</p>
+    </div>
+    <div class="sign-bd">
+      <p style="font-size:12.5px;color:var(--muted);margin-bottom:16px;font-family:var(--f-body)">Assine digitalmente a resposta à notificação. O documento assinado terá validade jurídica equivalente à assinatura física com reconhecimento de firma.</p>
+      <div class="sfield">
+        <label>Tipo de Certificado</label>
+        <select id="sign-cert-type"><option>Certificado A3 — Token físico (ICP-Brasil)</option><option>Certificado A1 — Software (ICP-Brasil)</option><option>Assinatura em Nuvem — GOV.BR</option></select>
+      </div>
+      <div class="sfield">
+        <label>Cargo / Qualificação do Signatário</label>
+        <select id="sign-cargo"><option>Procurador Geral do Município</option><option>Controlador Geral</option><option>Chefe de Gabinete</option><option>Prefeito Municipal</option></select>
+      </div>
+      <div class="sign-cert-preview">
+        <div class="sign-cert-lbl">Dados do Certificado Digital</div>
+        <div id="sign-cert-data">Titular: — <br>CPF: ***.***.***.** (omitido LGPD)<br>Validade: 31/12/2026<br>Autoridade: SERASA CA · ICP-Brasil</div>
+      </div>
+      <div class="sign-actions">
+        <button class="btn-primary" onclick="executarAssinatura()">✦ Assinar Agora</button>
+        <button class="btn-ghost" onclick="document.getElementById('sign-overlay').classList.remove('open')">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL OFÍCIO ══ -->
+<div class="modal-overlay" id="oficio-overlay" onclick="closeOficio(event)" style="z-index:600">
+  <div class="modal" onclick="event.stopPropagation()" style="max-width:700px">
+    <div class="modal-hd">
+      <div><div class="modal-hd-title">Ofício de Resposta — Gerado Automaticamente</div><div class="modal-hd-sub" id="oficio-sub">—</div></div>
+      <button class="modal-close" onclick="closeOficio()">✕</button>
+    </div>
+    <div class="modal-bd">
+      <div id="oficio-content"></div>
+      <div style="display:flex;gap:8px;padding-top:16px;border-top:1px solid var(--linen);flex-wrap:wrap;margin-top:4px">
+        <button class="btn-primary" onclick="toast('📄 Exportação','Ofício gerado em PDF com validade jurídica.','gold')">⬇ Exportar PDF</button>
+        <button class="btn-blue" onclick="toast('📧 Envio','Ofício enviado diretamente ao MPMA por e-mail institucional.','')">📧 Enviar ao MPMA</button>
+        <button class="btn-ghost" onclick="closeOficio()">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tc" id="tc"></div>
+
+<!-- ══════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════ -->
+<script>
+/* Utilizador atual — declarado já no início para evitar "Cannot access CU before initialization" (TDZ) */
+var CU=null;
+/* ════════ DADOS BASE ════════ */
+const T0=new Date();
+const fd=n=>{const d=new Date(T0);d.setDate(d.getDate()+n);return d.toISOString().slice(0,10);};
+const tdn=n=>{const d=new Date(T0);d.setDate(d.getDate()-n);return d.toLocaleDateString('pt-BR');};
+const fD=iso=>{if(!iso)return'—';const[y,m,d]=iso.split('-');return`${d}/${m}/${y}`;};
+const fM=v=>v>0?'R$ '+v.toLocaleString('pt-BR'):'—';
+const slbl=s=>({novo:'Nova',analise:'Em Análise',respondido:'Respondida',urgente:'Urgente',atrasada:'Atrasada'}[s]||s);
+
+const PDF_URL='https://cdn-0.mpma.mp.br/publicacoes/19897/9633d58882ff92ee519724759c23b12f.pdf';
+
+// IA: intervalos de reenvio por tema (horas)
+const AI_INTERVALS={'Nepotismo/TAC':[6,12,24],'Fraude em Licitação':[8,16,32],'Desvio / Lavagem':[12,24,48],'Funcionário Fantasma':[24,48,72],'Falsidade/Omissão':[12,24,48],'Concurso Público':[48,96,168],'Continuidade dos Serviços':[24,48,72]};
+
+let NOTS=[];
+let ASSIGNABLE=[];
+
+const AUDIT_LOG=[];
+
+const LINKS=[];
+
+let RS_LOG=[];
+
+const RS_ETAPAS=[
+  {l:'T+0 — Link seguro enviado',d:'Sistema gerou link (24h) e enviou por e-mail e WhatsApp ao responsável.',c:'📧 E-mail + 📱 WhatsApp'},
+  {l:'T+Xh — Reenvio automático #1',d:'Sem acesso registrado. Sistema reenvio com intervalo definido pela IA.',c:'📧 E-mail institucional'},
+  {l:'T+Xh — Reenvio #2 — Prioridade Máxima',d:'Segunda tentativa. Processo marcado como PRIORITÁRIO.',c:'📱 WhatsApp + 📧 E-mail'},
+  {l:'T+Xh — Escalamento ao Procurador',d:'Escalado automaticamente ao Procurador Geral e Controlador.',c:'📧 Procurador + 📞 Ligação'},
+];
+
+let TCE_MA_CACHE=null;
+
+/** Fallback só para ficheiro local sem meta: defina localStorage pm_api_base ou meta pm-api-base */
+var PM_DEV_FALLBACK='http://127.0.0.1:3780';
+function getMetaApiBase(){
+  try{
+    var m=document.querySelector('meta[name="pm-api-base"]');
+    var c=m&&m.getAttribute('content');
+    if(c!=null&&String(c).trim()!=='') return String(c).trim().replace(/\/$/,'');
+  }catch(e){}
+  return '';
+}
+function getApiBase(){
+  try{
+    var ls=localStorage.getItem('pm_api_base');
+    if(ls) return String(ls).replace(/\/$/,'');
+    var q=new URLSearchParams(location.search||'').get('api');
+    if(q) return String(q).replace(/\/$/,'');
+    var meta=getMetaApiBase();
+    if(meta) return meta;
+    if(location.protocol==='http:'||location.protocol==='https:') return '';
+  }catch(e){}
+  return '';
+}
+function apiUrl(path){
+  if(!path.startsWith('/')) path='/'+path;
+  var b=getApiBase();
+  if(b) return b.replace(/\/$/,'')+path;
+  if(typeof location!=='undefined'&&(location.protocol==='http:'||location.protocol==='https:')){
+    return path;
+  }
+  var meta=getMetaApiBase();
+  if(meta) return meta.replace(/\/$/,'')+path;
+  return PM_DEV_FALLBACK.replace(/\/$/,'')+path;
+}
+
+const PM_TOKEN_KEY='pm_token';
+try{
+  const _pnot=new URLSearchParams(location.search||'').get('notif');
+  if(_pnot){
+    sessionStorage.setItem('pm_pending_notif',_pnot.trim());
+    if(typeof history!=='undefined'&&history.replaceState){
+      const p=location.pathname||'/';
+      history.replaceState({},'',p+(location.hash||''));
+    }
+  }
+}catch(e){}
+function getPmToken(){
+  try{
+    var t=localStorage.getItem(PM_TOKEN_KEY);
+    if(!t){
+      var s=sessionStorage.getItem(PM_TOKEN_KEY);
+      if(s){localStorage.setItem(PM_TOKEN_KEY,s);sessionStorage.removeItem(PM_TOKEN_KEY);t=s;}
+    }
+    return t||'';
+  }catch(e){return '';}
+}
+function setPmToken(tok){
+  try{
+    if(tok)localStorage.setItem(PM_TOKEN_KEY,tok);
+    else localStorage.removeItem(PM_TOKEN_KEY);
+    sessionStorage.removeItem(PM_TOKEN_KEY);
+  }catch(e){}
+}
+/** Remove credenciais e volta à tela de login (token inválido ou logout) */
+function clearSessionAuth(){
+  try{localStorage.removeItem(PM_TOKEN_KEY);sessionStorage.removeItem(PM_TOKEN_KEY);}catch(e){}
+  CU=null;
+  if(socketIo){try{socketIo.close();}catch(e){}socketIo=null;}
+  var app=document.getElementById('app');
+  var login=document.getElementById('login-screen');
+  if(app&&login){app.style.display='none';login.style.display='flex';}
+}
+
+let socketIo=null;
+let modalNotifId=null;
+const chatMsgIds=new Set();
+
+async function apiFetch(path,opts={}){
+  const t=getPmToken();
+  const h={...opts.headers,'Content-Type':'application/json'};
+  if(t)h['Authorization']='Bearer '+t;
+  const u=apiUrl(path);
+  var r;
+  try{
+    r=await fetch(u,{...opts,headers:h,credentials:'same-origin',cache:'no-store'});
+  }catch(e){
+    r=await xhrFetchLike(u,opts.method||'GET',h,opts.body);
+  }
+  if(r.status===401&&path!=='/api/auth/login'&&path!=='/api/auth/google'){
+    clearSessionAuth();
+  }
+  return r;
+}
+function xhrFetchLike(url,method,headers,body){
+  return new Promise(function(resolve,reject){
+    var x=new XMLHttpRequest();
+    x.open(method,url,true);
+    Object.keys(headers).forEach(function(k){try{x.setRequestHeader(k,headers[k]);}catch(_){}});
+    x.timeout=60000;
+    x.onload=function(){
+      var t=x.responseText||'';
+      resolve({ok:x.status>=200&&x.status<300,status:x.status,text:function(){return Promise.resolve(t)},json:function(){return Promise.resolve(JSON.parse(t||'{}'))}});
+    };
+    x.onerror=function(){reject(new Error('XHR falhou'));};
+    x.ontimeout=function(){reject(new Error('timeout'));};
+    x.send(body!=null&&body!==undefined?body:null);
+  });
+}
+
+async function loadNotificacoes(){
+  try{
+    const r=await apiFetch('/api/notificacoes');
+    if(!r.ok)throw new Error('api');
+    const data=await r.json();
+    NOTS.length=0;
+    NOTS.push(...data);
+  }catch(e){
+    console.warn('API notificações indisponível.',e);
+    NOTS.length=0;
+  }
+}
+function mapApiUser(u){
+  return{
+    id:u.id,
+    nome:u.nome,cargo:u.cargo,init:u.init,color:u.color,
+    role:u.role,exec:u.exec,proc:u.proc,isUsuario:u.isUsuario
+  };
+}
+
+function applyNavVisibility(){
+  if(!CU)return;
+  const isUsuario=CU.role==='usuario';
+  const isAdmin=CU.role==='admin_master'||CU.role==='admin';
+  const canUserMgmt=isAdmin||CU.role==='prefeito';
+  document.querySelectorAll('.exec-only').forEach(el=>el.classList.toggle('hidden-item',!CU.exec));
+  document.querySelectorAll('.proc-only').forEach(el=>el.classList.toggle('hidden-item',!CU.proc));
+  document.querySelectorAll('.user-mgmt-nav').forEach(el=>el.classList.toggle('hidden-item',!canUserMgmt));
+  document.querySelectorAll('.usuario-hide').forEach(el=>el.classList.toggle('hidden-item',isUsuario));
+}
+
+function connectSocket(){
+  function bind(){
+    if(typeof io!=='function')return;
+    try{
+      var tok=getPmToken()||'';
+      var o={transports:['websocket','polling'],auth:{token:tok},reconnection:true,reconnectionAttempts:20};
+      var base=getApiBase();
+      if(!base&&typeof location!=='undefined'&&location.protocol!=='http:'&&location.protocol!=='https:'){
+        base=getMetaApiBase()||PM_DEV_FALLBACK;
+      }
+      socketIo=base?io(base,o):io(o);
+      socketIo.on('connect',function(){
+        var el=document.getElementById('ws-txt');if(el)el.textContent='Tempo real ativo';
+      });
+      socketIo.on('connect_error',function(){
+        var el=document.getElementById('ws-txt');if(el)el.textContent='Reconectando…';
+      });
+      socketIo.on('presence:count',function(p){
+        var n=p&&typeof p.count==='number'?p.count:0;
+        var on=document.getElementById('on-n');if(on)on.textContent=n;
+      });
+      socketIo.on('presence:users',function(p){
+        var users=(p&&p.users)||[];
+        var n=users.length;
+        var on=document.getElementById('on-n');if(on)on.textContent=n;
+        var sb=document.getElementById('sb-online-wrap');
+        if(sb){
+          if(!users.length)sb.innerHTML='<span class="online-list">Ninguém com sessão ativa no momento.</span>';
+          else sb.innerHTML='<div class="online-list"><strong>Online agora</strong><br>'+users.map(function(u){
+            var nome=String(u.nome||'?');
+            var cargo=String(u.cargo||u.role||'');
+            return '· '+nome+(cargo?' <span style="color:var(--muted)">('+cargo+')</span>':'');
+          }).join('<br>')+'</div>';
+        }
+      });
+      socketIo.on('chat:history',function(d){
+        if(!d||!d.notifId)return;
+        chatMsgIds.clear();
+        var box=document.getElementById('chat-msgs-'+d.notifId);
+        if(!box)return;
+        box.innerHTML='';
+        (d.messages||[]).forEach(function(m){appendChatLine(d.notifId,m);});
+      });
+      socketIo.on('chat:message',function(d){
+        if(!d||!d.message||!d.notifId)return;
+        if(modalNotifId===d.notifId)appendChatLine(d.notifId,d.message);
+        var myId=CU&&CU.id;
+        var fromOther=myId&&d.message.userId!==myId;
+        if(fromOther&&(modalNotifId!==d.notifId||(typeof document!=='undefined'&&document.hidden))){
+          var sn=String(d.message.texto||'').slice(0,90);
+          if(sn.length===90)sn+='…';
+          toast('💬 Chat',(d.message.nome||'Utilizador')+' · '+d.notifId+(sn?': '+sn:''),'');
+        }
+      });
+      socketIo.on('processo_respondido',function(p){
+        if(!p||!CU||p.userId===CU.id)return;
+        loadNotificacoes().then(function(){
+          renderNots();renderStats();refreshCrisisUi();renderCal();renderNsg();renderCharts();
+        });
+      });
+      socketIo.on('nova_notificacao',payload=>{
+        if(!socketIo||!socketIo.connected)return;
+        var mo=payload&&payload.monitoramentoOrigem;
+        if(mo&&mo!=='MPMA')return;
+        loadNotificacoes().then(()=>{
+          renderNots();renderStats();refreshCrisisUi();renderCal();renderNsg();renderCharts();
+          toast('📢 Nova denúncia MPMA',String(payload.titulo||payload.id||'').slice(0,120),'urg');
+        });
+      });
+      socketIo.on('prazos_atualizados',()=>{
+        loadNotificacoes().then(()=>{
+          renderNots();renderStats();refreshCrisisUi();renderCal();renderNsg();renderCharts();
+        });
+      });
+    }catch(e){console.warn('Socket.io:',e);}
+  }
+  if(typeof io!=='function'){
+    var sc=document.createElement('script');
+    var b=getApiBase();
+    var root=b;
+    if(!root&&typeof location!=='undefined'&&(location.protocol==='http:'||location.protocol==='https:')) root='';
+    else if(!root) root=PM_DEV_FALLBACK;
+    sc.src=root?(root.replace(/\/$/,'')+'/socket.io/socket.io.js'):'/socket.io/socket.io.js';
+    sc.onload=bind;
+    sc.onerror=function(){console.warn('Socket.io não carregado (opcional).');};
+    document.head.appendChild(sc);
+    return;
+  }
+  bind();
+}
+
+/* ════════ ESTADO ════════ */
+let AF='todas',AS='todas',calY,calM,selRsId=null,charts={},mEnv=2,mPend=0,mEsc=0,mAI=5;
+let repTabName='semanal',linkAutoOpen=null,juriHistory=[];
+let ofCnt=24,signNotifId=null,pwaPrompt=null;
+
+/* ════════ LINK BANNER ════════ */
+function showLinkBanner(id){
+  linkAutoOpen=id;
+  const n=NOTS.find(x=>x.id===id);
+  document.getElementById('lnk-banner').style.display='block';
+  document.getElementById('lnk-name').textContent=n?`${n.id} — ${n.titulo}`:id;
+}
+// Banner de link seguro desativado — ativado apenas via URL param
+
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();pwaPrompt=e;
+  document.getElementById('pwa-btn').style.display='block';
+});
+function installPWA(){
+  if(pwaPrompt){pwaPrompt.prompt();}
+  else toast('📱 PWA','Para instalar: no Chrome, menu "⋮" → "Adicionar à tela inicial".','');
+}
+
+/* ════════ LOGIN / LOGOUT ════════ */
+function setLoginMsg(text){
+  var el=document.getElementById('login-msg');
+  if(!el)return;
+  if(text){el.textContent=text;el.style.display='block';}
+  else{el.textContent='';el.style.display='none';}
+}
+async function postLoginAuth(user,pass){
+  var url=apiUrl('/api/auth/login');
+  var payload=JSON.stringify({username:user,password:pass});
+  var hdr={'Content-Type':'application/json;charset=UTF-8'};
+  try{
+    var r=await fetch(url,{method:'POST',headers:hdr,body:payload,credentials:'same-origin',cache:'no-store'});
+    var raw=await r.text();
+    return {ok:r.ok,status:r.status,raw:raw};
+  }catch(err){
+    return new Promise(function(resolve,reject){
+      var x=new XMLHttpRequest();
+      x.open('POST',url,true);
+      x.setRequestHeader('Content-Type','application/json;charset=UTF-8');
+      x.timeout=35000;
+      x.onload=function(){
+        resolve({ok:x.status>=200&&x.status<300,status:x.status,raw:x.responseText||''});
+      };
+      x.onerror=function(){reject(err);};
+      x.ontimeout=function(){reject(new Error('Tempo esgotado'));};
+      try{x.send(payload);}catch(e2){reject(e2);}
+    });
+  }
+}
+async function enterAppAfterAuth(data){
+  setPmToken(data.token);
+  CU=mapApiUser(data.user);
+  document.getElementById('u-av').textContent=CU.init;
+  document.getElementById('u-av').style.background=CU.color;
+  document.getElementById('u-name').textContent=CU.nome;
+  document.getElementById('u-role').textContent=CU.cargo+' · '+CU.role;
+  applyNavVisibility();
+  document.getElementById('sign-cargo').value=CU.cargo;
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='block';
+  const now=new Date();calY=now.getFullYear();calM=now.getMonth();
+  await loadNotificacoes();
+  await loadAssignableUsers();
+  connectSocket();
+  initApp();
+  loadRecorrentes();
+  const pendN=sessionStorage.getItem('pm_pending_notif');
+  if(pendN){sessionStorage.removeItem('pm_pending_notif');setTimeout(()=>openNotif(pendN,false),650);}
+  if(linkAutoOpen){
+    const id=linkAutoOpen;linkAutoOpen=null;
+    AUDIT_LOG.unshift({dt:'Agora',user:CU.nome,acao:'ABRIU_LINK_PDF',notif:id,ip:'ext-token',obs:`Via link seguro — ${CU.cargo}`});
+    setTimeout(()=>{openNotif(id,true);},900);
+  }
+}
+async function doLogin(){
+  setLoginMsg('');
+  const user=document.getElementById('login-user').value.trim();
+  const pass=document.getElementById('login-pass').value;
+  if(!user||!pass){setLoginMsg('Informe usuário e senha.');return;}
+  const btn=document.getElementById('btn-login');
+  if(btn){btn.textContent='Autenticando…';btn.disabled=true;btn.style.opacity='.7';}
+  let res, data={};
+  try{
+    res=await postLoginAuth(user,pass);
+    try{data=JSON.parse(res.raw||'{}');}catch(_){}
+    if(!res.ok){
+      if(res.status===423)setLoginMsg(data.error||'Conta temporariamente bloqueada. Aguarde e tente novamente.');
+      else setLoginMsg(data.error||('Erro '+res.status+': '+(res.raw||'').slice(0,100)));
+      return;
+    }
+    if(!data.token||!data.user){setLoginMsg('Resposta inválida. Reinicie o servidor (start.bat ou npm start).');return;}
+  }catch(e){
+    console.error(e);
+    setLoginMsg('Sem servidor na porta 3780. Duplo clique em start.bat na pasta plataforma-mp-v7 (mantém a janela aberta) e atualize esta página.');
+    return;
+  }finally{
+    if(btn){btn.textContent='Acessar Sistema ›';btn.disabled=false;btn.style.opacity='1';}
+  }
+  try{
+    await enterAppAfterAuth(data);
+  }catch(err){
+    console.error(err);
+    alert('Erro ao abrir o painel: '+err.message);
+  }
+}
+function doLogout(){
+  clearSessionAuth();
+  document.getElementById('login-user').value='';
+  document.getElementById('login-pass').value='';
+  juriHistory=[];
+}
+
+/* ════════ INIT ════════ */
+function initApp(){
+  updClock();setInterval(updClock,1000);
+  if(!window.__pmCd){window.__pmCd=setInterval(tickCountdowns,1000);}
+  renderNots();renderStats();renderAudit();renderLinks();
+  renderRep();renderNsg();renderRsLog();updMotor();renderCal();
+  loadTceMaPanel();initJuri();
+  if(CU.exec||CU.proc)renderExecutivo();
+  startMotor();startWS();
+}
+function updClock(){
+  const el=document.getElementById('clock');
+  if(el)el.textContent=new Date().toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+}
+
+/* ════════ WEBSOCKET SIMULADO ════════ */
+const WS_EVENTS=[
+  ()=>wsEvent('Denis Oliveira abriu o PDF do MP-2026-0041','VISUALIZOU_PDF','MP-2026-0041'),
+  ()=>wsEvent('Procurador comentou em MP-2025-0071','COMENTOU','MP-2025-0071'),
+  ()=>wsEvent('Motor: reenvio automático executado para MP-2026-0009','REENVIOU','MP-2026-0009'),
+  ()=>wsEvent('Alef atualizou status de MP-2025-0055','STATUS_ATUALIZADO','MP-2025-0055'),
+  ()=>wsEvent('Novo acesso via link seguro em MP-2026-0037','ABRIU_LINK','MP-2026-0037'),
+];
+let wsIdx=0;
+function startWS(){
+  /* Eventos simulados desativados — tempo real vem do Socket.io */
+}
+function wsEvent(msg,acao,notif){
+  const sb=document.getElementById('ws-sb');if(sb)sb.textContent=msg;
+  const wt=document.getElementById('ws-txt');if(wt)wt.textContent='⬤ '+msg.slice(0,28)+'…';
+  AUDIT_LOG.unshift({dt:'Agora',user:'WebSocket',acao,notif,ip:'ws://interno',obs:msg});
+  renderAudit();
+  document.querySelectorAll(`.nc`).forEach(c=>{
+    if(c.getAttribute('onclick')?.includes(notif))c.classList.add('ws-flash');
+  });
+  setTimeout(()=>document.querySelectorAll('.ws-flash').forEach(c=>c.classList.remove('ws-flash')),600);
+}
+
+/* ════════ NAV ════════ */
+function sp(name,el){
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.querySelectorAll('.sp').forEach(p=>p.classList.remove('active'));
+  const pg=document.getElementById('page-'+name);
+  if(pg)pg.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+  if(el)el.classList.add('active');
+  if(name==='dashboard')setTimeout(renderCharts,80);
+  if(name==='executivo'){renderExecutivo();setTimeout(renderExecCharts,80);}
+  if(name==='relatorio')renderRep();
+  if(name==='usuarios')renderUsuarios();
+  if(name==='tce')loadTceMaPanel();
+  closeSb();
+}
+function toggleSb(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sb-overlay').classList.toggle('open');}
+function closeSb(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sb-overlay').classList.remove('open');}
+
+/* ════════ UTILS ════════ */
+function prazoI(s){
+  if(!s)return{c:'p-ok',l:'—'};
+  const d=new Date(s+'T23:59:59');
+  if(Number.isNaN(d.getTime()))return{c:'p-ok',l:'—'};
+  const diff=Math.ceil((d-new Date())/(864e5));
+  if(diff<0)return{c:'p-danger',l:'Prazo vencido!'};
+  if(diff===0)return{c:'p-danger',l:'Vence HOJE!'};
+  if(diff===1)return{c:'p-warn',l:'Vence amanhã'};
+  if(diff<=3)return{c:'p-warn',l:diff+' dias'};
+  return{c:'p-ok',l:diff+' dias'};
+}
+/** Vermelho: atrasadas / vencido · Laranja: atenção · Verde: dentro do prazo */
+function semaforoRowClass(n){
+  if(n.status==='atrasada')return'nc-sema-red';
+  if(n.prazo&&n.prazo!=='2099-12-31'){
+    const d=new Date(n.prazo+'T23:59:59');
+    if(!Number.isNaN(d.getTime())){
+      const diff=Math.ceil((d-new Date())/(864e5));
+      if(diff<0)return'nc-sema-red';
+      if(diff<=3)return'nc-sema-amber';
+    }
+  }
+  if(n.status==='urgente')return'nc-sema-amber';
+  if(n.status==='analise')return'nc-sema-amber';
+  if(n.status==='respondido')return'nc-sema-green';
+  return'nc-sema-green';
+}
+function refreshCrisisUi(){
+  const crit=NOTS.filter(n=>n.status==='urgente'||n.status==='atrasada').length;
+  const critPdf=NOTS.filter(n=>{
+    const g=n.gravidadePdf;
+    if(!g||!g.nivel)return false;
+    const u=String(g.nivel).toUpperCase();
+    return u.includes('CRÍT')||u.includes('CRIT');
+  }).length;
+  const pri=NOTS.filter(n=>n.prioridade).length;
+  const on=(crit>=4)||(crit>=3&&pri>=1)||(crit>=2&&pri>=3)||(critPdf>=4)||(critPdf>=3&&pri>=1)||(critPdf>=2&&crit>=2);
+  document.body.classList.toggle('modo-crise',!!on);
+}
+function canAssignNotif(){
+  return CU && ['admin_master','admin','executivo','prefeito'].includes(CU.role);
+}
+function fmtCountdown(iso){
+  if(!iso||iso==='2099-12-31')return'—';
+  const end=new Date(iso+'T23:59:59').getTime();
+  const ms=end-Date.now();
+  if(ms<=0)return'Prazo encerrado';
+  const d=Math.floor(ms/864e5);
+  const h=Math.floor((ms%864e5)/36e5);
+  const m=Math.floor((ms%36e5)/6e4);
+  const s=Math.floor((ms%6e4)/1e3);
+  return d>0?`${d}d ${h}h ${m}m`:`${h}h ${m}m ${s}s`;
+}
+function tickCountdowns(){
+  document.querySelectorAll('[data-cd-iso]').forEach(el=>{
+    const iso=el.getAttribute('data-cd-iso');
+    el.textContent=fmtCountdown(iso||'');
+  });
+}
+function responsavelInativo(n){
+  if(!n||!n.responsavelId||n.status==='respondido')return false;
+  const logs=(n.accessLog||[]).filter(a=>a.userId===n.responsavelId);
+  if(!logs.length)return true;
+  let best=0;
+  logs.forEach(a=>{const t=Date.parse(a.iso);if(!Number.isNaN(t)&&t>best)best=t;});
+  if(!best)return true;
+  return(Date.now()-best)/(864e5)>7;
+}
+function escHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function gravBadgeClass(nivel){
+  const u=String(nivel||'').toUpperCase();
+  if(u.indexOf('CR')>=0)return'grav-CRIT';
+  if(u.indexOf('ALTA')>=0)return'grav-ALTA';
+  if(u.indexOf('MÉD')>=0||u.indexOf('MED')>=0)return'grav-MED';
+  return'grav-BAIXA';
+}
+function buildUnifiedTimelineHTML(n){
+  const rows=[];
+  (n.timeline||[]).forEach(t=>{
+    rows.push({t:Date.parse(t.iso)||0,html:`<div class="tl-item done"><div class="tl-dot"></div><div><div><strong>${escHtml(t.acao)}</strong></div><div class="tl-time">${escHtml(t.user||'—')} · ${escHtml(t.hora||'')}</div></div></div>`});
+  });
+  (n.accessLog||[]).forEach(a=>{
+    rows.push({t:Date.parse(a.iso)||0,html:`<div class="tl-item done"><div class="tl-dot"></div><div><div>👁 ${escHtml(formatAccessSummary(a))}</div><div class="tl-time">${escHtml(a.user||'')} · ${escHtml(a.hora||'')}</div></div></div>`});
+  });
+  (n.comentarios||[]).forEach(c=>{
+    rows.push({t:0,html:`<div class="tl-item done"><div class="tl-dot"></div><div><div>💬 Comentário · ${escHtml(c.autor)}</div><div class="tl-time">${escHtml(c.hora||'')}</div><div style="font-size:11.5px;margin-top:5px">${escHtml(c.texto)}</div></div></div>`});
+  });
+  rows.sort((a,b)=>{if(a.t&&b.t)return a.t-b.t;if(a.t&&!b.t)return-1;if(!a.t&&b.t)return 1;return 0;});
+  return rows.length?rows.map(r=>r.html).join(''):'<p style="color:var(--muted);font-size:12.5px">Sem eventos consolidados.</p>';
+}
+async function patchNotifMeta(id,payload){
+  try{
+    const r=await apiFetch('/api/notificacoes/'+encodeURIComponent(id),{method:'PATCH',body:JSON.stringify(payload)});
+    if(!r.ok){toast('Erro','Não foi possível guardar alterações.','urg');return;}
+    const j=await r.json();
+    const ix=NOTS.findIndex(x=>x.id===id);
+    if(ix>=0)NOTS[ix]=j;
+    if(modalNotifId===id)openNotif(id,false);
+    renderNots();renderStats();refreshCrisisUi();
+    if(CU&&(CU.exec||CU.proc))renderExecutivo();
+  }catch(e){toast('Erro','Falha de rede.','urg');}
+}
+function patchNotifResp(id,v){patchNotifMeta(id,{responsavelId:v===''?null:v});}
+function waShareProcesso(id){
+  const n=NOTS.find(x=>x.id===id);if(!n)return;
+  let base='';
+  try{base=(location.origin&&location.origin!=='null')?location.origin:'';}catch(e){}
+  const msg=`[PlataformaMP] ${n.id} — ${n.titulo}\n${base}/?notif=${encodeURIComponent(id)}`;
+  const enc=encodeURIComponent(msg);
+  const ru=ASSIGNABLE.find(u=>u.id===n.responsavelId);
+  const digits=ru&&ru.whatsapp?String(ru.whatsapp).replace(/\D/g,''):'';
+  const url=(digits.length>=10&&digits.length<=15)?`https://wa.me/${digits}?text=${enc}`:`https://wa.me/?text=${enc}`;
+  window.open(url,'_blank','noopener');
+}
+async function loadAssignableUsers(){
+  ASSIGNABLE=[];
+  if(!canAssignNotif()){
+    const sel=document.getElementById('sel-resp');
+    if(sel)sel.innerHTML='<option value="">Todos os responsáveis</option><option value="__sem__">Sem responsável</option>';
+    return;
+  }
+  try{
+    const r=await apiFetch('/api/usuarios/assignable');
+    if(r.ok)ASSIGNABLE=await r.json();
+  }catch(e){}
+  const sel=document.getElementById('sel-resp');
+  if(!sel)return;
+  const cur=sel.value;
+  sel.innerHTML='<option value="">Todos os responsáveis</option><option value="__sem__">Sem responsável</option>'+ASSIGNABLE.map(u=>`<option value="${escAttr(u.id)}">${escHtml(u.nome)}</option>`).join('');
+  if([...sel.options].some(o=>o.value===cur))sel.value=cur;
+}
+async function loadRecorrentes(){
+  const w=document.getElementById('recorrentes-wrap'),b=document.getElementById('recorrentes-body');
+  if(!w||!b||!CU||!CU.exec){if(w)w.style.display='none';return;}
+  w.classList.remove('hidden-item');
+  w.style.display='block';
+  try{
+    const r=await apiFetch('/api/insights/nomes-recorrentes');
+    if(!r.ok)throw new Error();
+    const j=await r.json();
+    const it=(j.itens||[]).slice(0,15);
+    b.innerHTML=it.length?it.map(x=>{
+      const pid=(x.processos&&x.processos[0])||'';
+      return`<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;padding:8px 0;border-bottom:1px solid var(--linen)"><span><strong>${escHtml(x.nome)}</strong> <span style="color:var(--muted)">(${x.count} menções)</span></span>${pid?`<button type="button" class="btn-ghost" style="padding:4px 10px;font-size:10px" onclick="openNotif('${escAttr(pid)}')">Abrir processo</button>`:''}</div>`;
+    }).join(''):'<span style="color:var(--muted)">Nenhum nome em dois ou mais processos.</span>';
+  }catch(e){b.innerHTML='<span style="color:var(--muted)">Indisponível.</span>';}
+}
+
+/* ════════ STATS ════════ */
+function renderStats(){
+  ['novo','analise','urgente','atrasada','respondido'].forEach(s=>{
+    const el=document.getElementById('cnt-'+s);
+    if(el)el.textContent=NOTS.filter(n=>n.status===s).length;
+  });
+  const bi=document.getElementById('badge-inbox');
+  if(bi)bi.textContent=NOTS.filter(n=>n.status==='novo'||n.status==='urgente'||n.status==='atrasada').length;
+  const sub=document.getElementById('inbox-sub');
+  if(sub){
+    const atr=NOTS.filter(n=>n.status==='atrasada').length;
+    sub.textContent=`${NOTS.length} processos · ${NOTS.filter(n=>n.status==='urgente').length} urgentes · ${atr} atrasada(s)`;
+  }
+  refreshCrisisUi();
+}
+
+/* ════════ NOTIF LIST ════════ */
+function fSec(s){AS=s;renderNots();}
+function setPill(el,f){
+  AF=f;
+  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  renderNots();
+}
+function renderNots(){
+  const q=(document.getElementById('srch')?.value||'').toLowerCase();
+  const ss=document.getElementById('sel-sec')?.value||'';
+  const su=document.getElementById('sel-urg')?.value||'';
+  const ord=document.getElementById('sel-ord')?.value||'r';
+  const resp=document.getElementById('sel-resp')?.value||'';
+  const orig=document.getElementById('sel-origem')?.value||'';
+  let data=NOTS.filter(n=>{
+    if(AF!=='todas'&&n.status!==AF)return false;
+    if(AS!=='todas'&&n.secretaria!==AS)return false;
+    if(ss&&n.secretaria!==ss)return false;
+    if(su&&n.urgencia!==su)return false;
+    if(resp==='__sem__'&&n.responsavelId)return false;
+    if(resp&&resp!=='__sem__'&&n.responsavelId!==resp)return false;
+    if(orig&&(n.monitoramentoOrigem||'MPMA')!==orig)return false;
+    if(q){
+      const hay=[n.titulo,n.id,n.servidor,n.secretaria,n.responsavelNome||'',n.monitoramentoOrigem||'',n.descricao||'',(n.ia&&n.ia.resumo)||'',(n.ia&&n.ia.tema)||''].map(x=>String(x).toLowerCase()).join(' ');
+      if(!hay.includes(q))return false;
+    }
+    return true;
+  });
+  data.sort((a,b)=>{
+    if(!!a.prioridade!==!!b.prioridade)return a.prioridade?-1:1;
+    if(ord==='p')return new Date(a.prazo)-new Date(b.prazo);
+    return 0;
+  });
+  const list=document.getElementById('notif-list');
+  if(!data.length){list.innerHTML=`<div class="empty"><div class="empty-ico">📭</div><p>Nenhum processo encontrado.</p></div>`;return;}
+  list.innerHTML=data.map(n=>{
+    const pi=prazoI(n.prazo);
+    const nr=(n.accessLog||[]).filter(a=>!a.respondeu&&!a.comentou&&(a.pdf||a.abriuDenuncia)).length;
+    const gv=n.gravidadePdf;
+    const gtxt=gv&&gv.nivel?`<span class="grav-inline ${gravBadgeClass(gv.nivel)}">${escHtml(gv.nivel)}</span>`:'';
+    const ina=responsavelInativo(n);
+    const cdIso=(n.prazo&&n.prazo!=='2099-12-31')?n.prazo:'';
+    const mo=n.monitoramentoOrigem||'MPMA';
+    const ob=`<span class="orig-badge orig-${escAttr(mo)}">${escHtml(mo)}</span>`;
+    const ri=n.classificacaoRiscoInstitucional;
+    const riMini=ri&&ri.nivel?`<span class="grav-inline ${ri.nivel==='alto'?'grav-crit':ri.nivel==='medio'?'grav-warn':'grav-ok'}" title="Termos detectados no texto do documento (sem conclusão jurídica): ${escAttr((ri.termos||[]).join(', '))}">Termos ${ri.nivel}</span>`:'';
+    return`<div class="nc status-${n.status} ${semaforoRowClass(n)}" onclick="openNotif('${escAttr(n.id)}')">
+      <div>
+        <div class="nc-top">
+          ${ob}
+          ${n.prioridade?'<span class="prio-flag">PRIORIDADE</span>':''}
+          <span class="nid">${escHtml(n.id)}</span>
+          <span class="badge b-${n.status}">${slbl(n.status)}</span>
+          ${gtxt}
+          ${riMini}
+          ${(n.viewers||[]).length?`<span class="vt">👁 ${(n.viewers||[]).slice(0,2).join(' · ')} vendo</span>`:''}
+          ${nr>0?`<span class="nrt">⚠ ${nr} viu sem responder</span>`:''}
+          ${ina?`<span class="inactive-warn">⚠ Resp. inativo</span>`:''}
+          <span class="pdf-ok">📄 PDF oficial</span>
+          ${n.assinado?`<span class="signed-ok">✦ Assinado</span>`:''}
+          ${n.ofNr?`<span class="vt" style="background:var(--blue-lite);color:var(--blue)">📋 ${escHtml(n.ofNr)}</span>`:''}
+        </div>
+        <div class="nt">${escHtml(n.titulo)}</div>
+        <div class="nm">
+          <span>📂 ${escHtml(n.secretaria)}</span>
+          <span title="Nomes citados no documento — não implicam envolvimento ou culpa">👤 ${escHtml(n.servidor)}</span>
+          ${n.responsavelNome?`<span style="color:var(--blue)">🎯 ${escHtml(n.responsavelNome)}</span>`:''}
+          <span>🕐 ${escHtml(n.recebido)}</span>
+          <span>⚡ ${escHtml(n.urgencia)}</span>
+          ${n.multa>0?`<span style="color:var(--danger)">💰 ${fM(n.multa)}</span>`:''}
+        </div>
+      </div>
+      <div class="nr">
+        <div class="${pi.c}">${pi.l}</div>
+        <div class="cd-live" data-cd-iso="${escAttr(cdIso)}" style="margin-top:4px">—</div>
+        <div style="margin-top:3px;font-size:11px">📅 ${fD(n.prazo)}</div>
+        <div style="margin-top:5px;font-size:10px">💬 ${(n.comentarios||[]).length} · 👁 ${(n.accessLog||[]).length}</div>
+      </div>
+    </div>`;
+  }).join('');
+  tickCountdowns();
+}
+
+/* ════════ MODAL · PDF · CHAT ════════ */
+function formatAccessSummary(a){
+  const nome=a.user||'—';
+  if(a.comentou)return nome+' comentou (sem resposta formal)';
+  if(a.abriuDenuncia)return a.acao||`${nome} acessou o link da denúncia`;
+  if(a.respondeu)return nome+' visualizou e respondeu';
+  if(a.pdf)return nome+' visualizou PDF e não respondeu (ignorado p/ resposta)';
+  return nome+' — '+(a.acao||'');
+}
+function appendChatLine(notifId,m){
+  if(!m||!m.id)return;
+  const k=notifId+'_'+m.id;
+  if(chatMsgIds.has(k))return;
+  chatMsgIds.add(k);
+  const box=document.getElementById('chat-msgs-'+notifId);
+  if(!box)return;
+  const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  box.insertAdjacentHTML('beforeend','<div class="chat-msg" data-mid="'+esc(m.id)+'"><div class="cm-meta">'+esc(m.nome)+' · '+esc(m.hora)+'</div><div>'+esc(m.texto)+'</div></div>');
+  box.scrollTop=box.scrollHeight;
+}
+function joinNotifChat(id){
+  chatMsgIds.clear();
+  const box=document.getElementById('chat-msgs-'+id);
+  if(box)box.innerHTML='';
+  if(socketIo&&socketIo.connected){
+    socketIo.emit('join:notif',id);
+    return;
+  }
+  apiFetch('/api/notificacoes/'+encodeURIComponent(id)+'/chat').then(r=>r.ok?r.json():Promise.resolve([])).then(msgs=>{
+    const b=document.getElementById('chat-msgs-'+id);
+    if(!b)return;
+    (msgs||[]).forEach(m=>appendChatLine(id,m));
+  }).catch(()=>{});
+}
+async function sendChatMsg(id){
+  const inp=document.getElementById('chat-inp-'+id);
+  const t=inp&&inp.value.trim();
+  if(!t)return;
+  if(socketIo&&socketIo.connected){socketIo.emit('chat:send',{notifId:id,texto:t});inp.value='';return;}
+  try{
+    const r=await apiFetch('/api/notificacoes/'+encodeURIComponent(id)+'/chat',{method:'POST',body:JSON.stringify({texto:t})});
+    if(r.ok){inp.value='';const j=await r.json();if(j.message)appendChatLine(id,j.message);}
+  }catch(e){toast('Chat','Falha ao enviar.','urg');}
+}
+function escAttr(s){
+  return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function formatDescricaoForDisplay(txt){
+  let s=String(txt||'').replace(/[\r\n\t]+/g,' ').replace(/\s+/g,' ').trim();
+  if(!s)return'—';
+  const max=500;
+  if(s.length<=max)return s;
+  let cut=s.slice(0,max);
+  const sp=cut.lastIndexOf(' ');
+  if(sp>=300)cut=cut.slice(0,sp);
+  return cut.trim()+'…';
+}
+function printPdfFrame(id){
+  const w=document.getElementById('pdf-wrap-'+id);
+  const f=w&&w.querySelector('iframe');
+  if(f&&f.getAttribute('src')&&f.contentWindow)try{f.contentWindow.focus();f.contentWindow.print();}catch(e){toast('Imprimir','Use Baixar se o navegador bloquear a impressão do documento.','');}
+  else toast('PDF','Expanda o documento (Mostrar PDF) para carregar antes de imprimir.','');
+}
+async function registerPdfView(id){
+  try{
+    const r=await apiFetch('/api/notificacoes/'+encodeURIComponent(id)+'/access-log',{method:'POST',body:JSON.stringify({tipo:'pdf_view'})});
+    if(r.ok){
+      const j=await r.json();
+      const idx=NOTS.findIndex(x=>x.id===id);
+      if(idx>=0)NOTS[idx]=j;
+    }
+  }catch(e){}
+}
+async function registerAbriuDenuncia(id){
+  try{
+    const r=await apiFetch('/api/notificacoes/'+encodeURIComponent(id)+'/access-log',{method:'POST',body:JSON.stringify({tipo:'abriu_denuncia'})});
+    if(r.ok){
+      const j=await r.json();
+      const idx=NOTS.findIndex(x=>x.id===id);
+      if(idx>=0)NOTS[idx]=j;
+    }
+  }catch(e){}
+}
+function buildMpmaExtracaoHtml(n){
+  const x=n&&n.mpmaExtracao;
+  if(!x)return'';
+  const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const m=x.multa,p=x.prazo,r=x.riscoFinanceiro;
+  const tem=!!(x.documentoTipo||x.orgao||m||p||(r&&(r.calculado||r.motivo)));
+  if(!tem)return'';
+  const pub=(x.prazo&&x.prazo.dataPublicacaoISO)||n.mpmaDataPublicacaoISO;
+  return`<div class="ai-box" style="margin-bottom:14px;border-left:3px solid #1a3d78"><h4>📌 Extração do PDF (trechos e valores do texto)</h4><p style="font-size:11px;color:var(--muted);margin:0 0 8px;line-height:1.45;font-family:var(--f-body)">Dados obtidos por leitura automática do PDF — sem interpretação jurídica.</p><div class="ai-tags">
+    ${pub?`<div class="aitag"><strong>Data publicação (no texto):</strong> ${fD(pub)}</div>`:''}
+    ${x.documentoTipo?`<div class="aitag" style="grid-column:1/-1"><strong>Tipo de documento (no texto):</strong> ${esc(x.documentoTipo)}</div>`:''}
+    ${x.orgao?`<div class="aitag" style="grid-column:1/-1"><strong>Órgão (no texto):</strong> ${esc(x.orgao)}</div>`:''}
+    ${m?`<div class="aitag"><strong>Multa (no texto):</strong> ${esc(m.valorFormatado)}${m.tipoLabel?` <span style="color:var(--muted)">(${esc(m.tipoLabel)})</span>`:''}</div>`:''}
+    ${p?`<div class="aitag"><strong>Prazo (no texto):</strong> ${esc(p.label||((p.dias!=null?p.dias+' dia(s)':'')+(p.diasUteis?' úteis':' corridos')))}</div>`:''}
+    ${r&&r.calculado?`<div class="aitag" style="grid-column:1/-1"><strong>Valores referidos (cálculo sobre o texto):</strong> ${esc(r.valorFormatado)} <span style="color:var(--muted);font-size:11px">${esc(r.formula)}</span></div>`:''}
+    ${r&&!r.calculado&&r.motivo?`<div class="aitag" style="grid-column:1/-1;color:var(--muted)"><strong>Valores no texto:</strong> ${esc(r.motivo)}</div>`:''}
+  </div></div>`;
+}
+function buildMpmaOcorrenciasNomesHtml(n){
+  if((n.monitoramentoOrigem||'MPMA')!=='MPMA')return'';
+  const arr=n.mpmaOcorrenciasNomes;
+  if(!Array.isArray(arr)||!arr.length)return'';
+  const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const uBase=String(n.pdfUrl||'').trim();
+  const cards=arr.map(o=>{
+    const href=String(o.pdfUrl||uBase||'').trim();
+    return`<div class="mpma-oc-card">
+      <div class="mpma-oc-hd"><strong>${esc(o.nomeCompleto||'')}</strong></div>
+      ${o.cargo?`<div class="mpma-oc-cargo" style="font-size:12.5px;color:var(--ink);margin-bottom:4px">${esc(o.cargo)}</div>`:''}
+      ${o.setor?`<div style="font-size:11.5px;color:var(--muted);margin-bottom:8px">Setor: ${esc(o.setor)}</div>`:''}
+      <div class="mpma-oc-trecho">${esc(o.trecho||'')}</div>
+      <div class="mpma-oc-actions"><button type="button" class="btn-ghost pdf-btn" onclick="window.open('${escAttr(href)}','_blank','noopener,noreferrer')">Abrir PDF oficial</button></div>
+    </div>`;
+  }).join('');
+  return`<div class="mpma-ocorrencias-wrap ai-box" style="margin-bottom:14px;border-left:3px solid #0ea5e9">
+    <h4>📍 Trechos confirmados no PDF (Buriticupu + servidor)</h4>
+    <p style="font-size:11px;color:var(--muted);margin:0 0 10px;line-height:1.45;font-family:var(--f-body)">Apenas nomes detetados no texto deste documento. Trecho copiado do PDF (±200 palavras), fora do cabeçalho — mesmo URL do processo. Sem conteúdo inventado.</p>
+    ${cards}
+  </div>`;
+}
+async function openNotif(id,autoPDF=false){
+  await registerAbriuDenuncia(id);
+  modalNotifId=id;
+  const n=NOTS.find(x=>x.id===id);if(!n)return;
+  document.getElementById('m-title').textContent=n.titulo;
+  document.getElementById('m-sub').textContent=`${n.id} · ${n.secretaria} · Recebido: ${n.recebido}`;
+  document.getElementById('m-viewers').innerHTML=(n.viewers||[]).length
+    ?`👁 <strong>${(n.viewers||[]).join('</strong> e <strong>')}</strong> também visualizando — atualizações em tempo real`
+    :'👁 Somente você visualizando agora · WebSocket ativo';
+
+  const pi=prazoI(n.prazo);
+  const ia=n.ia||{};
+
+  const cdIso=(n.prazo&&n.prazo!=='2099-12-31')?n.prazo:'';
+  const gv=n.gravidadePdf;
+  const gravBlock=!gv||!gv.nivel?'':`<div class="grav-panel"><h4 class="grav-hd">📊 Palavras-chave no texto do PDF</h4><p style="margin:0 0 6px;font-size:11px;color:var(--muted);font-family:var(--f-body)">Classificação automática por ocorrências no texto — <strong>não</strong> é qualificação jurídica.</p><p style="margin:0 0 8px;font-family:var(--f-body)"><span class="grav-inline ${gravBadgeClass(gv.nivel)}">${escHtml(gv.nivel)}</span>${gv.score!=null&&gv.score!==''?` · <span style="color:var(--muted)">índice ${escHtml(String(gv.score))}</span>`:''}</p>${(gv.sinais&&gv.sinais.length)?`<ul class="grav-sinais">${gv.sinais.slice(0,12).map(s=>`<li>${escHtml(s)}</li>`).join('')}</ul>`:''}</div>`;
+  const ri=n.classificacaoRiscoInstitucional;
+  const riBlock=!ri||!ri.nivel?'':`<div class="grav-panel" style="border-left:3px solid #7c3aed"><h4 class="grav-hd">⚖ Termos no texto (referência)</h4><p style="margin:0 0 6px;font-size:11px;color:var(--muted);font-family:var(--f-body)">Deteção lexical no documento — sem conclusão sobre responsabilidade.</p><p style="margin:0;font-family:var(--f-body)"><span class="grav-inline ${ri.nivel==='alto'?'grav-crit':ri.nivel==='medio'?'grav-warn':'grav-ok'}">${escHtml(ri.nivel)}</span>${(ri.termos&&ri.termos.length)?` · ${escHtml(ri.termos.join(', '))}`:''}</p></div>`;
+  const inaWarn=responsavelInativo(n)?`<div class="inactive-banner">⚠ O responsável atribuído não regista atividade neste processo há mais de 7 dias.</div>`:'';
+  const canAsg=canAssignNotif();
+  const respSel=canAsg?`<select class="sel" style="max-width:100%;font-size:13px" onchange="patchNotifResp('${escAttr(n.id)}',this.value)"><option value="">— Sem responsável —</option>${ASSIGNABLE.map(u=>`<option value="${escAttr(u.id)}" ${u.id===n.responsavelId?'selected':''}>${escHtml(u.nome)}</option>`).join('')}</select>`:`<div class="v">${escHtml(n.responsavelNome||'—')}</div>`;
+  const prioBlock=canAsg?`<label class="prio-lbl"><input type="checkbox" ${n.prioridade?'checked':''} onchange="(function(el,id){patchNotifMeta(id,{prioridade:el.checked})})(this,'${escAttr(n.id)}')"/> Prioridade máxima</label>`:(n.prioridade?`<span class="prio-flag">PRIORIDADE MÁXIMA</span>`:'<div class="v" style="color:var(--muted)">—</div>');
+
+  const al=(n.accessLog||[]).length?(n.accessLog||[]).map(a=>`
+    <div class="ar">
+      <div class="av" style="background:${a.color};width:24px;height:24px;font-size:9px">${a.init}</div>
+      <div class="ar-info"><strong>${a.user}</strong> · ${a.hora}<br>
+        <span style="font-size:10.5px;color:var(--muted)">${formatAccessSummary(a)}</span>
+      </div>
+      <span class="as ${a.respondeu?'as-y':a.comentou?'as-c':'as-n'}">${a.respondeu?'✓ Respondeu':a.comentou?'💬 Comentou':'✗ Sem resposta'}</span>
+    </div>`).join(''):'<div style="color:var(--muted);font-size:12.5px">Nenhum acesso registrado.</div>';
+
+  const comms=(n.comentarios||[]).map(c=>`
+    <div class="comment">
+      <div class="comment-hd"><span class="ca">${c.autor}</span><span>${c.hora}</span></div>
+      ${c.texto}
+    </div>`).join('')||'<p style="color:var(--muted);font-size:13px;margin-bottom:9px">Sem comentários ainda.</p>';
+
+  const autoBanner=autoPDF?`<div class="pdf-auto-banner">📄 <div><strong>Documento oficial do MPMA.</strong> O PDF abre abaixo, nesta mesma tela. Acesso registado na auditoria.</div></div>`:'';
+  const pdfSec=buildPdfSec(n,autoPDF);
+  const ex=n.mpmaExtracao;
+  const prazoPainel=(ex&&ex.prazo&&ex.prazo.diasUteis&&ex.prazo.label)?ex.prazo.label:`${fD(n.prazo)} · ${pi.l}`;
+  const mpmaExtracaoBlock=buildMpmaExtracaoHtml(n);
+  const mpmaOcorrenciasNomesBlock=buildMpmaOcorrenciasNomesHtml(n);
+  const mencoes=n.mencoesDetalhe||[];
+  const mencoesBlock=mencoes.length?`<div class="mencoes-detalhe-box" style="margin-bottom:14px;padding:12px 14px;background:var(--cream);border:1px solid var(--linen);border-radius:8px;font-family:var(--f-body)"><h4 style="margin:0 0 10px;font-size:13px">Servidores citados no PDF (cadastro)</h4>${mencoes.slice(0,12).map(m=>`<div style="padding:8px 0;border-bottom:1px solid var(--linen);font-size:12.5px;line-height:1.45"><strong>${escHtml(m.nome||'')}</strong>${m.cargo?`<div style="color:var(--ink);margin-top:2px">${escHtml(m.cargo)}</div>`:''}${m.setor?`<div style="color:var(--muted);margin-top:2px">Setor: ${escHtml(m.setor)}</div>`:''}</div>`).join('')}${mencoes.length>12?`<div style="font-size:11px;color:var(--muted);margin-top:8px">+ ${mencoes.length-12} outras menções</div>`:''}</div>`:'';
+  const mo=n.monitoramentoOrigem||'MPMA';
+  const origLbl=mo==='MPMA'?'MPMA — denúncias / menções monitoradas':mo==='DOU'?'DOU — Diário Oficial da União (federal)':mo==='DOE'?'DOE — Diário Oficial do Estado (MA)':'DOM — Diário Oficial Municipal (Buriticupu)';
+  const pubUrl=(n.diarioMetadados&&n.diarioMetadados.urlPublicacao)||n.fonte||'';
+  const origBlock=`<div class="ai-box" style="margin-bottom:14px;border-left:3px solid #334155"><h4>📰 Origem do monitoramento</h4><div class="ai-tags"><div class="aitag"><strong>Código:</strong> ${escHtml(mo)}</div><div class="aitag" style="grid-column:1/-1">${escHtml(origLbl)}</div>${pubUrl?`<div class="aitag" style="grid-column:1/-1"><strong>URL:</strong> <a href="${escAttr(pubUrl)}" target="_blank" rel="noopener">Abrir publicação</a></div>`:''}</div></div>`;
+  const alertasBlock=(n.alertasInteligencia&&n.alertasInteligencia.length)?`<div class="ai-box" style="margin-bottom:14px;border-left:3px solid #b45309"><h4>⚠ Padrões no texto (referência)</h4><p style="font-size:11px;color:var(--muted);margin:0 0 6px;line-height:1.45;font-family:var(--f-body)">Lista automática a partir do PDF — não constitui parecer ou interpretação.</p><ul style="margin:8px 0 0 18px;font-size:12.5px;line-height:1.55;font-family:var(--f-body)">${n.alertasInteligencia.map(a=>`<li>${escHtml(a)}</li>`).join('')}</ul></div>`:'';
+  const da=n.domAnalise;
+  const domIntelBlock=(n.monitoramentoOrigem==='DOM'&&da&&(da.denuncia||da.mencaoMunicipio||((da.atosAdministrativos||[]).length)))?`<div class="ai-box" style="margin-bottom:14px;border-left:3px solid #0f766e"><h4>Indicadores no texto — DOM (extração)</h4><p style="font-size:11px;color:var(--muted);margin:0 0 8px;line-height:1.45;font-family:var(--f-body)">Trechos e padrões extraídos do PDF municipal — sem conclusão jurídica.</p><div class="ai-tags">${da.denuncia?`<div class="aitag"><strong>Denúncia / MP:</strong> padrões encontrados no texto</div>`:''}${da.mencaoMunicipio?`<div class="aitag"><strong>Município:</strong> menção a Buriticupu / administração no texto</div>`:''}${(da.atosAdministrativos||[]).map(a=>`<div class="aitag" style="grid-column:1/-1"><strong>${escHtml(a.tipo)}:</strong> ${escHtml(a.nome)}${a.cargo?' · '+escHtml(a.cargo):''}</div><div class="aitag" style="grid-column:1/-1;font-size:11px;color:var(--muted)">${escHtml((a.trecho||'').slice(0,220))}</div>`).join('')}</div></div>`:'';
+
+  const modalLegal='<div class="modal-legal-note" role="note">Informações extraídas do documento oficial, <strong>sem interpretação</strong>. Os nomes indicam <strong>citação no texto do PDF</strong>, não envolvimento nem culpa. Verifique sempre o PDF original abaixo.</div>';
+
+  document.getElementById('m-body').innerHTML=`
+    ${modalLegal}
+    ${autoBanner}
+    <div class="ig">
+      <div><label>Secretaria</label><div class="v">📂 ${escHtml(n.secretaria)}</div></div>
+      <div><label>Citados no documento (nomes no texto do PDF)</label><div class="v">👤 ${escHtml(n.servidor)}</div></div>
+      <div><label>Status</label><div class="v"><span class="badge b-${n.status}">${slbl(n.status)}</span></div></div>
+      <div><label>Urgência</label><div class="v">⚡ ${escHtml(n.urgencia)}</div></div>
+      <div><label>Prazo</label><div class="v ${(ex&&ex.prazo&&ex.prazo.diasUteis)?'':pi.c}">${prazoPainel}</div></div>
+      <div><label>Risco de Multa</label><div class="v" style="color:var(--danger);font-weight:700">${fM(n.multa)}</div></div>
+    </div>
+    ${gravBlock}
+    ${riBlock}
+    ${inaWarn}
+    <div class="ig" style="margin-top:4px">
+      <div><label>Tempo até o prazo</label><div class="cd-live v" data-cd-iso="${escAttr(cdIso)}">—</div></div>
+      <div><label>Responsável</label>${respSel}</div>
+      <div><label>Prioridade</label>${prioBlock}</div>
+    </div>
+    ${mencoesBlock}
+    ${mpmaExtracaoBlock}
+    ${mpmaOcorrenciasNomesBlock}
+    ${origBlock}
+    ${alertasBlock}
+    ${domIntelBlock}
+    <div class="ai-box"><h4>Dados de apoio (extração do PDF / sistema)</h4>
+    <p style="font-size:11px;color:#94a3b8;margin:0 0 10px;line-height:1.5;font-family:var(--f-body)">Campos abaixo derivam de padrões no texto ou de regras internas da plataforma. <strong>Não substituem análise jurídica.</strong></p>
+    <div class="ai-tags">
+      <div class="aitag"><strong>Urgência (parâmetro):</strong> ${escHtml(n.urgencia||'—')} ${ia.urg?`· ${escHtml(ia.urg)}`:''}</div>
+      <div class="aitag"><strong>Prazo no texto:</strong> ${escHtml(ia.prazoReal||ia.prazo||'—')}</div>
+      ${ia.multaReal?`<div class="aitag" style="grid-column:1/-1"><strong>Multa / valores (trecho do texto):</strong> ${String(ia.multaReal).replace(/</g,'&lt;')}</div>`:''}
+      ${ia.orgaoMp?`<div class="aitag" style="grid-column:1/-1"><strong>Órgão (menção no texto):</strong> ${String(ia.orgaoMp).replace(/</g,'&lt;')}</div>`:''}
+      ${ia.documentoTipo?`<div class="aitag"><strong>Tipo de documento (heurística no PDF):</strong> ${String(ia.documentoTipo).replace(/</g,'&lt;')}</div>`:''}
+      ${ia.riscoEstimado?`<div class="aitag" style="grid-column:1/-1"><strong>Valores referidos (cálculo sobre o texto):</strong> ${String(ia.riscoEstimado).replace(/</g,'&lt;')}${ia.riscoFinanceiroFormula?` · ${String(ia.riscoFinanceiroFormula).replace(/</g,'&lt;')}`:''}</div>`:''}
+      <div class="aitag"><strong>Responsável interno:</strong> ${escHtml(ia.resp||'—')}</div>
+    </div></div>
+    <div class="desc-box"><h4>Resumo extraído do documento</h4><p style="font-size:10.5px;color:var(--muted);margin:-4px 0 10px;font-family:var(--f-body)">Trecho contínuo do texto do PDF obtido por extração automática — não é síntese interpretativa.</p>${formatDescricaoForDisplay(n.descricao)}</div>
+    <div id="pdf-embed-anchor-${n.id}">${pdfSec}</div>
+    <div class="access-log"><h4>📋 Log de Acesso — quem visualizou e respondeu</h4>${al}</div>
+    <div style="margin-bottom:16px"><div class="sec-title">💬 Chat do processo (tempo real)</div>
+      <div id="chat-msgs-${n.id}" class="chat-msgs" style="max-height:240px;overflow-y:auto;border:1px solid var(--linen);padding:10px;background:#fff;border-radius:6px;margin-bottom:10px;font-family:var(--f-body)"></div>
+      <div class="ci-row"><textarea class="ci" placeholder="Mensagem no chat…" id="chat-inp-${n.id}"></textarea><button type="button" class="btn-send" onclick="sendChatMsg('${escAttr(n.id)}')">Enviar</button></div>
+    </div>
+    <div style="margin-bottom:16px"><div class="sec-title">Linha do tempo — histórico completo</div><div class="tl-flow">${buildUnifiedTimelineHTML(n)}</div></div>
+    ${n.ofNr?`<div style="background:var(--blue-lite);border:1px solid #c0d4f8;padding:12px 15px;margin-bottom:14px;font-size:13px;font-family:var(--f-body)">
+      📋 Ofício já gerado: <strong>${n.ofNr}</strong> ${n.assinado?'· <span style="color:var(--success)">✦ Assinado digitalmente (ICP-Brasil)</span>':'· Aguardando assinatura'}
+    </div>`:''}
+    <div style="margin-bottom:16px"><div class="sec-title">Comentários Internos</div>${comms}
+      <div class="ci-row"><textarea class="ci" placeholder="Comentário interno…" id="ci-${n.id}"></textarea><button class="btn-send" onclick="addCmt('${escAttr(n.id)}')">Enviar</button></div>
+    </div>
+    <div class="sa">
+      <button type="button" class="bs bs-a" onclick="updSt('${escAttr(n.id)}','analise')">📋 Em Análise</button>
+      <button type="button" class="bs bs-r" onclick="iniciarResposta('${escAttr(n.id)}')">✅ Responder + Ofício</button>
+      <button type="button" class="bs bs-e" onclick="toast('🚨 Escalamento','${escAttr(n.id)} escalada ao Procurador automaticamente.','urg')">🚨 Escalar</button>
+      <button type="button" class="bs bs-wa" onclick="waShareProcesso('${escAttr(n.id)}')">📱 WhatsApp</button>
+      <button type="button" class="bs bs-pdf" onclick="openPdfView('${escAttr(n.id)}')">📄 PDF Oficial</button>
+      <button type="button" class="bs bs-sign" onclick="abrirAssinatura('${escAttr(n.id)}')">✦ Assinar</button>
+      <button type="button" class="bs bs-of" onclick="gerarOficio('${escAttr(n.id)}')">📋 Gerar Ofício</button>
+    </div>`;
+
+  tickCountdowns();
+  document.getElementById('modal-overlay').classList.add('open');
+  AUDIT_LOG.unshift({dt:'Agora',user:CU?CU.nome:'?',acao:autoPDF?'ABRIU_LINK_PDF':'ACESSOU',notif:n.id,ip:autoPDF?'ext-token':'192.168.1.x',obs:autoPDF?'Via link seguro':''});
+  if(autoPDF)registerPdfView(n.id);
+  joinNotifChat(n.id);
+  renderAudit();
+}
+function closeModal(e){
+  if(!e||e.target===document.getElementById('modal-overlay')){
+    if(modalNotifId&&socketIo&&socketIo.connected)try{socketIo.emit('leave:notif',modalNotifId);}catch(_){}
+    modalNotifId=null;
+    document.getElementById('modal-overlay').classList.remove('open');
+  }
+}
+
+/* ── PDF VIEWER (iframe direto MPMA, carga sob demanda) ── */
+function buildPdfSec(n,autoOpen){
+  if(!n)return'';
+  const pdfU=String(n.pdfUrl||'').trim()||PDF_URL;
+  const pdfAttr=escAttr(pdfU);
+  const host=pdfU.replace(/^https?:\/\//,'').split('/')[0];
+  const disp=autoOpen?'block':'none';
+  const srcInitial=autoOpen?pdfAttr:'';
+  const toggleLabel=autoOpen?'📕 Ocultar visualização':'👁 Visualizar PDF';
+  return`<div class="pdf-embed-block">
+  <div class="pdf-actions-row" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px">
+    <button type="button" class="btn-ghost pdf-toggle-hd" id="pdf-toggle-${n.id}" onclick="togglePdfEmbed('${n.id}')">${toggleLabel}</button>
+    <a class="btn-ghost pdf-btn" href="${pdfAttr}" download="notificacao_${n.id}.pdf" target="_blank" rel="noopener noreferrer">⬇ Baixar PDF</a>
+    <button type="button" class="btn-ghost pdf-btn" onclick="openPdfView('${n.id}');setTimeout(function(){printPdfFrame('${n.id}');},500)">🖨 Imprimir</button>
+  </div>
+  <div class="pdf-viewer-wrap" style="display:${disp}" id="pdf-wrap-${n.id}">
+    <div class="pdf-toolbar">
+      <span class="pdf-tb-title">Mesmo URL guardado · ${n.id} · ${host}</span>
+      <a class="pdf-btn" href="${pdfAttr}" download="notificacao_${n.id}.pdf" target="_blank" rel="noopener noreferrer">⬇ Baixar</a>
+      <button type="button" class="pdf-btn" onclick="printPdfFrame('${n.id}')">🖨 Imprimir</button>
+      <button type="button" class="pdf-btn" onclick="closePdfView('${n.id}')">✕ Recolher</button>
+    </div>
+    <div class="pdf-iframe-wrap"><iframe id="pdf-iframe-${n.id}" src="${srcInitial}" data-pdf-src="${pdfAttr}" title="PDF ${n.id}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+    <div class="pdf-foot">Documento original (mesmo URL guardado na notificação). <strong>Compare</strong> sempre este PDF com os trechos extraídos acima — a fonte jurídica é o ficheiro publicado. Carregamento ao visualizar.</div>
+  </div>
+</div>`;
+}
+function togglePdfEmbed(id){
+  const wrap=document.getElementById('pdf-wrap-'+id);
+  const iframe=document.getElementById('pdf-iframe-'+id);
+  const btn=document.getElementById('pdf-toggle-'+id);
+  if(!wrap)return;
+  const hidden=getComputedStyle(wrap).display==='none';
+  if(hidden){
+    wrap.style.display='block';
+    if(iframe){
+      const u=iframe.getAttribute('data-pdf-src');
+      if(u&&!iframe.getAttribute('src')){
+        requestAnimationFrame(function(){
+          requestAnimationFrame(function(){iframe.src=u;});
+        });
+      }
+    }
+    if(btn)btn.textContent='📕 Ocultar visualização';
+    registerPdfView(id);
+  }else{
+    wrap.style.display='none';
+    if(iframe)iframe.removeAttribute('src');
+    if(btn)btn.textContent='👁 Visualizar PDF';
+  }
+}
+function openPdfView(id){
+  const anchor=document.getElementById('pdf-embed-anchor-'+id);
+  if(anchor)anchor.scrollIntoView({behavior:'smooth',block:'start'});
+  let wrap=document.getElementById('pdf-wrap-'+id);
+  if(!wrap){
+    const n=NOTS.find(x=>x.id===id);
+    if(n&&anchor)anchor.innerHTML=buildPdfSec(n,false);
+    wrap=document.getElementById('pdf-wrap-'+id);
+  }
+  if(wrap&&getComputedStyle(wrap).display==='none')togglePdfEmbed(id);
+  else{
+    const iframe=document.getElementById('pdf-iframe-'+id);
+    if(iframe&&!iframe.getAttribute('src')){
+      const u=iframe.getAttribute('data-pdf-src');
+      if(u)requestAnimationFrame(function(){requestAnimationFrame(function(){iframe.src=u;});});
+      registerPdfView(id);
+    }else registerPdfView(id);
+  }
+  AUDIT_LOG.unshift({dt:'Agora',user:CU?CU.nome:'?',acao:'VISUALIZOU_PDF',notif:id,ip:'192.168.1.x',obs:'PDF MPMA'});
+  renderAudit();
+}
+function closePdfView(id){
+  const wrap=document.getElementById('pdf-wrap-'+id);
+  const iframe=document.getElementById('pdf-iframe-'+id);
+  const btn=document.getElementById('pdf-toggle-'+id);
+  if(wrap)wrap.style.display='none';
+  if(iframe)iframe.removeAttribute('src');
+  if(btn)btn.textContent='👁 Visualizar PDF';
+}
+
+/* ── RESPOSTA ── */
+function iniciarResposta(id){
+  updSt(id,'respondido');
+  gerarOficio(id);
+}
+async function updSt(id,s){
+  const n=NOTS.find(x=>x.id===id);if(!n)return;
+  try{
+    const r=await apiFetch('/api/notificacoes/'+encodeURIComponent(id),{method:'PATCH',body:JSON.stringify({status:s})});
+    if(r.ok){const j=await r.json();Object.assign(n,j);}
+    else n.status=s;
+  }catch(e){n.status=s;}
+  try{
+    const r2=await apiFetch('/api/notificacoes/'+encodeURIComponent(id)+'/access-log',{method:'POST',body:JSON.stringify({tipo:'resposta'})});
+    if(r2.ok){const j2=await r2.json();const ix=NOTS.findIndex(x=>x.id===id);if(ix>=0)NOTS[ix]=j2;}
+  }catch(_){}
+  AUDIT_LOG.unshift({dt:'Agora',user:CU?CU.nome:'?',acao:'STATUS_ATUALIZADO',notif:id,ip:'192.168.1.x',obs:slbl(s)});
+  closeModal();renderNots();renderStats();renderAudit();
+  wsEvent(`${CU?CU.nome:'Usuário'} atualizou ${id} → ${slbl(s)}`,'STATUS_ATUALIZADO',id);
+}
+async function addCmt(id){
+  const inp=document.getElementById('ci-'+id);
+  const text=inp?.value.trim();if(!text)return;
+  try{
+    const r=await apiFetch('/api/notificacoes/'+encodeURIComponent(id)+'/comentarios',{method:'POST',body:JSON.stringify({texto:text})});
+    if(r.ok){
+      const j=await r.json();
+      const ix=NOTS.findIndex(x=>x.id===id);
+      if(ix>=0)NOTS[ix]=j;
+      inp.value='';
+      if(modalNotifId===id)openNotif(id,false);
+      renderAudit();renderNots();
+      wsEvent(`${CU?CU.nome:'?'} comentou em ${id}`,'COMENTOU',id);
+      return;
+    }
+  }catch(e){}
+  toast('Erro','Não foi possível guardar o comentário.','urg');
+}
+
+/* ── ASSINATURA DIGITAL ── */
+function abrirAssinatura(id){
+  signNotifId=id;
+  document.getElementById('sign-cert-data').innerHTML=`Titular: <strong>${CU?CU.nome:'—'}</strong><br>Cargo: ${CU?CU.cargo:'—'}<br>CPF: ***.***.***.** (omitido — LGPD)<br>Validade: 31/12/2026<br>Autoridade: SERASA CA · ICP-Brasil<br>SHA-256: a3f2b1${Math.random().toString(16).substr(2,20)}`;
+  document.getElementById('sign-overlay').classList.add('open');
+}
+function executarAssinatura(){
+  if(!signNotifId)return;
+  const n=NOTS.find(x=>x.id===signNotifId);
+  if(n){n.assinado=true;if(!n.ofNr){ofCnt++;n.ofNr=`0${ofCnt}/2026/PGM`;}}
+  AUDIT_LOG.unshift({dt:'Agora',user:CU?CU.nome:'?',acao:'ASSINOU_DIGITALMENTE',notif:signNotifId,ip:'192.168.1.x',obs:`${document.getElementById('sign-cert-type')?.value||'A3'} · ICP-Brasil`});
+  document.getElementById('sign-overlay').classList.remove('open');
+  renderNots();renderAudit();closeModal();
+  toast('✦ Assinatura Digital','Documento assinado com validade jurídica plena. ICP-Brasil · MP 2.200-2/2001.','gold');
+}
+
+/* ── OFÍCIO ELETRÔNICO ── */
+function gerarOficio(id){
+  const n=NOTS.find(x=>x.id===id);if(!n)return;
+  ofCnt++;if(!n.ofNr)n.ofNr=`0${ofCnt}/2026/PGM`;
+  AUDIT_LOG.unshift({dt:'Agora',user:CU?CU.nome:'?',acao:'GEROU_OFICIO',notif:id,ip:'192.168.1.x',obs:`Ofício ${n.ofNr}`});
+  renderNots();renderAudit();
+  const hoje=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
+  document.getElementById('oficio-sub').textContent=`Ofício ${n.ofNr} · ${n.id} · ${hoje}`;
+  document.getElementById('oficio-content').innerHTML=`
+    <div class="oficio-wrap">
+      <div class="oficio-qr">📱</div>
+      <div class="oficio-header">
+        <h2>PROCURADORIA-GERAL DO MUNICÍPIO DE BURITICUPU</h2>
+        <p>Estado do Maranhão · CNPJ: 06.054.622/0001-36</p>
+        <p>Av. Principal, s/nº · Centro · Buriticupu/MA · CEP 65.393-000</p>
+        <p>pgm@buriticupu.ma.gov.br · (99) 3XXX-XXXX</p>
+      </div>
+      <div class="oficio-numero">OFÍCIO Nº ${n.ofNr}</div>
+      <p style="font-size:12.5px;margin-bottom:14px">Buriticupu (MA), ${hoje}.</p>
+      <div style="font-size:12.5px;margin-bottom:16px">
+        <strong>Ao Ilustríssimo Senhor</strong><br>
+        Dr. Felipe Augusto Rotondo<br>
+        Promotor de Justiça — 1ª Promotoria de Justiça de Buriticupu<br>
+        Ministério Público do Estado do Maranhão
+      </div>
+      <div class="oficio-body" style="font-size:12.5px">
+        <strong>Assunto: Resposta à Notificação ${n.id} — ${n.titulo}</strong>
+        <p style="margin-top:12px">Excelentíssimo Senhor Promotor,</p>
+        <p style="margin-top:10px">A Procuradoria-Geral do Município de Buriticupu, em resposta à notificação recebida em ${n.recebido}, vem, respeitosamente, prestar os seguintes esclarecimentos e informar as providências adotadas:</p>
+        <p style="margin-top:10px">O Município tomou conhecimento do processo ${n.id} — <em>"${n.titulo}"</em> — e determinou à Secretaria de ${n.secretaria} a adoção imediata das medidas cabíveis, em estrita conformidade com a legislação vigente e os princípios constitucionais da legalidade, moralidade e eficiência (art. 37, caput, CF/88).</p>
+        <p style="margin-top:10px">Informamos que as ações estão sendo desenvolvidas com a devida diligência. Documentação complementar será encaminhada oportunamente, na forma e no prazo estabelecidos por V. Exa.</p>
+        <p style="margin-top:10px">Atenciosamente,</p>
+      </div>
+      <div class="oficio-assin">
+        <p style="margin-bottom:8px">_____________________________________</p>
+        <strong>${CU?CU.nome:'Procurador Geral'}</strong>
+        <p>${CU?CU.cargo:'Procurador-Geral do Município'}</p>
+        <p>OAB/MA nº XXXXX</p>
+        ${n.assinado?`<p style="color:var(--success);font-weight:600;margin-top:10px;font-family:var(--f-body)">✦ Assinado Digitalmente — ICP-Brasil · ${new Date().toLocaleDateString('pt-BR')}</p>`:`<p style="color:var(--muted);font-size:11px;margin-top:8px">Pendente de assinatura digital</p>`}
+      </div>
+      <div class="oficio-stamp">${n.ofNr}<br>PlataformaMP v7.0<br>${new Date().toLocaleDateString('pt-BR')}</div>
+    </div>`;
+  document.getElementById('oficio-overlay').classList.add('open');
+}
+function closeOficio(e){if(!e||e.target===document.getElementById('oficio-overlay'))document.getElementById('oficio-overlay').classList.remove('open');}
+
+/* ════════ PAINEL EXECUTIVO ════════ */
+function renderExecutivo(){
+  const el=document.getElementById('exec-dt');
+  if(el)el.textContent=`Atualizado: ${new Date().toLocaleString('pt-BR')}`;
+  const risk=NOTS.reduce((s,n)=>s+n.multa,0);
+  const rv=document.getElementById('exec-risk');if(rv)rv.textContent='R$ '+risk.toLocaleString('pt-BR');
+  const mpDen=NOTS.filter(n=>(n.monitoramentoOrigem||'MPMA')==='MPMA');
+  const kpi=document.getElementById('exec-kpi-row');
+  if(kpi){
+    const tot=mpDen.length,urg=mpDen.filter(n=>n.status==='urgente').length,atr=mpDen.filter(n=>n.status==='atrasada').length,resp=mpDen.filter(n=>n.status==='respondido').length;
+    kpi.innerHTML=
+      '<div class="exec-kpi-card"><div class="exec-kpi-val" style="color:var(--ink)">'+tot+'</div><div class="exec-kpi-lbl">Total de denúncias (MPMA)</div><div class="exec-kpi-sub">Itens na caixa de entrada</div></div>'+
+      '<div class="exec-kpi-card"><div class="exec-kpi-val" style="color:#b45309">'+urg+'</div><div class="exec-kpi-lbl">Urgentes</div><div class="exec-kpi-sub">Status urgente</div></div>'+
+      '<div class="exec-kpi-card"><div class="exec-kpi-val" style="color:#991b1b">'+atr+'</div><div class="exec-kpi-lbl">Atrasadas</div><div class="exec-kpi-sub">Fora do prazo</div></div>'+
+      '<div class="exec-kpi-card"><div class="exec-kpi-val" style="color:var(--success)">'+resp+'</div><div class="exec-kpi-lbl">Respondidas</div><div class="exec-kpi-sub">Encerradas</div></div>';
+  }
+  loadExecExtras();
+  const secs=[{nome:'Saúde',key:'Saúde'},{nome:'Administração',key:'Administração'},{nome:'Finanças',key:'Finanças'},{nome:'Gabinete',key:'Gabinete'},{nome:'Obras',key:'Obras'}];
+  const grid=document.getElementById('sema-grid');
+  if(grid){
+    grid.innerHTML=secs.map(s=>{
+      const ns=NOTS.filter(n=>n.secretaria===s.key||n.secretaria.startsWith(s.key.split(' ')[0]));
+      const urg=ns.filter(n=>n.status==='urgente').length;
+      const atr=ns.filter(n=>n.status==='atrasada').length;
+      const anal=ns.filter(n=>n.status==='analise').length;
+      const cls=urg>0||atr>0?'sl-r':anal>0?'sl-y':'sl-g';
+      const lbl=urg>0||atr>0?'CRÍTICO':anal>0?'ATENÇÃO':'REGULAR';
+      const multa=ns.reduce((a,n)=>a+n.multa,0);
+      return`<div class="sema-card">
+        <div class="sema-light ${cls}"></div>
+        <div class="sema-sec">${s.nome}</div>
+        <div class="sema-cnt">${ns.length} processo${ns.length!==1?'s':''}</div>
+        <div class="sema-cnt" style="font-weight:700;color:${urg>0||atr>0?'var(--danger)':anal>0?'var(--warn)':'var(--success)'}">${lbl}</div>
+        ${multa>0?`<div class="sema-multa">${fM(multa)}</div>`:`<div class="sema-cnt" style="color:var(--success)">Sem multa</div>`}
+      </div>`;
+    }).join('');
+  }
+  const tb=document.getElementById('exec-table');
+  if(tb){
+    const rows=NOTS.filter(n=>n.status==='urgente'||n.status==='analise'||n.status==='atrasada').sort((a,b)=>new Date(a.prazo)-new Date(b.prazo));
+    tb.innerHTML=rows.map(n=>{
+      const pi=prazoI(n.prazo);
+      return`<tr>
+        <td class="mono" style="color:var(--blue)">${n.id}</td>
+        <td>${n.secretaria}</td>
+        <td><span class="badge b-${n.status}">${slbl(n.status)}</span></td>
+        <td style="color:var(--danger);font-weight:700;font-family:var(--f-body)">${fM(n.multa)}</td>
+        <td class="${pi.c}">${pi.l}</td>
+        <td style="font-size:11.5px;font-family:var(--f-body)">${n.status==='urgente'?'⚡ Resposta imediata':'📋 Protocolar resposta'}</td>
+      </tr>`;
+    }).join('');
+  }
+}
+async function loadExecExtras(){
+  const wrap=document.getElementById('exec-extras');
+  if(!wrap)return;
+  const t=new Date();t.setHours(12,0,0,0);
+  const prazos=NOTS.filter(n=>n.prazo&&n.prazo!=='2099-12-31'&&n.status!=='respondido')
+    .map(n=>({n,d:Math.ceil((new Date(n.prazo+'T12:00:00')-t)/864e5)}))
+    .filter(x=>!Number.isNaN(x.d)&&x.d>=0&&x.d<=14)
+    .sort((a,b)=>a.d-b.d)
+    .slice(0,10);
+  const criticos=NOTS.filter(n=>n.status==='urgente'||n.status==='atrasada').sort((a,b)=>String(a.prazo).localeCompare(String(b.prazo))).slice(0,10);
+  let rankHtml='<div style="color:var(--muted);font-size:12px;font-family:var(--f-body)">A carregar ranking…</div>';
+  try{
+    const r=await apiFetch('/api/relatorios/desempenho?periodo=semana');
+    if(r.ok){
+      const d=await r.json();
+      const top=(d.advogados||[]).filter(x=>x.visualizou>0||x.respondeu>0||x.comentou>0).slice(0,6);
+      rankHtml=top.length?top.map((u,i)=>`<div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:7px 0;border-bottom:1px solid var(--linen);font-family:var(--f-body)"><span><strong>${i+1}.</strong> ${u.nome}</span><span style="color:var(--success);font-weight:700">${u.eficienciaPct}%</span></div>`).join(''):'<div style="color:var(--muted);font-size:12px;font-family:var(--f-body)">Sem atividade registada na semana.</div>';
+    }else{
+      rankHtml='<div style="color:var(--muted);font-size:12px;font-family:var(--f-body)">Sem permissão ou servidor offline.</div>';
+    }
+  }catch(e){
+    rankHtml='<div style="color:var(--muted);font-size:12px;font-family:var(--f-body)">Ranking indisponível.</div>';
+  }
+  wrap.innerHTML='<div class="cc"><h4>Ranking (resposta / visualização)</h4>'+rankHtml+'</div>'+
+  '<div class="cc"><h4>Processos críticos</h4>'+(criticos.length?criticos.map(n=>'<div style="font-size:11.5px;padding:6px 0;border-bottom:1px solid var(--linen);font-family:var(--f-body)"><span class="mono" style="color:var(--blue)">'+n.id+'</span> · <span class="badge b-'+n.status+'">'+slbl(n.status)+'</span> · '+fD(n.prazo)+'</div>').join(''):'<div style="color:var(--muted);font-size:12px;font-family:var(--f-body)">Nenhum processo urgente ou atrasado.</div>')+'</div>'+
+  '<div class="cc"><h4>Prazos (14 dias)</h4>'+(prazos.length?prazos.map(({n,d})=>'<div style="font-size:11.5px;padding:6px 0;border-bottom:1px solid var(--linen);cursor:pointer;font-family:var(--f-body)" onclick="sp(\'inbox\',null);openNotif(\''+n.id+'\')"><strong>'+fD(n.prazo)+'</strong> · '+(d===0?'HOJE':d+' d.')+' · '+n.id+'</div>').join(''):'<div style="color:var(--muted);font-size:12px;font-family:var(--f-body)">Sem prazos nesta janela.</div>')+'</div>';
+}
+function execChartLast6Months(){
+  const labels=[];
+  const counts=[];
+  const now=new Date();
+  for(let i=5;i>=0;i--){
+    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+    const mo=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'][d.getMonth()];
+    labels.push(mo+'/'+String(d.getFullYear()).slice(2));
+    const y=d.getFullYear(),m=d.getMonth();
+    const cnt=NOTS.filter(n=>{
+      const s=String(n.recebido||'');
+      const parts=s.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+      if(!parts)return false;
+      const dy=+parts[3],dm=+parts[2]-1;
+      return dy===y&&dm===m;
+    }).length;
+    counts.push(cnt);
+  }
+  const max=Math.max(1,...counts,1);
+  const pct=counts.map(c=>Math.round((c/max)*100));
+  return{labels,pct};
+}
+function renderExecCharts(){
+  if(charts.cExecTrend)charts.cExecTrend.destroy();
+  if(charts.cExecUrg)charts.cExecUrg.destroy();
+  const c1=document.getElementById('cExecTrend'),c2=document.getElementById('cExecUrg');
+  const ex=execChartLast6Months();
+  if(c1)charts.cExecTrend=new Chart(c1,{type:'line',data:{labels:ex.labels,datasets:[{data:ex.pct,borderColor:'#9b2a1b',backgroundColor:'rgba(155,42,27,.1)',fill:true,tension:.4,pointRadius:4,pointBackgroundColor:'#9b2a1b',borderWidth:2}]},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){return'Volume relativo: '+ctx.parsed.y+'%';}}}},scales:{y:{beginAtZero:true,max:100,ticks:{callback:v=>v+'%'},grid:{color:'#ece5d8'}},x:{grid:{display:false}}}}});
+  if(c2)charts.cExecUrg=new Chart(c2,{type:'doughnut',data:{labels:['Alta','Média','Baixa'],datasets:[{data:[NOTS.filter(n=>n.urgencia==='Alta').length,NOTS.filter(n=>n.urgencia==='Média').length,NOTS.filter(n=>n.urgencia==='Baixa').length],backgroundColor:['#ef4444','#f59e0b','#22c55e'],borderWidth:0}]},options:{cutout:'62%',plugins:{legend:{position:'bottom'}}}});
+}
+
+/* ════════ DASHBOARD ════════ */
+function renderCharts(){
+  const defs=[
+    {id:'cSt',type:'doughnut',labels:['Novas','Análise','Urgentes','Atrasadas','Respondidas'],data:[NOTS.filter(n=>n.status==='novo').length,NOTS.filter(n=>n.status==='analise').length,NOTS.filter(n=>n.status==='urgente').length,NOTS.filter(n=>n.status==='atrasada').length,NOTS.filter(n=>n.status==='respondido').length],colors:['#1a3d78','#c57b28','#9b2a1b','#991b1b','#175a36'],opts:{cutout:'62%',plugins:{legend:{position:'bottom'}}}},
+    {id:'cSec',type:'bar',labels:['Admin.','Saúde','Finanças','Gabinete'],data:[NOTS.filter(n=>n.secretaria==='Administração').length,NOTS.filter(n=>n.secretaria==='Saúde').length,NOTS.filter(n=>n.secretaria==='Finanças').length,NOTS.filter(n=>n.secretaria==='Gabinete').length],colors:['#0c1017','#0c1017','#0c1017','#0c1017'],opts:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:'#ece5d8'}},x:{grid:{display:false}}},borderRadius:2}},
+    {id:'cMes',type:'line',labels:['set/25','out/25','nov/25','dez/25','jan/26','fev/26'],data:[1,2,2,1,1,2],colors:['#9b2a1b'],opts:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{stepSize:1},grid:{color:'#ece5d8'}},x:{grid:{display:false}}},tension:.4,fill:true,pointRadius:4}},
+    {id:'cUrg',type:'polarArea',labels:['Alta','Média','Baixa'],data:[NOTS.filter(n=>n.urgencia==='Alta').length,NOTS.filter(n=>n.urgencia==='Média').length,NOTS.filter(n=>n.urgencia==='Baixa').length],colors:['rgba(155,42,27,.75)','rgba(197,123,40,.75)','rgba(23,90,54,.75)'],opts:{plugins:{legend:{position:'bottom'}},scales:{r:{display:false}}}},
+  ];
+  defs.forEach(cfg=>{
+    if(charts[cfg.id])charts[cfg.id].destroy();
+    const ctx=document.getElementById(cfg.id);if(!ctx)return;
+    // Build dataset properly per chart type
+    const isLine=cfg.type==='line';
+    const isPolar=cfg.type==='polarArea';
+    function hexToRgba(hex,a){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return`rgba(${r},${g},${b},${a})`;}
+    const lineColor=isLine&&cfg.colors[0].startsWith('#')?cfg.colors[0]:'#9b2a1b';
+    const ds={
+      data:cfg.data,
+      backgroundColor:isLine?hexToRgba(lineColor,0.12):cfg.colors,
+      borderColor:isLine?lineColor:undefined,
+      borderWidth:isLine?2:0,
+      tension:cfg.opts.tension||0,
+      fill:isLine?(cfg.opts.fill||false):false,
+      pointBackgroundColor:isLine?lineColor:undefined,
+      pointRadius:cfg.opts.pointRadius||0,
+      borderRadius:!isLine&&!isPolar?(cfg.opts.borderRadius||0):0,
+    };
+    // Remove dataset-level keys from opts before spreading into options
+    const {tension,fill,pointRadius,borderRadius,...cleanOpts}=cfg.opts;
+    charts[cfg.id]=new Chart(ctx,{type:cfg.type,data:{labels:cfg.labels,datasets:[ds]},options:{responsive:true,maintainAspectRatio:true,...cleanOpts}});
+  });
+}
+
+/* ════════ CALENDAR ════════ */
+function prazoCalBucket(iso){
+  if(!iso||iso==='2099-12-31')return'';
+  const d=new Date(iso+'T12:00:00');
+  if(Number.isNaN(d.getTime()))return'';
+  const today=new Date();today.setHours(12,0,0,0);
+  const diff=Math.ceil((d-today)/864e5);
+  if(diff<0)return'';
+  if(diff===0)return'cal-hoje';
+  if(diff<=3)return'cal-proximo';
+  return'cal-ok';
+}
+const MNS=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+function calNav(dir){
+  calM+=dir;if(calM>11){calM=0;calY++;}if(calM<0){calM=11;calY--;}
+  const n=new Date();
+  if(calY<n.getFullYear()||(calY===n.getFullYear()&&calM<n.getMonth())){calM=n.getMonth();calY=n.getFullYear();}
+  renderCal();
+}
+function renderCal(){
+  document.getElementById('cal-lbl').textContent=`${MNS[calM]} ${calY}`;
+  const prev=document.getElementById('cal-prev'),now=new Date();
+  if(prev)prev.disabled=(calY===now.getFullYear()&&calM===now.getMonth());
+  const first=new Date(calY,calM,1),last=new Date(calY,calM+1,0);
+  const todayIso=now.toISOString().slice(0,10);
+  let html='';
+  for(let i=0;i<first.getDay();i++)html+='<div class="cal-cell other"></div>';
+  for(let d=1;d<=last.getDate();d++){
+    const iso=`${calY}-${String(calM+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isTd=iso===todayIso,isPast=iso<todayIso;
+    const evs=isPast?[]:NOTS.filter(x=>x.prazo===iso);
+    let cls='cal-cell';if(isPast)cls+=' past';else if(isTd)cls+=' today';
+    const de=isTd?`<div class="today-b">${d}</div>`:`<div class="cal-date">${d}</div>`;
+    const evh=evs.map(e=>{
+      const st=e.status||'novo';
+      const pb=prazoCalBucket(e.prazo);
+      return`<div class="cal-ev cev-${st} ${pb}" onclick="openNotif('${e.id}');event.stopPropagation()" title="${String(e.titulo||'').replace(/"/g,'&quot;')}">${e.id.replace('MP-','#')}</div>`;
+    }).join('');
+    html+=`<div class="${cls}">${de}${evh}</div>`;
+  }
+  const tail=(7-((first.getDay()+last.getDate())%7))%7;
+  for(let i=0;i<tail;i++)html+='<div class="cal-cell other"></div>';
+  document.getElementById('cal-grid').innerHTML=html;
+}
+
+/* ════════ MOTOR REENVIO ════════ */
+function startMotor(){
+  setInterval(()=>{
+    const pend=NOTS.filter(n=>n.reenvioEtapa<3&&n.status!=='respondido');
+    if(!pend.length)return;
+    const n=pend[Math.floor(Math.random()*pend.length)];
+    if(n.reenvioEtapa>=3)return;
+    const ne=n.reenvioEtapa+1;
+    const e=RS_ETAPAS[ne];n.reenvioEtapa=ne;
+    const intv=AI_INTERVALS[(n.ia&&n.ia.tema)||'']||[24,48,72];
+    const h=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    RS_LOG.unshift({notif:n.id,etapa:`T+${intv[ne-1]}h`,canal:e.c,hora:`Agora ${h}`,status:ne===3?'Escalado':'Entregue',ai:`IA: ${(n.ia&&n.ia.tema)||'—'}`});
+    mEnv++;if(ne===3)mEsc++;mAI++;
+    updMotor();renderRsLog();
+    if(selRsId===n.id)renderRsSteps(n);
+    AUDIT_LOG.unshift({dt:'Agora',user:'Motor IA',acao:ne===3?'ESCALOU':'REENVIOU',notif:n.id,ip:'interno',obs:`T+${intv[ne-1]}h — IA adaptativo`});
+    renderAudit();
+  },25000);
+}
+function updMotor(){
+  mPend=NOTS.filter(n=>n.reenvioEtapa<3&&n.status!=='respondido').length;
+  ['m-env','m-pend','m-esc','m-ai'].forEach((id,i)=>{
+    const el=document.getElementById(id);
+    if(el)el.textContent=[mEnv,mPend,mEsc,mAI][i];
+  });
+}
+function renderNsg(){
+  const g=document.getElementById('nsg');if(!g)return;
+  g.innerHTML=NOTS.filter(n=>n.status!=='respondido').map(n=>`
+    <div class="nsi" id="nsi-${n.id}" onclick="selRs('${n.id}')">
+      <div class="ns-id">${n.id}</div>
+      <div class="ns-t">${n.titulo.length>44?n.titulo.slice(0,44)+'…':n.titulo}</div>
+      <span class="badge ${n.reenvioEtapa>=3?'b-urgente':'b-analise'}">Etapa ${n.reenvioEtapa}/3</span>
+    </div>`).join('');
+}
+function selRs(id){
+  selRsId=id;
+  document.querySelectorAll('.nsi').forEach(el=>el.classList.remove('selected'));
+  const el=document.getElementById('nsi-'+id);if(el)el.classList.add('selected');
+  const n=NOTS.find(x=>x.id===id);
+  if(n){document.getElementById('rs-detail').style.display='block';renderRsSteps(n);}
+}
+function renderRsSteps(n){
+  const s=document.getElementById('rs-steps');if(!s)return;
+  const intv=AI_INTERVALS[(n.ia&&n.ia.tema)||'']||[24,48,72];
+  s.innerHTML=RS_ETAPAS.map((e,i)=>{
+    let cc='rsp',ic=String(i+1);
+    if(i<n.reenvioEtapa){cc='rsd';ic='✓';}
+    else if(i===n.reenvioEtapa){cc=i>=3?'rsc':'rsa';ic='▶';}
+    const hLabel=i===0?'Imediato':`T+${intv[Math.min(i-1,intv.length-1)]}h`;
+    return`<div class="rs-step">
+      <div class="rs-c ${cc}">${ic}</div>
+      <div class="rs-info">
+        <strong>${e.l}</strong>
+        <span>${e.d}</span>
+        <div style="margin-top:4px;display:flex;gap:6px;flex-wrap:wrap">
+          <div class="rs-eta">${hLabel}</div>
+          <div class="rs-ai-badge">✦ IA: ${hLabel}</div>
+        </div>
+        ${i<=n.reenvioEtapa?`<div style="font-size:10px;color:var(--blue);margin-top:3px;font-family:var(--f-body)">${e.c}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+function renderRsLog(){
+  const b=document.getElementById('rs-log');if(!b)return;
+  b.innerHTML=RS_LOG.slice(0,15).map(l=>`
+    <tr>
+      <td style="color:var(--blue);font-weight:600;font-family:var(--f-mono);font-size:10px">${l.notif}</td>
+      <td>${l.etapa}</td><td>${l.canal}</td>
+      <td class="mono">${l.hora}</td>
+      <td><span class="badge ${l.status==='Escalado'?'b-urgente':l.status==='Entregue'?'b-respondido':'b-analise'}">${l.status}</span></td>
+      <td style="font-size:10.5px;color:var(--gold);font-family:var(--f-body)">${l.ai}</td>
+    </tr>`).join('');
+}
+
+/* ════════ TCE-MA (dados reais — API /api/tcema/buriticupu) ════════ */
+function tceTipoIco(tipo){
+  const x=String(tipo||'').toLowerCase();
+  if(x==='multa')return'💰';
+  if(x==='irregularidade')return'🚨';
+  if(x==='contrato')return'📑';
+  if(x==='auditoria')return'🔍';
+  if(x==='relatorio')return'📋';
+  return'🏛️';
+}
+function tceBadgeClass(it){
+  if(it.alertaAtivo)return'tceb-alerta';
+  if((it.termosDestaque||[]).length)return'tceb-alerta';
+  return'tceb-ok';
+}
+function fmtTceValor(v){
+  if(v==null||v===''||Number.isNaN(Number(v)))return'—';
+  return'R$ '+Number(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+async function loadTceMaPanel(){
+  try{
+    const r=await apiFetch('/api/tcema/buriticupu');
+    if(r.ok)TCE_MA_CACHE=await r.json();
+    else TCE_MA_CACHE=null;
+  }catch(e){
+    TCE_MA_CACHE=null;
+  }
+  renderTCE();
+}
+function renderTCE(){
+  const bd=document.getElementById('tce-body');
+  const kpi=document.getElementById('tce-kpi-row');
+  const st=document.getElementById('tce-status-txt');
+  const recs=document.getElementById('tce-recs');
+  const R=TCE_MA_CACHE&&TCE_MA_CACHE.resumo;
+  if(st){
+    if(!CU){st.textContent='—';}
+    else if(TCE_MA_CACHE&&TCE_MA_CACHE.atualizadoEm){
+      const u=new Date(TCE_MA_CACHE.atualizadoEm).toLocaleString('pt-BR');
+      st.textContent='Fonte: www.tcema.tc.br · Atualizado '+u+(TCE_MA_CACHE.ultimoErro?' · Aviso: crawl parcial':'');
+    }else if(TCE_MA_CACHE===null&&CU){st.textContent='Não foi possível carregar (servidor ou sessão).';}
+    else{st.textContent='A carregar dados do TCE-MA…';}
+  }
+  if(kpi&&R){
+    kpi.innerHTML=
+      '<div class="tce-kpi-cell"><div class="tce-kpi-val" style="color:#991b1b">'+R.irregularidades+'</div><div class="tce-kpi-lbl">Irregularidades (detetadas)</div></div>'+
+      '<div class="tce-kpi-cell"><div class="tce-kpi-val" style="color:var(--ink)">'+fmtTceValor(R.valorTotal)+'</div><div class="tce-kpi-lbl">Valor total envolvido (extraído do texto)</div></div>'+
+      '<div class="tce-kpi-cell"><div class="tce-kpi-val" style="color:#b45309">'+R.alertasAtivos+'</div><div class="tce-kpi-lbl">Alertas ativos (termos / tipo)</div></div>';
+  }else if(kpi&&CU){
+    kpi.innerHTML='<div class="tce-kpi-cell" style="grid-column:1/-1"><div class="tce-kpi-lbl" style="margin-top:0">Indicadores indisponíveis — verifique ligação ao servidor ou renove a sessão.</div></div>';
+  }else if(kpi)kpi.innerHTML='';
+  if(!bd)return;
+  const itens=(TCE_MA_CACHE&&TCE_MA_CACHE.itens)||[];
+  if(!itens.length){
+    bd.innerHTML='<p style="color:var(--muted);font-size:13px;font-family:var(--f-body);padding:12px 0;line-height:1.6">Nenhum conteúdo público do TCE-MA com menção a <strong>Buriticupu</strong> foi encontrado nas páginas monitoradas (capa + TCE em pauta 2023–2026). Quando o tribunal publicar notícias ou atos que cite o município, aparecerão aqui com link oficial.</p>'+
+      (TCE_MA_CACHE&&TCE_MA_CACHE.ultimoErro?'<p style="color:var(--danger);font-size:12px;font-family:var(--f-body)">Último aviso do crawler: '+escHtml(TCE_MA_CACHE.ultimoErro)+'</p>':'');
+  }else{
+    bd.innerHTML=itens.map(function(it){
+      const terms=(it.termosDestaque||[]).length?'<div style="margin-top:6px;font-size:10.5px;color:#b45309;font-family:var(--f-body)">⚠ '+it.termosDestaque.map(function(t){return escHtml(t);}).join(' · ')+'</div>':'';
+      const v=it.valorReais!=null?'<span class="tcebadge tceb-no" style="margin-left:6px">'+fmtTceValor(it.valorReais)+'</span>':'';
+      const dt=it.dataRef?'<span style="font-size:10px;color:var(--muted);margin-left:8px;font-family:var(--f-mono)">'+escHtml(it.dataRef)+'</span>':'';
+      return'<div class="tce-row">'+
+        '<div class="tce-ico">'+tceTipoIco(it.tipo)+'</div>'+
+        '<div class="tce-info">'+
+        '<strong>'+escHtml(it.titulo||'—')+'</strong>'+
+        '<p style="margin-top:6px">'+escHtml((it.descricao||'').slice(0,900))+(String(it.descricao||'').length>900?'…':'')+'</p>'+
+        '<div style="margin-top:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">'+
+        '<span class="tcebadge '+tceBadgeClass(it)+'">'+(escHtml(it.tipo||'registo'))+'</span>'+v+dt+
+        '</div>'+terms+
+        '<div class="tce-link-official" style="margin-top:8px"><a href="'+escAttr(it.linkOficial||'#')+'" target="_blank" rel="noopener noreferrer">Abrir no site do TCE-MA →</a></div>'+
+        '</div></div>';
+    }).join('');
+  }
+  if(recs){
+    if(R&&R.totalItens){
+      const pt=R.porTipo||{};
+      const parts=Object.keys(pt).map(function(k){return k+': '+pt[k];}).join(' · ');
+      recs.innerHTML='<p style="color:var(--muted);font-size:12.5px;font-family:var(--f-body);line-height:1.75"><strong>Resumo automático:</strong> '+R.totalItens+' registo(s) relacionados a Buriticupu. '+parts+'.</p>'+
+        '<p style="font-size:11.5px;color:var(--muted);margin-top:10px;font-family:var(--f-body)">Inteligência: destaque para ocorrências de <em>irregularidade</em>, <em>multa</em> e <em>dano ao erário</em> no texto capturado (sem simulação).</p>';
+    }else{
+      recs.innerHTML='<p style="color:var(--muted);font-size:12.5px;font-family:var(--f-body)">Recomendações: quando existirem registos, reveja links oficiais e cruze com processos MPMA na caixa de entrada.</p>';
+    }
+  }
+}
+
+/* ════════ AUDITORIA ════════ */
+function renderAudit(){
+  const b=document.getElementById('audit-body');if(!b)return;
+  b.innerHTML=AUDIT_LOG.slice(0,25).map(a=>`
+    <tr>
+      <td class="mono">${a.dt}</td>
+      <td>${a.user}</td>
+      <td><span style="font-family:var(--f-mono);font-size:9px;background:var(--cream);padding:2px 5px">${a.acao}</span></td>
+      <td style="color:var(--blue);font-family:var(--f-mono);font-size:10px">${a.notif}</td>
+      <td class="mono" style="color:var(--muted)">${a.ip}</td>
+      <td style="font-size:10.5px;color:var(--muted);font-family:var(--f-body)">${a.obs}</td>
+    </tr>`).join('');
+}
+
+/* ════════ LINKS / TOKENS ════════ */
+function renderLinks(){
+  const b=document.getElementById('links-body');if(!b)return;
+  b.innerHTML=LINKS.map(l=>`
+    <tr>
+      <td><span class="${l.ativo?'tk':'tk-exp'}">${l.token}</span></td>
+      <td style="color:var(--blue);font-family:var(--f-mono);font-size:10px">${l.notif}</td>
+      <td>${l.dest}@buriticupu.ma.gov.br</td>
+      <td class="mono" style="color:var(--muted)">${l.gerado}</td>
+      <td class="mono" style="color:var(--muted)">${l.expira}</td>
+      <td style="font-size:11px">${l.acessado}</td>
+      <td><span class="badge ${l.ativo?'b-respondido':'b-urgente'}">${l.ativo?'Ativo':'Expirado'}</span></td>
+    </tr>`).join('');
+}
+function gerarToken(){
+  const n=NOTS.filter(n=>n.status!=='respondido')[0];
+  const tk='tk_'+Math.random().toString(36).substr(2,8).toUpperCase();
+  LINKS.unshift({token:tk,notif:n.id,dest:'servidor.designado',gerado:'Agora',expira:'Em 24h',acessado:'Não acessado',ativo:true});
+  renderLinks();toast('🔗 Token','Link seguro gerado e enviado ao destinatário.','');
+}
+
+/* ════════ RELATÓRIOS ════════ */
+function setRepTab(el,tab){
+  repTabName=tab;
+  document.querySelectorAll('.rep-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  const ps=document.getElementById('rep-periodo');
+  const pd=document.getElementById('rep-desempenho-periodo');
+  const rs=document.getElementById('rep-sec');
+  const rt=document.getElementById('rep-status');
+  if(tab==='desempenho'){
+    if(ps)ps.style.display='none';
+    if(pd)pd.style.display='';
+    if(rs)rs.style.display='none';
+    if(rt)rt.style.display='none';
+  }else{
+    if(ps)ps.style.display='';
+    if(pd)pd.style.display='none';
+    if(rs)rs.style.display='';
+    if(rt)rt.style.display='';
+    if(ps){
+      if(tab==='mensal')ps.innerHTML='<option>Fevereiro 2026</option><option>Janeiro 2026</option><option>Dezembro 2025</option><option>Novembro 2025</option>';
+      else if(tab==='produtividade')ps.innerHTML='<option>Fevereiro 2026</option><option>Janeiro 2026</option><option>Dezembro 2025</option><option>3º Trimestre 2025</option>';
+      else ps.innerHTML='<option>Semana 08 — 17 a 23/02/2026</option><option>Semana 07 — 10 a 16/02/2026</option><option>Semana 06 — 03 a 09/02/2026</option>';
+    }
+  }
+  renderRep();
+}
+function renderRep(){
+  const el=document.getElementById('rep-preview');if(!el)return;
+  if(repTabName==='desempenho'){
+    renderRepDesempenho();
+    return;
+  }
+  const periodo=document.getElementById('rep-periodo')?.value||'—';
+  const all=NOTS;
+  const cnt={novo:all.filter(n=>n.status==='novo').length,analise:all.filter(n=>n.status==='analise').length,urgente:all.filter(n=>n.status==='urgente').length,atrasada:all.filter(n=>n.status==='atrasada').length,respondido:all.filter(n=>n.status==='respondido').length};
+  const nrTotal=all.reduce((s,n)=>s+(n.accessLog||[]).filter(a=>!a.respondeu&&!a.comentou&&(a.pdf||a.abriuDenuncia)).length,0);
+  const tabName=repTabName;
+  const emitido=new Date().toLocaleString('pt-BR');
+
+  const hdr=`<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:18px">
+    <div><div class="rph1">Relatório ${tabName==='semanal'?'Semanal':tabName==='mensal'?'Mensal':'de Produtividade'}</div>
+      <div class="rpsub">${periodo} · Procuradoria Municipal de Buriticupu — MA<br>Promotor: Dr. Felipe Augusto Rotondo · 1ª Promotoria de Justiça de Buriticupu</div>
+    </div>
+    <div style="text-align:right;font-size:10.5px;color:var(--muted);font-family:var(--f-body)">Emitido: ${emitido}<br>Procurador Geral Municipal<br><strong>DOCUMENTO SIGILOSO</strong></div>
+  </div>`;
+
+  const kpis=`<div class="rpkpi">
+    <div class="rpkpi-item" style="background:var(--cream)"><div class="rpkpi-val">${all.length}</div><div class="rpkpi-lbl">Total</div></div>
+    <div class="rpkpi-item" style="background:#fee2e2"><div class="rpkpi-val" style="color:var(--danger)">${cnt.urgente}</div><div class="rpkpi-lbl">Urgentes</div></div>
+    <div class="rpkpi-item" style="background:#fef3c7"><div class="rpkpi-val" style="color:var(--warn)">${cnt.analise}</div><div class="rpkpi-lbl">Em Análise</div></div>
+    <div class="rpkpi-item" style="background:#fecaca"><div class="rpkpi-val" style="color:#7f1d1d">${cnt.atrasada}</div><div class="rpkpi-lbl">Atrasadas</div></div>
+    <div class="rpkpi-item" style="background:#dcfce7"><div class="rpkpi-val" style="color:var(--success)">${cnt.respondido}</div><div class="rpkpi-lbl">Respondidas</div></div>
+  </div>`;
+
+  const tbl=`<table class="rpt"><thead><tr><th>Protocolo</th><th>Título</th><th>Secretaria</th><th>Status</th><th>Urgência</th><th>Prazo</th><th>Multa</th><th>NR*</th></tr></thead><tbody>
+    ${all.map(n=>`<tr>
+      <td style="font-family:var(--f-mono);font-size:9.5px">${n.id}</td>
+      <td style="font-size:11px">${n.titulo.slice(0,36)}…</td>
+      <td>${n.secretaria}</td>
+      <td><span class="badge b-${n.status}">${slbl(n.status)}</span></td>
+      <td>${n.urgencia}</td>
+      <td style="font-family:var(--f-mono);font-size:10px">${fD(n.prazo)}</td>
+      <td style="font-family:var(--f-mono);font-size:10px;color:var(--danger)">${fM(n.multa)}</td>
+      <td style="text-align:center;${(n.accessLog||[]).filter(a=>!a.respondeu&&!a.comentou&&(a.pdf||a.abriuDenuncia)).length>0?'color:var(--danger);font-weight:700':'color:var(--success)'}">${(n.accessLog||[]).filter(a=>!a.respondeu&&!a.comentou&&(a.pdf||a.abriuDenuncia)).length}</td>
+    </tr>`).join('')}
+  </tbody></table>
+  <div style="font-size:10px;color:var(--muted);margin-top:6px;font-family:var(--f-body)">*NR = Acessos sem resposta registrados no período</div>`;
+
+  const foot=`<div style="font-size:9px;color:var(--muted);text-align:center;margin-top:16px;padding-top:12px;border-top:1px solid var(--linen);font-family:var(--f-body)">PlataformaMP v7.0 · Procuradoria Municipal de Buriticupu-MA · SIGILOSO · LGPD</div>`;
+
+  const nrAlert=nrTotal>0?`<div style="background:var(--gold-lite);border:1px solid rgba(212,184,90,.3);padding:10px 14px;margin-bottom:14px;font-size:12.5px;font-family:var(--f-body)">⚠ <strong>${nrTotal} acesso(s) sem resposta</strong> registrado(s) no período.</div>`:'';
+
+  if(tabName==='produtividade'){
+    el.innerHTML=hdr+`
+      <div class="rph3">Indicadores de Desempenho</div>
+      <div class="prod-grid">
+        <div class="prod-card"><div class="prod-val">5,8<small style="font-size:15px">d</small></div><div class="prod-lbl">Tempo Médio Resp.</div></div>
+        <div class="prod-card"><div class="prod-val" style="color:var(--danger)">58<small style="font-size:15px">%</small></div><div class="prod-lbl">Taxa no Prazo</div></div>
+        <div class="prod-card"><div class="prod-val" style="color:var(--danger)">4</div><div class="prod-lbl">Ações Judicializadas</div></div>
+      </div>
+      <div class="rph3">Taxa de Resposta por Secretaria</div>
+      ${[{s:'Saúde',p:70},{s:'Administração',p:30},{s:'Finanças',p:50},{s:'Gabinete',p:20}].map(x=>`
+        <div class="resp-bar-lbl"><span>${x.s}</span><span style="${x.p<50?'color:var(--danger)':x.p<70?'color:var(--warn)':'color:var(--success)'}">${x.p}%</span></div>
+        <div class="resp-bar"><div class="resp-bar-fill" style="width:${x.p}%;background:${x.p<50?'var(--danger)':x.p<70?'var(--warn)':'var(--success)'}"></div></div>`).join('')}
+      <div class="rph3">Reenvios Automáticos (Motor IA)</div>
+      <table class="rpt"><thead><tr><th>Processo</th><th>Etapa Atual</th><th>Tema IA</th><th>Reenvios</th><th>Escalado</th></tr></thead><tbody>
+        ${NOTS.map(n=>`<tr><td style="font-family:var(--f-mono);font-size:9.5px">${n.id}</td><td>Etapa ${n.reenvioEtapa}/3</td><td style="font-size:10.5px;color:var(--gold)">${(n.ia&&n.ia.tema)||'—'}</td><td>${n.reenvioEtapa}</td><td>${n.reenvioEtapa>=3?`<span style="color:var(--danger);font-weight:700">Sim</span>`:`<span style="color:var(--success)">Não</span>`}</td></tr>`).join('')}
+      </tbody></table>
+      ${nrAlert}${foot}`;
+  } else {
+    el.innerHTML=hdr+`<div class="rph3">Resumo do Período</div>`+kpis+nrAlert+
+      (tabName==='mensal'?`<div style="background:var(--red-lite);border:1px solid #f5c6be;padding:12px 15px;margin-bottom:14px;font-size:12.5px;font-family:var(--f-body)"><strong>Processos Críticos:</strong> MP-2026-0041 (4 ações judiciais, multa R$10k/dia) e MP-2026-0037 (Pregão R$6,8mi, possível falsificação).</div>`:'')
+      +`<div class="rph3">Listagem de Processos</div>`+tbl+foot;
+  }
+}
+async function renderRepDesempenho(){
+  const el=document.getElementById('rep-preview');if(!el)return;
+  const periodo=document.getElementById('rep-desempenho-periodo')?.value||'semana';
+  el.innerHTML='<div style="padding:28px;color:var(--muted);font-family:var(--f-body)">A carregar relatório de desempenho…</div>';
+  try{
+    const r=await apiFetch('/api/relatorios/desempenho?periodo='+encodeURIComponent(periodo));
+    const d=await r.json().catch(()=>({}));
+    if(!r.ok)throw new Error(d.error||'Erro');
+    const dest=d.advogadoDestaque;
+    const lbl={dia:'Hoje',semana:'Esta semana',mes:'Este mês'}[periodo]||periodo;
+    const destHtml=dest
+      ?`<div style="background:linear-gradient(135deg,var(--gold-lite),#fff);border:1px solid rgba(212,184,90,.45);padding:14px 18px;margin-bottom:18px;border-radius:6px;font-family:var(--f-body)">
+          🏆 <strong>Advogado destaque</strong> — <strong>${dest.nome}</strong>
+          · eficiência <strong>${dest.eficienciaPct}%</strong> (${dest.respondeu} respostas / ${dest.visualizou} visualizações)
+        </div>`
+      :`<div style="background:var(--cream);padding:12px 14px;margin-bottom:14px;font-size:13px;color:var(--muted);font-family:var(--f-body)">Nenhuma atividade registada no período (aberturas de denúncia ou PDF no log).</div>`;
+    const resumo=d.resumoExecutivo||{};
+    const resumoHtml=(resumo.totalDenuncias!=null)?`<div class="rpkpi" style="margin-bottom:16px">
+      <div class="rpkpi-item" style="background:var(--cream)"><div class="rpkpi-val">${resumo.totalDenuncias}</div><div class="rpkpi-lbl">Denúncias MPMA (total)</div></div>
+      <div class="rpkpi-item" style="background:#fee2e2"><div class="rpkpi-val" style="color:#b45309">${resumo.urgentes}</div><div class="rpkpi-lbl">Urgentes</div></div>
+      <div class="rpkpi-item" style="background:#fecaca"><div class="rpkpi-val" style="color:#991b1b">${resumo.atrasadas}</div><div class="rpkpi-lbl">Atrasadas</div></div>
+      <div class="rpkpi-item" style="background:#dcfce7"><div class="rpkpi-val" style="color:var(--success)">${resumo.respondidas}</div><div class="rpkpi-lbl">Respondidas</div></div>
+    </div>`:'';
+    const rows=(d.advogados||[]).map((u,i)=>`<tr>
+      <td style="text-align:center;font-weight:700;color:var(--muted)">${i+1}</td>
+      <td>${u.nome}</td>
+      <td><span class="badge b-gray">${u.role||'—'}</span></td>
+      <td style="text-align:center">${u.visualizou}</td>
+      <td style="text-align:center">${u.respondeu}</td>
+      <td style="text-align:center">${u.denunciasAnalisadas!=null?u.denunciasAnalisadas:'—'}</td>
+      <td style="text-align:center">${u.tempoMedioRespostaHoras!=null?u.tempoMedioRespostaHoras+' h':'—'}</td>
+      <td style="text-align:center">${u.comentou!=null?u.comentou:'—'}</td>
+      <td style="text-align:center;color:var(--danger)">${u.ignorou!=null?u.ignorou:'—'}</td>
+      <td style="text-align:center;font-weight:700;color:${u.eficienciaPct>=70?'var(--success)':u.eficienciaPct>=40?'var(--warn)':'var(--danger)'}">${u.eficienciaPct}%</td>
+    </tr>`).join('');
+    const rank=(d.rankingDesempenho||d.advogados||[]).slice(0,8).map((u,i)=>'<div style="display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:1px solid var(--linen)"><span>'+(i+1)+'. '+u.nome+'</span><span style="color:var(--success)">'+(u.eficienciaPct||0)+'%</span></div>').join('');
+    el.innerHTML=`<div class="rph3">Desempenho por advogado (${lbl})</div>
+      ${resumoHtml}
+      <div style="font-size:11px;color:var(--muted);margin-bottom:12px;font-family:var(--f-body)">Visualizações = abriu denúncia ou PDF · Respondeu = resposta formal · Denúncias analisadas = processos com resposta · Tempo médio = entre 1.ª visualização e resposta no período · Eficiência = respostas ÷ visualizações</div>
+      ${destHtml}
+      ${rank?'<div class="rph3" style="margin-top:14px">Ranking rápido</div><div style="margin-bottom:14px">'+rank+'</div>':''}
+      <table class="rpt"><thead><tr><th>#</th><th>Nome</th><th>Perfil</th><th>Visualizou</th><th>Respondeu</th><th>Analisadas</th><th>T. médio resp.</th><th>Comentou</th><th>Ignorou</th><th>Eficiência</th></tr></thead><tbody>${rows}</tbody></table>
+      <div style="font-size:10px;color:var(--muted);margin-top:10px;font-family:var(--f-body)">Registo de acesso no servidor · ${new Date(d.inicioISO).toLocaleString('pt-BR')} — ${new Date(d.fimISO).toLocaleString('pt-BR')}</div>`;
+  }catch(e){
+    el.innerHTML='<div style="padding:20px;color:var(--danger);font-family:var(--f-body)">Não foi possível carregar o relatório. É necessário perfil executivo/admin e servidor ativo.</div>';
+  }
+}
+function expPDF(){toast('📄 Exportação','Relatório exportado em PDF com timbre oficial.','');}
+
+/* ════════ JURI IA ════════ */
+const JURI_SYS=`Você é JURI, Assistente de Inteligência Artificial Jurídica de Alto Nível. Possui doutorado e especialização em:
+- Licitações e Contratos Administrativos (Lei 14.133/2021 e legislação correlata)
+- Direito Penal com ênfase em crimes contra a Administração Pública (CP arts. 312–359)
+- Direito Constitucional (CF/88)
+- Direito Administrativo Sancionador
+- Improbidade Administrativa (Lei 8.429/92, alterada pela Lei 14.230/2021)
+- Controle Externo e Atuação do Ministério Público (Lei 8.625/93)
+- Jurisprudência do TCE-MA, TJMA, STJ e STF
+
+Você atua especificamente nos casos reais da Procuradoria Municipal de Buriticupu-MA:
+- MP-2026-0041: Descumprimento de TAC por nepotismo, 4 ações judiciais, multa R$10k/dia
+- MP-2026-0037: Pregão R$6,8mi com possível falsificação de Diário Oficial
+- MP-2025-0089: Operação Acqua Alta (GAECO), desvio via Empresa Veneza
+- MP-2025-0071: Dados falsos no SINAN, omissão de violência sexual
+- MP-2025-0055: Funcionário fantasma, vereador George Barros, R$22k ilegais
+- MP-2026-0009: Descumprimento de sentença para concurso público
+
+DIRETRIZES OBRIGATÓRIAS:
+1. Não elaborar peças jurídicas finais prontas para protocolo.
+2. Não emitir parecer conclusivo vinculante.
+3. Fornecer: fundamentação doutrinária, jurisprudência (STF, STJ, TCE-MA), estrutura argumentativa, análise de riscos, pontos fortes e vulnerabilidades.
+4. Linguagem técnica, formal e compatível com atuação forense.
+5. Citar artigos de lei específicos sempre que possível.
+6. Diferenciar análise preventiva, defensiva e acusatória quando aplicável.
+7. Considerar princípios constitucionais: legalidade, moralidade, impessoalidade, proporcionalidade, devido processo legal.
+
+Responda de forma estruturada com seções claras: ANÁLISE JURÍDICA, FUNDAMENTOS LEGAIS, JURISPRUDÊNCIA, RISCOS, LINHA DE DEFESA/ACUSAÇÃO, RECOMENDAÇÕES TÉCNICAS.`;
+
+function initJuri(){
+  const msgs=document.getElementById('juri-msgs');if(!msgs)return;
+  juriHistory=[];msgs.innerHTML='';
+  addJuriMsg('juri',`**JURI — Assistente Jurídico de Inteligência Artificial**
+
+Olá. Sou JURI, assistente de IA jurídica especializado em Direito Administrativo, Licitações, Improbidade e Controle Externo.
+
+Estou integrado aos processos reais da Procuradoria Municipal de Buriticupu — MA:
+
+◆ **MP-2026-0041** — Nepotismo / TAC / 4 Ações Judiciais
+◆ **MP-2026-0037** — Pregão R$ 6,8mi / Possível Falsificação DO
+◆ **MP-2025-0089** — Operação Acqua Alta / GAECO
+◆ **MP-2025-0071** — Dados Falsos SINAN
+◆ **MP-2025-0055** — Funcionário Fantasma
+
+Posso auxiliar com fundamentação doutrinária, jurisprudência (STF/STJ/TCE-MA), análise de risco e estrutura argumentativa.
+
+**Como posso auxiliar sua análise jurídica?**`,'JURI');
+}
+function addJuriMsg(who,text,name){
+  const msgs=document.getElementById('juri-msgs');if(!msgs)return;
+  const el=document.createElement('div');
+  el.className=`jmsg ${who}`;
+  el.innerHTML=`<div class="jmsg-bubble">${fmtJuri(text)}</div><div class="jmsg-meta">${name||who} · ${new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</div>`;
+  msgs.appendChild(el);msgs.scrollTop=msgs.scrollHeight;
+}
+function fmtJuri(t){
+  return t.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>').replace(/◆/g,'<span style="color:var(--gold)">◆</span>');
+}
+function addTyping(){
+  const msgs=document.getElementById('juri-msgs');if(!msgs)return null;
+  const el=document.createElement('div');
+  el.className='jmsg juri';el.id='juri-typing';
+  el.innerHTML=`<div class="jmsg-bubble"><div class="typing"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div><span style="margin-left:7px;font-size:11.5px">JURI está analisando…</span></div></div>`;
+  msgs.appendChild(el);msgs.scrollTop=msgs.scrollHeight;
+  return el;
+}
+async function juriSend(){
+  const input=document.getElementById('juri-input');
+  const msg=input?.value.trim();if(!msg)return;
+  input.value='';
+  const btn=document.getElementById('juri-send-btn');if(btn)btn.disabled=true;
+  addJuriMsg('user',msg,CU?CU.nome:'Usuário');
+  juriHistory.push({role:'user',content:msg});
+  const typing=addTyping();
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:JURI_SYS,messages:juriHistory})
+    });
+    const data=await resp.json();
+    if(typing)typing.remove();
+    const reply=data.content?.map(c=>c.text||'').join('')||'Erro ao processar consulta.';
+    juriHistory.push({role:'assistant',content:reply});
+    addJuriMsg('juri',reply,'JURI');
+  }catch(err){
+    if(typing)typing.remove();
+    addJuriMsg('juri','**Erro de conexão.** JURI não conseguiu acessar a API. Em produção, este módulo requer chave Anthropic configurada no servidor backend.\n\nConsulte o Técnico de TI para configuração.','JURI');
+  }
+  if(btn)btn.disabled=false;
+}
+function juriKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();juriSend();}}
+function juriQ(el){
+  const t=el.querySelector('strong')?.textContent||'';
+  const full=el.textContent.replace(t,'').trim();
+  const inp=document.getElementById('juri-input');
+  if(inp){inp.value=full;inp.focus();}
+}
+
+async function renderUsuarios(){
+  const adm=document.getElementById('usuarios-admin-wrap');
+  const denied=document.getElementById('usuarios-denied');
+  const can=CU&&(CU.role==='admin_master'||CU.role==='admin'||CU.role==='prefeito');
+  if(!can){
+    if(adm)adm.style.display='none';
+    if(denied)denied.style.display='block';
+    return;
+  }
+  const nuRole=document.getElementById('nu-role');
+  if(nuRole){
+    if(CU.role==='prefeito')nuRole.innerHTML='<option value="usuario">usuario</option><option value="executivo">executivo</option>';
+    else nuRole.innerHTML='<option value="usuario">usuario</option><option value="executivo">executivo</option><option value="prefeito">prefeito</option><option value="admin">admin</option><option value="admin_master">admin_master</option>';
+  }
+  if(adm)adm.style.display='block';
+  if(denied)denied.style.display='none';
+  const tb=document.getElementById('usuarios-body');
+  if(!tb)return;
+  try{
+    const r=await apiFetch('/api/usuarios');
+    if(!r.ok)throw new Error();
+    const list=await r.json();
+    tb.innerHTML=list.map(u=>`<tr>
+      <td style="font-family:var(--f-mono);font-size:11px">${u.username}</td>
+      <td>${u.nome}</td>
+      <td><span class="badge b-gray">${u.role}</span></td>
+      <td style="font-size:11px">
+        <input type="text" id="wa-${u.id}" value="${String(u.whatsapp||'').replace(/"/g,'&quot;')}" placeholder="DDD+número" style="max-width:130px;padding:4px 8px;border:1px solid var(--linen);font-family:var(--f-body)">
+        <button type="button" class="btn-ghost" style="padding:4px 10px" onclick="saveUserWhatsapp('${u.id}')">Guardar WA</button>
+      </td>
+      <td style="font-size:11px">
+        <input type="password" placeholder="Nova senha" id="rp-${u.id}" style="max-width:130px;padding:4px 8px;border:1px solid var(--linen);font-family:var(--f-body)">
+        <button type="button" class="btn-ghost" style="padding:4px 10px" onclick="resetUserPass('${u.id}')">Salvar senha</button>
+      </td>
+    </tr>`).join('');
+  }catch(e){
+    tb.innerHTML='<tr><td colspan="5">Erro ao carregar usuários. Verifique o servidor.</td></tr>';
+  }
+}
+async function saveUserWhatsapp(id){
+  const inp=document.getElementById('wa-'+id);
+  const whatsapp=inp&&inp.value.trim()||'';
+  const r=await apiFetch('/api/usuarios/'+encodeURIComponent(id),{method:'PATCH',body:JSON.stringify({whatsapp})});
+  if(r.ok)toast('WhatsApp','Número guardado.','');
+  else{const d=await r.json().catch(()=>({}));alert(d.error||'Erro');}
+}
+async function resetUserPass(id){
+  const inp=document.getElementById('rp-'+id);
+  const password=inp&&inp.value.trim();
+  if(!password){alert('Digite a nova senha.');return;}
+  const r=await apiFetch('/api/usuarios/'+encodeURIComponent(id),{method:'PATCH',body:JSON.stringify({password})});
+  if(r.ok){toast('Senha','Atualizada.','');if(inp)inp.value='';}
+  else{const d=await r.json().catch(()=>({}));alert(d.error||'Sem permissão ou erro.');}
+}
+async function criarUsuario(){
+  const username=document.getElementById('nu-user').value.trim();
+  const nome=document.getElementById('nu-nome').value.trim();
+  const password=document.getElementById('nu-pass').value;
+  const role=document.getElementById('nu-role').value;
+  const whatsapp=(document.getElementById('nu-whatsapp')&&document.getElementById('nu-whatsapp').value.trim())||'';
+  if(!username||!nome||!password){alert('Preencha username, nome e senha.');return;}
+  const r=await apiFetch('/api/usuarios',{method:'POST',body:JSON.stringify({username,nome,password,role,whatsapp})});
+  const d=await r.json().catch(()=>({}));
+  if(r.ok){toast('Usuário','Criado.','');renderUsuarios();document.getElementById('nu-user').value='';document.getElementById('nu-nome').value='';document.getElementById('nu-pass').value='';const nw=document.getElementById('nu-whatsapp');if(nw)nw.value='';}
+  else alert(d.error||'Erro ao criar.');
+}
+
+/* ════════ TOAST ════════ */
+function toast(title,msg,type){type=type||'';
+  const c=document.getElementById('tc');
+  const t=document.createElement('div');
+  t.className=`toast${type?' '+type:''}`;
+  t.innerHTML=`<div class="toast-title">${title}</div><div>${msg}</div>`;
+  c.appendChild(t);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('show')));
+  setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),320);},5500);
+}
+
+window.doLogin=doLogin;
+
+(async function tryPersistedSession(){
+  const t=getPmToken();
+  if(!t)return;
+  try{
+    const r=await apiFetch('/api/me');
+    if(!r.ok){
+      if(r.status===401)setPmToken('');
+      return;
+    }
+    CU=mapApiUser(await r.json());
+    document.getElementById('u-av').textContent=CU.init;
+    document.getElementById('u-av').style.background=CU.color;
+    document.getElementById('u-name').textContent=CU.nome;
+    document.getElementById('u-role').textContent=CU.cargo+' · '+CU.role;
+    applyNavVisibility();
+    document.getElementById('sign-cargo').value=CU.cargo;
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app').style.display='block';
+    const now=new Date();calY=now.getFullYear();calM=now.getMonth();
+    await loadNotificacoes();
+    await loadAssignableUsers();
+    connectSocket();
+    initApp();
+    loadRecorrentes();
+    const pendN=sessionStorage.getItem('pm_pending_notif');
+    if(pendN){sessionStorage.removeItem('pm_pending_notif');setTimeout(()=>openNotif(pendN,false),650);}
+  }catch(e){
+    /* Erro de rede: mantém token para tentar de novo no próximo F5 */
+  }
+})();
+</script>
+</body>
+</html>

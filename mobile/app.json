@@ -1,0 +1,18 @@
+{
+  "expo": {
+    "name": "PlataformaMP",
+    "slug": "plataforma-mp-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#0c1017"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": { "supportsTablet": true },
+    "android": { "adaptiveIcon": { "backgroundColor": "#0c1017" } },
+    "extra": {
+      "apiUrl": "http://127.0.0.1:3780"
+    }
+  }
+}
