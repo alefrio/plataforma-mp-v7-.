@@ -1,0 +1,21 @@
+[
+  { "nome": "João Carlos Teixeira da Silva", "cargo": "Prefeito" },
+  { "nome": "Afonso Barros Batista", "cargo": "Chefe de Gabinete do Prefeito" },
+  { "nome": "Whesley Nunes do Nascimento", "cargo": "Procuradoria-Geral do Município" },
+  { "nome": "Vandecleber Freitas Silva", "cargo": "Sec. Administração e Planejamento" },
+  { "nome": "Maria Celioneide da Luz", "cargo": "Sec. Fazenda e Orçamento" },
+  { "nome": "Denis Araujo da Silva", "cargo": "Sec. Transparência e Controle Interno" },
+  { "nome": "Clodilton Sousa Bonfim", "cargo": "Sec. Educação" },
+  { "nome": "Chrystiane Pianco Lima", "cargo": "Sec. Saúde" },
+  { "nome": "Lucas Rafael da Conceição Pereira", "cargo": "Sec. Infraestrutura" },
+  { "nome": "Vera Lucia Santos Costa", "cargo": "Sec. Meio Ambiente" },
+  { "nome": "Thiago Felipe Costa Sousa", "cargo": "Sec. Habitação" },
+  { "nome": "Frank Eron Nunes Araujo", "cargo": "Sec. Segurança Pública" },
+  { "nome": "Áurea Cristina Costa Flor", "cargo": "Sec. Desenvolvimento Social" },
+  { "nome": "Euzilene Gonçalves Lopes da Silva", "cargo": "Sec. da Mulher" },
+  { "nome": "Mateus Nobre da Silva", "cargo": "Sec. Cultura" },
+  { "nome": "Willas de Melo Sousa", "cargo": "Sec. Esporte" },
+  { "nome": "Marcos Almeida Lima", "cargo": "Sec. Agricultura" },
+  { "nome": "Thiago Silva Brito", "cargo": "Sec. Indústria e Comércio" },
+  { "nome": "Mauricio Cruz Marinho", "cargo": "Sec. Comunicação" }
+]

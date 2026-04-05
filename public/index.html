@@ -65,7 +65,11 @@ body{font-family:var(--f-body);background:var(--parchment);color:var(--ink);min-
 /* ── TOPBAR ── */
 #app{display:none;min-height:100vh;}
 .topbar{min-height:var(--th);background:linear-gradient(180deg,#0f1520,var(--ink));display:flex;align-items:center;flex-wrap:wrap;padding:8px 14px;gap:10px;position:sticky;top:0;z-index:300;border-bottom:2px solid var(--red);box-shadow:0 4px 20px rgba(0,0,0,.3);}
-.hamburger{display:none;background:none;border:none;color:#fff;font-size:22px;cursor:pointer;padding:4px;}
+/* Botão menu — visível em todas as larguras (desktop: recolher sidebar; mobile: gaveta) */
+.btn-menu{display:inline-flex;align-items:center;justify-content:center;width:40px;height:36px;padding:0;border-radius:8px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.07);color:#fff;font-size:20px;line-height:1;cursor:pointer;flex-shrink:0;transition:background .2s,border-color .2s,box-shadow .2s,transform .15s ease;font-family:var(--f-body);}
+.btn-menu:hover{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.24);box-shadow:0 2px 12px rgba(0,0,0,.2);}
+.btn-menu:focus-visible{outline:2px solid rgba(255,255,255,.5);outline-offset:2px;}
+.btn-menu:active{transform:scale(.96);}
 .topbar-brand{font-family:var(--f-display);color:#fff;font-size:18px;flex:1;display:flex;align-items:center;gap:9px;font-weight:600;letter-spacing:.3px;}
 .topbar-brand .sep{color:rgba(155,42,27,.7);}
 .topbar-brand .ver{font-family:var(--f-mono);font-size:9px;color:rgba(255,255,255,.5);background:rgba(155,42,27,.35);border:1px solid rgba(155,42,27,.4);padding:2px 8px;border-radius:99px;letter-spacing:.5px;}
@@ -79,22 +83,99 @@ body{font-family:var(--f-body);background:var(--parchment);color:var(--ink);min-
 .rbadge{font-size:9px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.5);padding:2px 7px;border-radius:99px;text-transform:uppercase;letter-spacing:.6px;font-family:var(--f-body);}
 .btn-logout{background:transparent;border:1px solid rgba(255,255,255,.14);color:rgba(255,255,255,.55);padding:4px 12px;font-size:11px;cursor:pointer;font-family:var(--f-body);transition:all .18s;}
 .btn-logout:hover{border-color:var(--red);color:#fff;}
+.topbar-bell-wrap{position:relative;flex-shrink:0;}
+.topbar-bell{position:relative;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:16px;width:40px;height:36px;border-radius:8px;cursor:pointer;line-height:1;font-family:var(--f-body);}
+.topbar-bell:hover{background:rgba(255,255,255,.14);}
+.topbar-bell-badge{position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;padding:0 4px;border-radius:99px;background:#dc2626;color:#fff;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;font-family:var(--f-mono);}
+.bell-panel{position:absolute;top:calc(100% + 8px);right:0;width:min(360px,92vw);max-height:min(70vh,420px);overflow:auto;background:#fff;border:1px solid var(--linen);border-radius:10px;box-shadow:0 16px 48px rgba(0,0,0,.2);z-index:400;padding:12px 14px;font-size:12px;font-family:var(--f-body);}
+.bell-panel h4{margin:0 0 10px;font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);font-family:var(--f-body);}
+.bell-row{padding:8px 0;border-bottom:1px solid var(--cream);cursor:pointer;}
+.bell-row:last-child{border-bottom:none;}
+.bell-row:hover{background:var(--cream);margin:0 -8px;padding-left:8px;padding-right:8px;border-radius:6px;}
+.nd-ok{font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;background:#ecfdf5;color:#166534;}
+.nd-att{font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;background:#fef9c3;color:#854d0e;}
+.nd-crit{font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;background:#fee2e2;color:#991b1b;}
 @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(22,163,74,.4);}50%{box-shadow:0 0 0 6px rgba(22,163,74,0);}}
 .online-dot{width:7px;height:7px;background:var(--online);border-radius:50%;display:inline-block;animation:pulse 2s infinite;}
 
 /* ── LAYOUT ── */
 .layout{display:flex;min-height:calc(100vh - var(--th));}
-.sidebar{width:var(--sw);background:#fff;border-right:1px solid var(--linen);flex-shrink:0;position:sticky;top:var(--th);height:calc(100vh - var(--th));overflow-y:auto;transition:transform .28s;}
-.sb-hd{padding:14px 18px 10px;border-bottom:1px solid var(--cream);}
+.sidebar{width:var(--sw);min-width:var(--sw);background:#fff;border-right:1px solid var(--linen);flex-shrink:0;position:sticky;top:var(--th);height:calc(100vh - var(--th));overflow:hidden;display:flex;flex-direction:column;box-shadow:2px 0 14px rgba(0,0,0,.06);transition:transform .3s cubic-bezier(.22,1,.36,1),box-shadow .3s ease,background .25s,border-color .25s;}
+.sb-status-strip{display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px;border-bottom:1px solid var(--cream);background:linear-gradient(180deg,#faf9f7,var(--parchment));flex-shrink:0;}
+.sb-pill{font-size:9px;font-weight:700;font-family:var(--f-mono);letter-spacing:.4px;padding:4px 8px;border-radius:99px;border:1px solid var(--linen);white-space:nowrap;}
+.sb-pill--ok{color:var(--success);background:#ecfdf5;border-color:#bbf7d0;}
+.sb-pill--warn{color:var(--warn);background:var(--gold-lite);border-color:rgba(212,184,90,.4);}
+.sb-pill--err{color:#fff;background:#b91c1c;border-color:#991b1b;}
+.sb-pill--muted{color:var(--muted);background:var(--cream);}
+.sb-pill--mpma-on{color:var(--blue);background:var(--blue-lite);border-color:rgba(26,61,120,.2);}
+.sb-crise-flag{display:none;font-size:8px;font-weight:800;letter-spacing:1px;padding:3px 8px;border-radius:4px;background:#dc2626;color:#fff;margin-left:auto;animation:sbCrisePulse 1.2s ease-in-out infinite;}
+body.modo-crise .sb-crise-flag{display:inline-block;}
+@keyframes sbCrisePulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(220,38,38,.5);}50%{opacity:.92;box-shadow:0 0 0 4px rgba(220,38,38,0);}}
+.sb-hd{padding:12px 16px 10px;border-bottom:1px solid var(--cream);display:flex;align-items:flex-start;justify-content:space-between;gap:8px;flex-shrink:0;}
+.sb-hd-main .sb-hd-lbl{margin:0;}
+.sb-hd-sub{font-size:10px;color:var(--muted);margin-top:3px;font-family:var(--f-body);line-height:1.35;}
+.sb-ver{font-family:var(--f-mono);font-size:8px;color:var(--muted);background:var(--cream);padding:3px 7px;border-radius:4px;flex-shrink:0;}
+.sb-search-wrap{position:relative;padding:8px 14px 10px;border-bottom:1px solid var(--cream);flex-shrink:0;}
+.sb-search-ico{position:absolute;left:24px;top:50%;transform:translateY(-50%);font-size:12px;opacity:.45;pointer-events:none;}
+.sb-nav-search{width:100%;border:1px solid var(--linen);background:#fdfbf8;border-radius:6px;padding:8px 10px 8px 34px;font-size:12px;font-family:var(--f-body);outline:none;transition:border-color .2s,box-shadow .2s;}
+.sb-nav-search:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(26,61,120,.08);}
+.sb-nav-body{flex:1;overflow-y:auto;min-height:0;-webkit-overflow-scrolling:touch;}
 .sb-hd-lbl{font-family:var(--f-display);font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1.6px;}
-.sb-section{padding:7px 0;border-bottom:1px solid var(--cream);}
-.sb-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.4px;color:var(--muted);padding:5px 18px 2px;font-family:var(--f-body);}
-.nav-item{display:flex;align-items:center;gap:9px;padding:8px 18px;font-size:12.5px;cursor:pointer;border-left:3px solid transparent;color:var(--ink);transition:all .15s cubic-bezier(.22,1,.36,1);user-select:none;font-family:var(--f-body);}
-.nav-item:hover{background:var(--cream);padding-left:22px;}
-.nav-item.active{background:var(--cream);border-left-color:var(--red);font-weight:600;}
-.nav-item .ni{width:17px;text-align:center;opacity:.65;font-size:13px;}
-.nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:99px;min-width:18px;text-align:center;font-family:var(--f-mono);}
-.nav-item.hidden-item{display:none;}
+.sb-section{padding:6px 0;border-bottom:1px solid var(--cream);}
+.sb-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.4px;color:var(--muted);padding:6px 18px 4px;font-family:var(--f-body);}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 16px;font-size:12.5px;cursor:pointer;border-left:3px solid transparent;color:var(--ink);transition:background .18s,padding-left .18s,border-color .18s,transform .12s;user-select:none;font-family:var(--f-body);border-radius:0 6px 6px 0;margin-right:8px;}
+.nav-item:hover{background:var(--cream);padding-left:20px;}
+.nav-item:active{transform:scale(.99);}
+.nav-item.active{background:linear-gradient(90deg,rgba(155,42,27,.12),transparent);border-left-color:var(--red);font-weight:600;}
+.nav-item .ni{width:20px;text-align:center;opacity:.72;font-size:14px;flex-shrink:0;}
+.nav-txt{flex:1;min-width:0;line-height:1.3;}
+.nav-item--pulse .ni{animation:navNiBlink 1.1s ease-in-out infinite;}
+@keyframes navNiBlink{0%,100%{opacity:.72;transform:scale(1);}50%{opacity:1;transform:scale(1.08);}}
+.nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px;min-width:20px;text-align:center;font-family:var(--f-mono);flex-shrink:0;}
+.nav-badge--amber{background:#c2410c;}
+.nav-badge--slate{background:#475569;}
+.nav-item.hidden-item,.nav-filter-hide,.nav-group-hide{display:none!important;}
+.sb-recent-wrap{padding-bottom:8px;}
+.sb-recent-body{padding:0 12px 4px;display:flex;flex-direction:column;gap:4px;}
+.sb-recent-empty{font-size:10.5px;color:var(--muted);padding:4px 6px;line-height:1.4;font-family:var(--f-body);}
+.sb-recent-item{text-align:left;font-size:11.5px;padding:7px 10px;border:1px solid var(--linen);background:#fff;border-radius:6px;cursor:pointer;font-family:var(--f-body);color:var(--ink);transition:background .15s,border-color .15s;}
+.sb-recent-item:hover{background:var(--cream);border-color:var(--blue);}
+@media (prefers-color-scheme:dark){
+  body:not(.theme-force-light) .sidebar{background:#121820;border-right-color:#2a3444;box-shadow:2px 0 20px rgba(0,0,0,.45);}
+  body:not(.theme-force-light) .sidebar .sb-label{color:#9ca3af;}
+  body:not(.theme-force-light) .sidebar .nav-item{color:#e5e7eb;}
+  body:not(.theme-force-light) .sidebar .nav-item:hover{background:#1e2630;}
+  body:not(.theme-force-light) .sidebar .nav-item.active{background:linear-gradient(90deg,rgba(155,42,27,.35),transparent);}
+  body:not(.theme-force-light) .sidebar .sb-hd,
+  body:not(.theme-force-light) .sidebar .sb-search-wrap{border-color:#2a3444;}
+  body:not(.theme-force-light) .sidebar .sb-status-strip{background:linear-gradient(180deg,#161d27,#121820);border-color:#2a3444;}
+  body:not(.theme-force-light) .sidebar .sb-nav-search{background:#1a222d;border-color:#374151;color:#e5e7eb;}
+  body:not(.theme-force-light) .sidebar .sb-section{border-color:#2a3444;}
+  body:not(.theme-force-light) .sidebar .sb-recent-item{background:#1a222d;border-color:#374151;color:#e5e7eb;}
+}
+@media (min-width:769px){
+  .layout{position:relative;}
+  .sidebar{
+    position:fixed;left:0;top:var(--th);bottom:0;height:auto;max-height:none;z-index:120;
+    width:var(--sw);min-width:var(--sw);
+    transform:translateX(0);
+    will-change:transform;
+  }
+  .sidebar.hidden{
+    transform:translateX(-100%);
+    box-shadow:none;
+    pointer-events:none;
+  }
+  .main.main-content{
+    margin-left:var(--sw);
+    max-width:min(1220px,calc(100% - var(--sw)));
+    transition:margin-left .3s cubic-bezier(.22,1,.36,1),max-width .3s ease;
+  }
+  .main.main-content.full{
+    margin-left:0;
+    max-width:1220px;
+  }
+}
 .sb-online{padding:4px 18px 8px;}
 .sb-user{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:11.5px;font-family:var(--f-body);}
 .sb-user .av{width:22px;height:22px;font-size:9px;}
@@ -104,6 +185,10 @@ body{font-family:var(--f-body);background:var(--parchment);color:var(--ink);min-
 .ws-dot{width:6px;height:6px;background:var(--online);border-radius:50%;animation:pulse 1.5s infinite;}
 .sb-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:150;}
 .main{flex:1;padding:26px 28px;max-width:1220px;width:100%;min-width:0;}
+.main.main-content{transition:margin-left .3s cubic-bezier(.22,1,.36,1),max-width .3s ease;}
+@media (prefers-reduced-motion:reduce){
+  .sidebar,.main.main-content{transition:none!important;}
+}
 
 /* ── PAGE HEADER ── */
 .ph{margin-bottom:22px;display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;}
@@ -389,6 +474,7 @@ body{font-family:var(--f-body);background:var(--parchment);color:var(--ink);min-
 .mono{font-family:var(--f-mono);font-size:10px;}
 .tk{font-family:var(--f-mono);font-size:10px;background:#f0fdf4;color:var(--success);border:1px solid #bbf7d0;padding:2px 7px;}
 .tk-exp{background:#fff1f2;color:var(--danger);border-color:#fecdd3;}
+  code.pm-token-full{display:block;max-width:min(520px,92vw);word-break:break-all;font-family:var(--f-mono);font-size:9.5px;line-height:1.35;color:var(--ink);background:var(--cream);border:1px solid var(--linen);padding:8px 10px;border-radius:4px;white-space:pre-wrap;}
 
 /* ── RELATÓRIOS ── */
 .rep-tabs{display:flex;background:#fff;border:1px solid var(--linen);overflow:hidden;width:fit-content;margin-bottom:14px;}
@@ -493,7 +579,14 @@ body{font-family:var(--f-body);background:var(--parchment);color:var(--ink);min-
 
 /* ── MOBILE ── */
 @media(max-width:768px){
-  .hamburger{display:flex;}
+  .sidebar{
+    position:fixed;top:var(--th);left:0;bottom:0;z-index:160;
+    height:calc(100dvh - var(--th));
+    transform:translateX(-100%);
+    box-shadow:4px 0 24px rgba(0,0,0,.18);
+  }
+  .sidebar.open{transform:translateX(0);}
+  .main.main-content{margin-left:0!important;max-width:1220px!important;transition:none;}
   .topbar-brand{font-size:15px;}
   .ph-title{font-size:21px;}
   .modal-overlay{padding:12px 8px;align-items:stretch;}
@@ -506,15 +599,15 @@ body{font-family:var(--f-body);background:var(--parchment);color:var(--ink);min-
   .sa .bs{width:100%;min-height:44px;}
   .ci-row{flex-direction:column;}
   .btn-send{width:100%;min-height:44px;}
-  .sidebar{position:fixed;top:var(--th);left:0;bottom:0;z-index:160;transform:translateX(-100%);height:calc(100dvh - var(--th));}
-  .sidebar.open{transform:translateX(0);}
   .sb-overlay.open{display:block;}
   .main{padding:14px;}
   .nc{grid-template-columns:1fr;}
   .nc .nr{text-align:left;}
   .stats-row{grid-template-columns:repeat(2,minmax(0,1fr));}
   .kpi-grid,.rpkpi,.prod-grid{grid-template-columns:1fr 1fr;}
-  .charts-grid,.nsg,.exec-charts,.sema-grid,.exec-extras-grid,.exec-kpi-row,.tce-kpi-grid{grid-template-columns:1fr;}
+  .charts-grid,.nsg,.exec-charts,.sema-grid,.exec-extras-grid,.tce-kpi-grid{grid-template-columns:1fr;}
+  /* KPI executivo: 2 colunas no telemóvel (mais legível que 4×1) */
+  .exec-kpi-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
   .ig{grid-template-columns:1fr 1fr;}
   .juri-wrap{grid-template-columns:1fr;}
   .topbar-meta{display:none;}
@@ -524,6 +617,37 @@ body{font-family:var(--f-body);background:var(--parchment);color:var(--ink);min-
   .login-box{width:calc(100vw - 20px);}
   .stats-row,.kpi-grid{grid-template-columns:1fr 1fr;}
   .sema-grid{grid-template-columns:1fr 1fr;}
+  .exec-kpi-row{grid-template-columns:1fr;}
+}
+
+/* ── Mobile: Painel Executivo, Auditoria, Relatórios, Usuários, Tokens ── */
+@media(max-width:768px){
+  .pm-table-wrap{width:100%;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--linen);border-radius:8px;background:#fff;box-sizing:border-box;}
+  .pm-table-wrap table.dt{min-width:min(720px,140vw);width:100%;border:none;border-radius:0;}
+  .pm-table-wrap table.dt th,.pm-table-wrap table.dt td{white-space:nowrap;}
+  .pm-table-wrap table.dt td:last-child{white-space:normal;max-width:200px;}
+  .exec-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:8px;max-width:100%;}
+  .exec-table-wrap table{min-width:560px;}
+  .exec-hero{padding:18px 16px;gap:14px;}
+  .exec-hero h2{font-size:18px;line-height:1.25;}
+  .exec-hero > div:last-child{margin-left:0!important;text-align:left!important;width:100%;}
+  .exec-risk-val{font-size:26px;}
+  #page-relatorio .ph,#page-links .ph{align-items:stretch;}
+  #page-relatorio .ph > div:first-child,#page-links .ph > div:first-child{width:100%;min-width:0;}
+  #page-relatorio .ph .btn-primary,#page-links .ph .btn-primary{width:100%;max-width:none;box-sizing:border-box;}
+  .rep-tabs{flex-direction:column;width:100%;max-width:100%;border-radius:8px;overflow:hidden;}
+  .rep-tab{width:100%;box-sizing:border-box;padding:12px 14px;border-bottom:1px solid var(--linen);border-radius:0;text-align:center;}
+  .rep-tab:last-child{border-bottom:none;}
+  .rep-filters{flex-direction:column;align-items:stretch;gap:10px;}
+  .rep-filters .sel{width:100%!important;max-width:100%!important;min-width:0!important;box-sizing:border-box;}
+  .rep-preview{padding:14px 12px;font-size:14px;line-height:1.65;max-width:100%;box-sizing:border-box;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .rep-preview .rph1{font-size:20px!important;}
+  .rep-preview .rpkpi{grid-template-columns:1fr!important;gap:8px!important;}
+  .rep-preview table.rpt{min-width:520px;}
+  .rep-preview .prod-grid{grid-template-columns:1fr!important;}
+  #page-usuarios .search-bar{flex-direction:column;align-items:stretch;gap:10px;}
+  #page-usuarios .search-bar input.sel,#page-usuarios .search-bar select.sel,#page-usuarios .search-bar .btn-primary{width:100%!important;max-width:100%!important;min-width:0!important;box-sizing:border-box;}
+  #page-audit .ph,#page-executivo .ph,#page-usuarios .ph{flex-direction:column;align-items:flex-start;gap:10px;}
 }
 body.modo-crise{--parchment:#faf6f0;}
 body.modo-crise .topbar{border-bottom-width:3px;border-bottom-color:#dc2626;box-shadow:0 4px 24px rgba(220,38,38,.2);}
@@ -612,12 +736,16 @@ body.modo-crise .crisis-bar{display:block;}
 <!-- ══════════ APP ══════════ -->
 <div id="app">
   <div class="topbar">
-    <button class="hamburger" onclick="toggleSb()">☰</button>
+    <button type="button" id="toggleSidebar" class="btn-menu" onclick="toggleSidebar()" aria-controls="sidebar" aria-expanded="true" title="Abrir ou fechar menu">☰</button>
     <div class="topbar-brand">PlataformaMP <span class="sep">·</span> Buriticupu <span class="ver">v7.0</span></div>
     <div class="topbar-meta">
       <span><span class="online-dot"></span> <span id="on-n">4</span> online</span>
       <span class="ws-live"><span class="ws-dot"></span><span id="ws-txt">Tempo real ativo</span></span>
       <span id="clock">—</span>
+    </div>
+    <div class="topbar-bell-wrap" id="topbar-bell-wrap" style="display:none">
+      <button type="button" class="topbar-bell" id="topbar-bell-btn" onclick="toggleBellPanel(event)" title="Notificações internas" aria-expanded="false" aria-controls="bell-panel" aria-label="Notificações">🔔<span class="topbar-bell-badge" id="topbar-bell-badge">0</span></button>
+      <div class="bell-panel" id="bell-panel" role="region" aria-label="Lista de alertas recentes" style="display:none"></div>
     </div>
     <button class="pwa-btn" id="pwa-btn" onclick="installPWA()">⬇ Instalar App</button>
     <div class="topbar-user">
@@ -630,49 +758,80 @@ body.modo-crise .crisis-bar{display:block;}
   <div class="legal-disclaimer" role="note">Este sistema exibe informações públicas extraídas automaticamente de documentos oficiais, <strong>sem interpretação</strong>. Confira sempre o documento original (PDF).</div>
   <div class="sb-overlay" id="sb-overlay" onclick="closeSb()"></div>
   <div class="layout">
-    <aside class="sidebar" id="sidebar">
-      <div class="sb-hd" style="display:flex;align-items:center;justify-content:space-between;"><div class="sb-hd-lbl">Navegação</div><span style="font-family:var(--f-mono);font-size:8px;color:var(--muted);background:var(--cream);padding:2px 6px;">v7.0</span></div>
-      <div class="sb-section">
-        <div class="sb-label">Principal</div>
-        <div class="nav-item active" onclick="sp('inbox',this)"><span class="ni">📥</span>Caixa de Entrada <span class="nav-badge" id="badge-inbox">—</span></div>
-        <div class="nav-item exec-only hidden-item" onclick="sp('executivo',this)"><span class="ni">🎯</span>Painel Executivo</div>
-        <div class="nav-item usuario-hide" onclick="sp('dashboard',this)"><span class="ni">📊</span>Dashboard</div>
-        <div class="nav-item" onclick="sp('calendar',this)"><span class="ni">📅</span>Calendário de Prazos</div>
-        <div class="nav-item usuario-hide" onclick="sp('reenvio',this)"><span class="ni">🔄</span>Reenvio Inteligente</div>
-        <div class="nav-item usuario-hide" onclick="sp('tce',this)"><span class="ni">🏛️</span>TCE-MA / SAGRES</div>
-        <div class="nav-item usuario-hide" onclick="sp('audit',this)"><span class="ni">🔍</span>Auditoria</div>
-        <div class="nav-item usuario-hide" onclick="sp('links',this)"><span class="ni">🔗</span>Tokens de Acesso</div>
-        <div class="nav-item proc-only hidden-item" onclick="sp('relatorio',this)"><span class="ni">📄</span>Relatórios</div>
-        <div class="nav-item user-mgmt-nav hidden-item" onclick="sp('usuarios',this)"><span class="ni">👥</span>Usuários</div>
-        <div class="nav-item usuario-hide" onclick="sp('juri',this)"><span class="ni">⚖️</span>JURI — IA Jurídica</div>
+    <aside class="sidebar" id="sidebar" aria-label="Menu lateral">
+      <div class="sb-status-strip" id="sb-status-strip">
+        <span class="sb-pill sb-pill--ok" id="sb-pill-sys" title="Estado da ligação ao servidor da plataforma">● Sistema online</span>
+        <span class="sb-pill sb-pill--muted" id="sb-pill-mpma" title="Varredura periódica do Diário MPMA (quando ativa no servidor)">MPMA</span>
+        <span class="sb-crise-flag" id="sb-crise-flag">CRISE</span>
       </div>
-      <div class="sb-section">
-        <div class="sb-label">Filtrar Secretaria</div>
-        <div class="nav-item" onclick="fSec('todas')"><span class="ni">◈</span>Todas</div>
-        <div class="nav-item" onclick="fSec('Saúde')"><span class="ni">🏥</span>Saúde</div>
-        <div class="nav-item" onclick="fSec('Administração')"><span class="ni">🏛</span>Administração</div>
-        <div class="nav-item" onclick="fSec('Finanças')"><span class="ni">💰</span>Finanças</div>
-        <div class="nav-item" onclick="fSec('Gabinete')"><span class="ni">📋</span>Gabinete</div>
+      <div class="sb-hd sb-hd-main">
+        <div>
+          <div class="sb-hd-lbl">Navegação</div>
+          <div class="sb-hd-sub">Procuradoria · Buriticupu-MA</div>
+        </div>
+        <span class="sb-ver">v7.0</span>
       </div>
-      <div class="sb-section">
-        <div class="sb-label">Usuários Online</div>
-        <div class="sb-online" id="sb-online-wrap" style="font-size:11px;color:var(--muted);padding:4px 0">Conectando…</div>
+      <div class="sb-search-wrap">
+        <span class="sb-search-ico" aria-hidden="true">🔍</span>
+        <input type="search" id="nav-srch" class="sb-nav-search" placeholder="Buscar funcionalidade…" autocomplete="off" oninput="filterNavMenu()" aria-label="Buscar no menu"/>
       </div>
-      <div class="sb-section" style="padding:10px 18px;">
-        <div class="sb-label" style="padding:0;margin-bottom:6px">WebSocket</div>
-        <div style="display:flex;align-items:center;gap:6px;font-size:11px;font-family:var(--f-body);color:var(--muted)">
-          <div class="ws-dot"></div><span id="ws-sb">Aguardando eventos…</span>
+      <div class="sb-nav-body">
+        <nav class="sb-nav-scroll" aria-label="Áreas do sistema">
+          <div class="sb-section nav-group" data-group="principal">
+            <div class="sb-label">📂 Principal</div>
+            <div class="nav-item nav-item--page active" data-page="inbox" data-search="caixa entrada denúncias notificações processos triagem mpma" title="Lista de notificações e processos — triagem e resposta institucional." onclick="sp('inbox',this)"><span class="ni">📥</span><span class="nav-txt">Caixa de Entrada</span><span class="nav-badge" id="badge-inbox">0</span></div>
+            <div class="nav-item nav-item--page usuario-hide hidden-item" data-page="dashboard" data-search="dashboard indicadores gráficos estatísticas" title="Indicadores e gráficos consolidados da carteira de processos." onclick="sp('dashboard',this)"><span class="ni">📊</span><span class="nav-txt">Dashboard</span></div>
+            <div class="nav-item nav-item--page exec-only hidden-item" data-page="executivo" data-search="painel executivo gestão chefia prefeito" title="Visão de gestão: riscos, secretarias e KPIs para chefia." onclick="sp('executivo',this)"><span class="ni">🎯</span><span class="nav-txt">Painel Executivo</span></div>
+            <div class="nav-item nav-item--page" data-page="calendar" data-search="calendário prazos vencimento agenda" title="Prazos processuais nos próximos dias." onclick="sp('calendar',this)"><span class="ni">📅</span><span class="nav-txt">Calendário de Prazos</span></div>
+          </div>
+          <div class="sb-section nav-group" data-group="operacoes">
+            <div class="sb-label">📂 Operações</div>
+            <div class="nav-item nav-item--page usuario-hide hidden-item" data-page="reenvio" data-search="reenvio inteligente motor lembretes automático" title="Fluxo de reenvio e lembretes aos responsáveis." onclick="sp('reenvio',this)"><span class="ni">🔄</span><span class="nav-txt">Reenvio Inteligente</span></div>
+            <div class="nav-item nav-item--page usuario-hide hidden-item" data-page="tce" data-search="tce sagres controle externo tribunal contas" title="Painel TCE-MA e referências ao universo SAGRES." onclick="sp('tce',this)"><span class="ni">🏛️</span><span class="nav-txt">TCE-MA / SAGRES</span></div>
+            <div class="nav-item nav-item--page usuario-hide hidden-item" data-page="audit" data-search="auditoria registo logs rastreio acessos irregularidades" title="Registo de ações e monitorização de uso do sistema." onclick="sp('audit',this)"><span class="ni">🔍</span><span class="nav-txt">Auditoria</span><span class="nav-badge nav-badge--amber" id="badge-audit">0</span></div>
+          </div>
+          <div class="sb-section nav-group" data-group="gestao">
+            <div class="sb-label">📂 Gestão</div>
+            <div class="nav-item nav-item--page proc-only hidden-item" data-page="relatorio" data-search="relatórios pdf exportar desempenho gerencial" title="Relatórios gerenciais e exportação institucional (PDF/Word)." onclick="sp('relatorio',this)"><span class="ni">📄</span><span class="nav-txt">Relatórios</span><span class="nav-badge nav-badge--slate" id="badge-relatorio">0</span></div>
+            <div class="nav-item nav-item--page user-mgmt-nav hidden-item" data-page="usuarios" data-search="usuários contas perfis administração" title="Criação e gestão de contas e perfis de acesso." onclick="sp('usuarios',this)"><span class="ni">👥</span><span class="nav-txt">Usuários</span></div>
+            <div class="nav-item nav-item--page usuario-hide hidden-item" data-page="links" data-search="tokens links seguros acesso externo convidado" title="Links temporários para acesso externo a processos." onclick="sp('links',this)"><span class="ni">🔗</span><span class="nav-txt">Tokens de Acesso</span></div>
+          </div>
+          <div class="sb-section nav-group" data-group="inteligencia">
+            <div class="sb-label">📂 Inteligência</div>
+            <div class="nav-item nav-item--page usuario-hide hidden-item" data-page="juri" data-search="juri ia jurídica assistente inteligência artificial consulta" title="Assistente IA para consulta orientativa (não substitui parecer formal)." onclick="sp('juri',this)"><span class="ni">⚖️</span><span class="nav-txt">JURI — IA Jurídica</span></div>
+          </div>
+          <div class="sb-section nav-group" data-group="secretarias">
+            <div class="sb-label">Filtrar secretaria</div>
+            <div class="nav-item" data-search="todas secretarias filtro caixa" title="Mostrar processos de todas as secretarias na caixa de entrada." onclick="fSec('todas')"><span class="ni">◈</span><span class="nav-txt">Todas</span></div>
+            <div class="nav-item" data-search="saúde secretaria saúde filtro" title="Filtrar por menções à secretaria de Saúde." onclick="fSec('Saúde')"><span class="ni">🏥</span><span class="nav-txt">Saúde</span></div>
+            <div class="nav-item" data-search="administração secretaria filtro" title="Filtrar por menções à Administração." onclick="fSec('Administração')"><span class="ni">🏛</span><span class="nav-txt">Administração</span></div>
+            <div class="nav-item" data-search="finanças fazenda orçamento filtro" title="Filtrar por menções a Finanças / Fazenda." onclick="fSec('Finanças')"><span class="ni">💰</span><span class="nav-txt">Finanças</span></div>
+            <div class="nav-item" data-search="gabinete prefeito filtro" title="Filtrar por menções ao Gabinete." onclick="fSec('Gabinete')"><span class="ni">📋</span><span class="nav-txt">Gabinete</span></div>
+          </div>
+        </nav>
+        <div class="sb-section sb-recent-wrap nav-group" data-group="recentes">
+          <div class="sb-label">📌 Recentes</div>
+          <div id="sb-recent-body" class="sb-recent-body"><span class="sb-recent-empty">Navegue pelas áreas para ver atalhos aqui.</span></div>
+        </div>
+        <div class="sb-section nav-group" data-group="online" data-no-filter="1">
+          <div class="sb-label">Utilizadores online</div>
+          <div class="sb-online" id="sb-online-wrap" style="font-size:11px;color:var(--muted);padding:4px 18px 6px">Conectando…</div>
+        </div>
+        <div class="sb-section nav-group" data-group="ws" data-no-filter="1" style="padding:10px 18px 14px">
+          <div class="sb-label" style="padding-left:0;margin-bottom:6px">Tempo real</div>
+          <div style="display:flex;align-items:center;gap:6px;font-size:11px;font-family:var(--f-body);color:var(--muted)">
+            <div class="ws-dot"></div><span id="ws-sb">Aguardando eventos…</span>
+          </div>
         </div>
       </div>
     </aside>
 
-    <main class="main">
+    <main class="main main-content" id="main-content">
 
       <!-- ══ INBOX ══ -->
       <div class="sp active" id="page-inbox">
         <div class="ph">
           <div><div class="ph-title">Caixa de Entrada</div><div class="ph-sub" id="inbox-sub">—</div></div>
-          <button class="btn-primary" onclick="toast('Sistema','Cadastro via protocolo disponível após integração.')">+ Registrar</button>
         </div>
         <div class="stats-row">
           <div class="stat-card sc-n"><div class="sc-lbl">Novas</div><div class="sc-val" id="cnt-novo">—</div><div class="sc-sub">aguardando triagem</div></div>
@@ -683,7 +842,7 @@ body.modo-crise .crisis-bar{display:block;}
         </div>
         <div class="search-bar">
           <div class="sw"><span class="si">🔍</span><input type="text" id="srch" placeholder="Nome, secretaria, palavra-chave ou texto da denúncia…" oninput="renderNots()"></div>
-          <select class="sel" id="sel-sec" onchange="renderNots()"><option value="">Todas as secretarias</option><option>Saúde</option><option>Administração</option><option>Finanças</option><option>Gabinete</option></select>
+          <select class="sel" id="sel-sec" onchange="renderNots()"><option value="">Todas as secretarias</option><option>Saúde</option><option>Educação</option><option>Administração</option><option>Obras</option><option>Finanças</option><option>Gabinete</option><option>Cultura</option><option>Meio Ambiente</option><option>Assistência Social</option></select>
           <select class="sel" id="sel-urg" onchange="renderNots()"><option value="">Qualquer urgência</option><option>Alta</option><option>Média</option><option>Baixa</option></select>
           <select class="sel" id="sel-ord" onchange="renderNots()"><option value="r">Mais recentes</option><option value="p">Prazo mais próximo</option></select>
           <select class="sel" id="sel-resp" onchange="renderNots()" title="Filtrar por responsável"><option value="">Todos os responsáveis</option><option value="__sem__">Sem responsável</option></select>
@@ -734,7 +893,7 @@ body.modo-crise .crisis-bar{display:block;}
           <div class="cc"><h4>Status dos Processos</h4><canvas id="cSt"></canvas></div>
           <div class="cc"><h4>Por Secretaria</h4><canvas id="cSec"></canvas></div>
           <div class="cc"><h4>Volume Mensal 2025–2026</h4><canvas id="cMes"></canvas></div>
-          <div class="cc"><h4>Nível de Urgência</h4><canvas id="cUrg"></canvas></div>
+          <div class="cc"><h4>Classificação automática (risco)</h4><canvas id="cUrg"></canvas></div>
         </div>
       </div>
 
@@ -807,15 +966,25 @@ body.modo-crise .crisis-bar{display:block;}
       <!-- ══ AUDITORIA ══ -->
       <div class="sp" id="page-audit">
         <div class="ph"><div><div class="ph-title">Auditoria</div><div class="ph-sub">Registro imutável — acessos, PDFs, assinaturas, reenvios, tempo real</div></div></div>
+        <div class="pm-table-wrap" role="region" aria-label="Tabela de auditoria">
         <table class="dt"><thead><tr><th>Data/Hora</th><th>Usuário</th><th>Ação</th><th>Processo</th><th>IP</th><th>Observação</th></tr></thead>
         <tbody id="audit-body"></tbody></table>
+        </div>
+        <h3 style="font-size:13px;margin:22px 0 10px;font-family:var(--f-body)">Exportações e relatórios automáticos (servidor)</h3>
+        <p style="font-size:11px;color:var(--muted);margin-bottom:10px;font-family:var(--f-body)">Registo em <code>logs/platform-audit.jsonl</code> — PDF exportado manualmente e relatório diário agendado.</p>
+        <div class="pm-table-wrap" role="region" aria-label="Auditoria da plataforma">
+        <table class="dt"><thead><tr><th>Data ISO</th><th>Tipo</th><th>Detalhe</th></tr></thead>
+        <tbody id="platform-audit-body"><tr><td colspan="3" style="color:var(--muted)">A carregar…</td></tr></tbody></table>
+        </div>
       </div>
 
       <!-- ══ TOKENS ══ -->
       <div class="sp" id="page-links">
         <div class="ph"><div><div class="ph-title">Tokens de Acesso</div><div class="ph-sub">JWT ao login · validade 12h · controla API e tempo real</div></div><button class="btn-primary" onclick="gerarToken()">+ Gerar Token</button></div>
-        <table class="dt"><thead><tr><th>Token</th><th>Processo</th><th>Destinatário</th><th>Gerado</th><th>Expira</th><th>Acessado</th><th>Status</th></tr></thead>
+        <div class="pm-table-wrap" role="region" aria-label="Lista de tokens">
+        <table class="dt"><thead><tr><th>Token</th><th>Processo</th><th>E-mail</th><th>Expiração</th><th>Status</th><th>Ações</th></tr></thead>
         <tbody id="links-body"></tbody></table>
+        </div>
       </div>
 
       <!-- ══ RELATÓRIOS ══ -->
@@ -838,7 +1007,7 @@ body.modo-crise .crisis-bar{display:block;}
             <option>Semana 07 — 10 a 16/02/2026</option>
             <option>Semana 06 — 03 a 09/02/2026</option>
           </select>
-          <select class="sel" id="rep-sec" onchange="renderRep()"><option value="">Todas as secretarias</option><option>Saúde</option><option>Administração</option><option>Finanças</option><option>Gabinete</option></select>
+          <select class="sel" id="rep-sec" onchange="renderRep()"><option value="">Todas as secretarias</option><option>Saúde</option><option>Educação</option><option>Administração</option><option>Obras</option><option>Finanças</option><option>Gabinete</option><option>Cultura</option><option>Meio Ambiente</option><option>Assistência Social</option></select>
           <select class="sel" id="rep-status" onchange="renderRep()"><option value="">Todos os status</option><option>Urgentes</option><option>Em Análise</option><option>Respondidas</option></select>
         </div>
         <div class="rep-preview" id="rep-preview"></div>
@@ -854,11 +1023,21 @@ body.modo-crise .crisis-bar{display:block;}
             <input type="text" id="nu-nome" placeholder="Nome completo" class="sel" style="flex:1;min-width:140px;padding:10px 12px">
             <input type="password" id="nu-pass" placeholder="Senha" class="sel" style="max-width:160px;padding:10px 12px">
             <input type="text" id="nu-whatsapp" placeholder="WhatsApp (DDD+número)" class="sel" style="max-width:160px;padding:10px 12px">
-            <select class="sel" id="nu-role"><option value="usuario">usuario</option><option value="executivo">executivo</option><option value="prefeito">prefeito</option><option value="admin">admin</option><option value="admin_master">admin_master</option></select>
+            <select class="sel" id="nu-role"><option value="usuario">usuario</option><option value="executivo">executivo</option><option value="juridico">juridico</option><option value="auditor">auditor</option><option value="prefeito">prefeito</option><option value="admin">admin</option><option value="admin_master">admin_master</option></select>
             <button class="btn-primary" onclick="criarUsuario()">+ Criar</button>
           </div>
-          <table class="dt"><thead><tr><th>Username</th><th>Nome</th><th>Role</th><th>WhatsApp</th><th>Senha</th></tr></thead>
+          <div class="pm-table-wrap" role="region" aria-label="Utilizadores ativos">
+          <table class="dt"><thead><tr><th>Username</th><th>Nome</th><th>Role</th><th>Estado</th><th>WhatsApp</th><th>Senha</th><th id="usuarios-th-acoes" style="display:none">Ações</th></tr></thead>
           <tbody id="usuarios-body"></tbody></table>
+          </div>
+          <div id="usuarios-inativos-wrap" style="display:none;margin-top:28px">
+            <h3 style="font-size:15px;margin-bottom:10px;font-family:var(--f-body)">Utilizadores inativos (soft delete)</h3>
+            <p style="font-size:12px;color:var(--muted);margin-bottom:12px;font-family:var(--f-body)">Apenas administradores podem ver e restaurar. Os dados permanecem em ficheiro no servidor.</p>
+            <div class="pm-table-wrap" role="region" aria-label="Utilizadores inativos">
+            <table class="dt"><thead><tr><th>Username</th><th>Nome</th><th>Role</th><th>Desativado em</th><th>Ações</th></tr></thead>
+            <tbody id="usuarios-inativos-body"></tbody></table>
+            </div>
+          </div>
         </div>
         <div id="usuarios-denied" class="empty" style="display:none"><div class="empty-ico">🔒</div>Acesso restrito a administradores ou prefeito (criação limitada).</div>
       </div>
@@ -994,11 +1173,14 @@ const PDF_URL='https://cdn-0.mpma.mp.br/publicacoes/19897/9633d58882ff92ee519724
 const AI_INTERVALS={'Nepotismo/TAC':[6,12,24],'Fraude em Licitação':[8,16,32],'Desvio / Lavagem':[12,24,48],'Funcionário Fantasma':[24,48,72],'Falsidade/Omissão':[12,24,48],'Concurso Público':[48,96,168],'Continuidade dos Serviços':[24,48,72]};
 
 let NOTS=[];
+let __pmKpis=null;
+const __pmBellEvents=[];
 let ASSIGNABLE=[];
 
 const AUDIT_LOG=[];
 
-const LINKS=[];
+/** Tokens de acesso JWT (servidor: GET/POST /api/access-tokens) */
+var PM_ACCESS_TOKENS=[];
 
 let RS_LOG=[];
 
@@ -1056,6 +1238,27 @@ try{
     }
   }
 }catch(e){}
+try{
+  const _qs=new URLSearchParams(location.search||'');
+  let _ptok=_qs.get('token');
+  if(!_ptok&&location.hash&&/^#token=/.test(location.hash)){
+    try{_ptok=decodeURIComponent(location.hash.slice(7));}catch(e){_ptok=location.hash.slice(7);}
+    if(typeof history!=='undefined'&&history.replaceState)history.replaceState({},'',(location.pathname||'/')+(location.search||''));
+  }
+  if(_ptok){
+    let trimmed=String(_ptok).trim();
+    try{trimmed=decodeURIComponent(trimmed.replace(/\+/g,'%20'));}catch(e){}
+    if(trimmed){
+      setPmToken(trimmed);
+      try{sessionStorage.setItem('pm_login_token','1');}catch(e){}
+      if(typeof history!=='undefined'&&history.replaceState){
+        _qs.delete('token');
+        const tail=_qs.toString();
+        history.replaceState({},'',(location.pathname||'/')+(tail?'?'+tail:'')+(location.hash||''));
+      }
+    }
+  }
+}catch(e){}
 function getPmToken(){
   try{
     var t=localStorage.getItem(PM_TOKEN_KEY);
@@ -1075,12 +1278,16 @@ function setPmToken(tok){
 }
 /** Remove credenciais e volta à tela de login (token inválido ou logout) */
 function clearSessionAuth(){
+  try{if(__menuStatusTimer)clearInterval(__menuStatusTimer);}catch(e){}
+  __menuStatusTimer=null;
   try{localStorage.removeItem(PM_TOKEN_KEY);sessionStorage.removeItem(PM_TOKEN_KEY);}catch(e){}
   CU=null;
   if(socketIo){try{socketIo.close();}catch(e){}socketIo=null;}
   var app=document.getElementById('app');
   var login=document.getElementById('login-screen');
   if(app&&login){app.style.display='none';login.style.display='flex';}
+  var bw=document.getElementById('topbar-bell-wrap');if(bw)bw.style.display='none';
+  var bp=document.getElementById('bell-panel');if(bp)bp.style.display='none';
 }
 
 let socketIo=null;
@@ -1099,6 +1306,9 @@ async function apiFetch(path,opts={}){
     r=await xhrFetchLike(u,opts.method||'GET',h,opts.body);
   }
   if(r.status===401&&path!=='/api/auth/login'&&path!=='/api/auth/google'){
+    try{
+      if(path==='/api/me'&&sessionStorage.getItem('pm_login_token')){return r;}
+    }catch(e){}
     clearSessionAuth();
   }
   return r;
@@ -1135,19 +1345,167 @@ function mapApiUser(u){
   return{
     id:u.id,
     nome:u.nome,cargo:u.cargo,init:u.init,color:u.color,
-    role:u.role,exec:u.exec,proc:u.proc,isUsuario:u.isUsuario
+    role:u.role,exec:u.exec,proc:u.proc,isUsuario:u.isUsuario,isAuditor:!!u.isAuditor
   };
 }
 
 function applyNavVisibility(){
   if(!CU)return;
-  const isUsuario=CU.role==='usuario';
+  if(CU.role==='auditor'){
+    document.querySelectorAll('.nav-item--page').forEach(function(el){
+      const p=el.getAttribute('data-page');
+      const ok=['inbox','calendar','dashboard','executivo','relatorio','audit'].indexOf(p)>=0;
+      el.classList.toggle('hidden-item',!ok);
+    });
+    document.querySelectorAll('.exec-only:not(.nav-item--page),.proc-only:not(.nav-item--page),.usuario-hide:not(.nav-item--page),.user-mgmt-nav').forEach(function(el){
+      el.classList.add('hidden-item');
+    });
+    filterNavMenu();
+    return;
+  }
+  const isUsuario=CU.role==='usuario'||CU.role==='visitante';
   const isAdmin=CU.role==='admin_master'||CU.role==='admin';
   const canUserMgmt=isAdmin||CU.role==='prefeito';
   document.querySelectorAll('.exec-only').forEach(el=>el.classList.toggle('hidden-item',!CU.exec));
   document.querySelectorAll('.proc-only').forEach(el=>el.classList.toggle('hidden-item',!CU.proc));
   document.querySelectorAll('.user-mgmt-nav').forEach(el=>el.classList.toggle('hidden-item',!canUserMgmt));
   document.querySelectorAll('.usuario-hide').forEach(el=>el.classList.toggle('hidden-item',isUsuario));
+  filterNavMenu();
+}
+
+let __menuStatusTimer=null;
+function startMenuStatusPolling(){
+  try{if(__menuStatusTimer)clearInterval(__menuStatusTimer);}catch(e){}
+  fetchMenuStatus();
+  __menuStatusTimer=setInterval(fetchMenuStatus,40000);
+}
+function fetchMenuStatus(){
+  if(!CU)return;
+  apiFetch('/api/menu-status').then(function(r){
+    if(!r.ok){applyMenuStatusError();return null;}
+    return r.json();
+  }).then(function(d){
+    if(d&&typeof d.auditoria==='number')applyMenuStatusOk(d);
+  }).catch(function(){applyMenuStatusError();});
+}
+function applyMenuStatusError(){
+  var p=document.getElementById('sb-pill-sys');
+  if(p){p.className='sb-pill sb-pill--err';p.textContent='● Erro na API';}
+}
+function applyMenuStatusOk(d){
+  var p=document.getElementById('sb-pill-sys');
+  if(p){p.className='sb-pill sb-pill--ok';p.textContent='● Sistema online';}
+  var m=document.getElementById('sb-pill-mpma');
+  if(m){
+    if(d.mpmaMonitorAtivo){
+      m.className='sb-pill sb-pill--mpma-on';
+      m.textContent='MPMA ativo';
+    }else{
+      m.className='sb-pill sb-pill--muted';
+      m.textContent='MPMA pausado';
+    }
+  }
+  var ba=document.getElementById('badge-audit');
+  if(ba)ba.textContent=String(d.auditoria);
+  var br=document.getElementById('badge-relatorio');
+  if(br)br.textContent=String(d.relatoriosHoje);
+  var bb=document.getElementById('topbar-bell-badge');
+  if(bb&&typeof d.notificacoesNovas==='number')bb.textContent=String(Math.min(99,Math.max(0,d.notificacoesNovas)));
+}
+function loadDashboardKpis(){
+  if(!CU)return Promise.resolve(null);
+  return apiFetch('/api/dashboard/kpis').then(function(r){return r.ok?r.json():null;}).then(function(d){__pmKpis=d;return d;}).catch(function(){return null;});
+}
+function renderBellPanel(){
+  var p=document.getElementById('bell-panel');if(!p)return;
+  var h='<h4>Alertas em tempo real</h4>';
+  if(!__pmBellEvents.length){p.innerHTML=h+'<p style="color:var(--muted);margin:0;font-size:12px">Nenhum evento nesta sessão. Novas denúncias MPMA aparecem aqui.</p>';return;}
+  p.innerHTML=h+__pmBellEvents.slice(0,20).map(function(x){
+    var id=String(x.id||'').replace(/'/g,'\\\'');
+    return'<div class="bell-row" role="button" onclick="sp(\'inbox\',null);openNotif(\''+id+'\',false);document.getElementById(\'bell-panel\').style.display=\'none\'"><strong style="font-size:12px">'+escHtml(x.titulo||x.id)+'</strong><div style="font-size:10px;color:var(--muted);margin-top:2px">'+escHtml(x.id)+' · '+escHtml(x.t||'')+'</div></div>';
+  }).join('');
+}
+function toggleBellPanel(e){
+  if(e)e.stopPropagation();
+  var panel=document.getElementById('bell-panel');
+  var btn=document.getElementById('topbar-bell-btn');
+  if(!panel)return;
+  var open=panel.style.display==='block';
+  if(open){panel.style.display='none';if(btn)btn.setAttribute('aria-expanded','false');}
+  else{renderBellPanel();panel.style.display='block';if(btn)btn.setAttribute('aria-expanded','true');}
+}
+document.addEventListener('click',function(ev){
+  var w=document.getElementById('topbar-bell-wrap');
+  if(!w||!ev.target||w.contains(ev.target))return;
+  var panel=document.getElementById('bell-panel');
+  if(panel)panel.style.display='none';
+  var btn=document.getElementById('topbar-bell-btn');
+  if(btn)btn.setAttribute('aria-expanded','false');
+});
+async function loadPlatformAudit(){
+  var tb=document.getElementById('platform-audit-body');if(!tb)return;
+  tb.innerHTML='<tr><td colspan="3" style="color:var(--muted)">A carregar…</td></tr>';
+  try{
+    var r=await apiFetch('/api/auditoria/plataforma');
+    var d=await r.json().catch(function(){return{};});
+    if(!r.ok){tb.innerHTML='<tr><td colspan="3" style="color:var(--danger)">'+(d.error||'Sem permissão')+'</td></tr>';return;}
+    var rows=(d.linhas||[]).slice().reverse();
+    if(!rows.length){tb.innerHTML='<tr><td colspan="3" style="color:var(--muted)">Sem registos ainda.</td></tr>';return;}
+    tb.innerHTML=rows.map(function(l){
+      var det=[l.nome,l.userId,l.periodo,l.aba,l.ficheiro,l.bytes!=null?l.bytes+' bytes':''].filter(Boolean).join(' · ');
+      return'<tr><td class="mono" style="font-size:10px">'+escHtml(l.dataISO||'')+'</td><td>'+escHtml(l.tipo||'—')+'</td><td style="font-size:11px">'+escHtml(det||'—')+'</td></tr>';
+    }).join('');
+  }catch(e){
+    tb.innerHTML='<tr><td colspan="3" style="color:var(--danger)">Erro de rede.</td></tr>';
+  }
+}
+function filterNavMenu(){
+  var inp=document.getElementById('nav-srch');
+  var q=inp?String(inp.value||'').trim().toLowerCase():'';
+  document.querySelectorAll('.nav-group').forEach(function(g){
+    if(g.getAttribute('data-no-filter')==='1'){
+      g.classList.remove('nav-group-hide');
+      return;
+    }
+    var items=g.querySelectorAll('.nav-item');
+    var vis=0;
+    items.forEach(function(it){
+      var ds=(it.getAttribute('data-search')||'')+' '+String(it.textContent||'').toLowerCase();
+      var show=!q||ds.indexOf(q)>=0;
+      it.classList.toggle('nav-filter-hide',!show);
+      if(show)vis++;
+    });
+    var hideGroup=q.length>0&&vis===0;
+    g.classList.toggle('nav-group-hide',hideGroup);
+  });
+}
+function spByPage(name){
+  var el=document.querySelector('.nav-item--page[data-page="'+name+'"]');
+  sp(name,el);
+}
+function pushRecentNav(name){
+  var labels={inbox:'Caixa de Entrada',executivo:'Painel Executivo',dashboard:'Dashboard',calendar:'Calendário de Prazos',reenvio:'Reenvio Inteligente',tce:'TCE-MA / SAGRES',audit:'Auditoria',links:'Tokens de Acesso',relatorio:'Relatórios',usuarios:'Usuários',juri:'JURI — IA Jurídica'};
+  var label=labels[name]||name;
+  try{
+    var r=JSON.parse(localStorage.getItem('pm_nav_recent')||'[]');
+    r=r.filter(function(x){return x.name!==name;});
+    r.unshift({name:name,label:label});
+    r=r.slice(0,5);
+    localStorage.setItem('pm_nav_recent',JSON.stringify(r));
+    renderRecentNav();
+  }catch(e){}
+}
+function renderRecentNav(){
+  var el=document.getElementById('sb-recent-body');
+  if(!el)return;
+  var r=[];
+  try{r=JSON.parse(localStorage.getItem('pm_nav_recent')||'[]');}catch(e){}
+  if(!r.length){el.innerHTML='<span class="sb-recent-empty">Navegue pelas áreas para ver atalhos aqui.</span>';return;}
+  el.innerHTML=r.map(function(x){
+    var nm=String(x.name||'').replace(/[^a-z0-9_-]/gi,'');
+    if(!nm)return'';
+    return'<button type="button" class="sb-recent-item" onclick="spByPage(\''+nm+'\')">'+escHtml(x.label||nm)+'</button>';
+  }).filter(Boolean).join('');
 }
 
 function connectSocket(){
@@ -1208,20 +1566,27 @@ function connectSocket(){
         if(!p||!CU||p.userId===CU.id)return;
         loadNotificacoes().then(function(){
           renderNots();renderStats();refreshCrisisUi();renderCal();renderNsg();renderCharts();
+          fetchMenuStatus();
         });
       });
       socketIo.on('nova_notificacao',payload=>{
         if(!socketIo||!socketIo.connected)return;
         var mo=payload&&payload.monitoramentoOrigem;
         if(mo&&mo!=='MPMA')return;
+        try{
+          __pmBellEvents.unshift({id:payload.id,titulo:payload.titulo,t:new Date().toLocaleString('pt-BR')});
+          if(__pmBellEvents.length>30)__pmBellEvents.length=30;
+        }catch(e){}
         loadNotificacoes().then(()=>{
           renderNots();renderStats();refreshCrisisUi();renderCal();renderNsg();renderCharts();
+          fetchMenuStatus();
           toast('📢 Nova denúncia MPMA',String(payload.titulo||payload.id||'').slice(0,120),'urg');
         });
       });
       socketIo.on('prazos_atualizados',()=>{
         loadNotificacoes().then(()=>{
           renderNots();renderStats();refreshCrisisUi();renderCal();renderNsg();renderCharts();
+          fetchMenuStatus();
         });
       });
     }catch(e){console.warn('Socket.io:',e);}
@@ -1245,6 +1610,39 @@ function connectSocket(){
 let AF='todas',AS='todas',calY,calM,selRsId=null,charts={},mEnv=2,mPend=0,mEsc=0,mAI=5;
 let repTabName='semanal',linkAutoOpen=null,juriHistory=[];
 let ofCnt=24,signNotifId=null,pwaPrompt=null;
+
+/** Comparação sem acentos (filtros do painel). */
+function normTxtPainel(s){
+  return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+}
+/**
+ * Texto de secretaria(s) para cartões e filtros: campo principal, depois catálogo MPMA (mpmaSecretarias / extração).
+ */
+function displaySecretariaPainel(n){
+  const amb='Não identificada no texto';
+  let s=String(n.secretaria||'').trim();
+  if(s&&s!==amb)return s;
+  const a=Array.isArray(n.mpmaSecretarias)&&n.mpmaSecretarias.length?n.mpmaSecretarias.filter(Boolean):null;
+  if(a&&a.length)return a.join(' · ');
+  const ex=n.mpmaExtracao&&Array.isArray(n.mpmaExtracao.secretariasInstitucionais)?n.mpmaExtracao.secretariasInstitucionais.filter(Boolean):null;
+  if(ex&&ex.length)return ex.join(' · ');
+  const iasec=n.ia&&String(n.ia.sec||'').trim();
+  if(iasec&&iasec!==amb)return iasec;
+  return s||amb;
+}
+/**
+ * Nav "Saúde" / select filtram por substring (ex.: "Secretaria Municipal de Saúde"), não igualdade exata.
+ */
+function matchesSecretariaPainelFilter(n,filtro){
+  if(!filtro)return true;
+  const blob=normTxtPainel([
+    displaySecretariaPainel(n),
+    Array.isArray(n.mpmaSecretarias)?n.mpmaSecretarias.join(' '):'',
+    n.mpmaExtracao&&Array.isArray(n.mpmaExtracao.secretariasInstitucionais)?n.mpmaExtracao.secretariasInstitucionais.join(' '):'',
+    n.secretaria||''
+  ].join(' '));
+  return blob.includes(normTxtPainel(filtro));
+}
 
 /* ════════ LINK BANNER ════════ */
 function showLinkBanner(id){
@@ -1296,6 +1694,7 @@ async function postLoginAuth(user,pass){
 }
 async function enterAppAfterAuth(data){
   setPmToken(data.token);
+  try{sessionStorage.removeItem('pm_login_token');}catch(e){}
   CU=mapApiUser(data.user);
   document.getElementById('u-av').textContent=CU.init;
   document.getElementById('u-av').style.background=CU.color;
@@ -1305,11 +1704,14 @@ async function enterAppAfterAuth(data){
   document.getElementById('sign-cargo').value=CU.cargo;
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app').style.display='block';
+  var tbw=document.getElementById('topbar-bell-wrap');if(tbw&&CU&&CU.role!=='visitante')tbw.style.display='';
   const now=new Date();calY=now.getFullYear();calM=now.getMonth();
   await loadNotificacoes();
   await loadAssignableUsers();
   connectSocket();
   initApp();
+  startMenuStatusPolling();
+  renderRecentNav();
   loadRecorrentes();
   const pendN=sessionStorage.getItem('pm_pending_notif');
   if(pendN){sessionStorage.removeItem('pm_pending_notif');setTimeout(()=>openNotif(pendN,false),650);}
@@ -1361,11 +1763,35 @@ function doLogout(){
 function initApp(){
   updClock();setInterval(updClock,1000);
   if(!window.__pmCd){window.__pmCd=setInterval(tickCountdowns,1000);}
-  renderNots();renderStats();renderAudit();renderLinks();
+  renderNots();renderStats();renderAudit();loadAccessTokens();
   renderRep();renderNsg();renderRsLog();updMotor();renderCal();
   loadTceMaPanel();initJuri();
-  if(CU.exec||CU.proc)renderExecutivo();
+  if(CU&&(CU.exec||CU.proc||CU.isAuditor))renderExecutivo();
   startMotor();startWS();
+  if(!window.__pmpSbResizeBound){
+    window.__pmpSbResizeBound=true;
+    var __pmpSbResizeT=null;
+    window.addEventListener('resize',function(){
+      clearTimeout(__pmpSbResizeT);
+      __pmpSbResizeT=setTimeout(syncSidebarLayoutMode,100);
+    });
+    document.addEventListener('keydown',function(e){
+      if(e.key==='Escape'&&typeof isMobileNav==='function'&&isMobileNav())closeSb();
+    });
+  }
+  applySidebarPersistedState();
+  setTimeout(pmApplyVisitorRoutes,120);
+}
+function pmApplyVisitorRoutes(){
+  try{
+    var p=(location.pathname||'').replace(/\/$/,'')||'/';
+    if(p==='/processos'&&typeof sp==='function')sp('inbox',null);
+    var m=/^\/visualizar\/(.+)$/.exec(location.pathname||'');
+    if(m&&typeof openNotif==='function'){
+      var id=decodeURIComponent(m[1]);
+      setTimeout(function(){openNotif(id,false);},380);
+    }
+  }catch(e){}
 }
 function updClock(){
   const el=document.getElementById('clock');
@@ -1401,17 +1827,86 @@ function sp(name,el){
   document.querySelectorAll('.sp').forEach(p=>p.classList.remove('active'));
   const pg=document.getElementById('page-'+name);
   if(pg)pg.classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
-  if(el)el.classList.add('active');
-  if(name==='dashboard')setTimeout(renderCharts,80);
+  document.querySelectorAll('.nav-item--page').forEach(i=>i.classList.remove('active'));
+  var navEl=el||document.querySelector('.nav-item--page[data-page="'+name+'"]');
+  if(navEl)navEl.classList.add('active');
+  if(name==='dashboard'){loadDashboardKpis().then(function(){setTimeout(renderCharts,80);});}
   if(name==='executivo'){renderExecutivo();setTimeout(renderExecCharts,80);}
   if(name==='relatorio')renderRep();
+  if(name==='audit')loadPlatformAudit();
   if(name==='usuarios')renderUsuarios();
+  if(name==='links')loadAccessTokens();
   if(name==='tce')loadTceMaPanel();
+  pushRecentNav(name);
   closeSb();
 }
-function toggleSb(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sb-overlay').classList.toggle('open');}
-function closeSb(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sb-overlay').classList.remove('open');}
+/** Chave localStorage — menu recolhido no desktop (valor "true" = escondido) */
+var LS_SIDEBAR_HIDDEN='sidebar';
+function isMobileNav(){
+  return typeof window.matchMedia==='function'&&window.matchMedia('(max-width:768px)').matches;
+}
+function updateToggleBtnAria(){
+  var btn=document.getElementById('toggleSidebar');
+  var sb=document.getElementById('sidebar');
+  if(!btn||!sb)return;
+  if(isMobileNav()){
+    var o=sb.classList.contains('open');
+    btn.setAttribute('aria-expanded',o?'true':'false');
+    sb.setAttribute('aria-hidden',o?'false':'true');
+  }else{
+    btn.setAttribute('aria-expanded',sb.classList.contains('hidden')?'false':'true');
+    sb.setAttribute('aria-hidden',sb.classList.contains('hidden')?'true':'false');
+  }
+}
+function applySidebarPersistedState(){
+  if(isMobileNav())return;
+  var sb=document.getElementById('sidebar');
+  var main=document.querySelector('.main.main-content');
+  if(!sb||!main)return;
+  var hidden=false;
+  try{hidden=localStorage.getItem(LS_SIDEBAR_HIDDEN)==='true';}catch(e){}
+  sb.classList.toggle('hidden',hidden);
+  main.classList.toggle('full',hidden);
+  updateToggleBtnAria();
+}
+function syncSidebarLayoutMode(){
+  var sb=document.getElementById('sidebar');
+  var main=document.querySelector('.main.main-content');
+  if(!sb||!main)return;
+  if(isMobileNav()){
+    sb.classList.remove('hidden');
+    main.classList.remove('full');
+    closeSb();
+  }else{
+    applySidebarPersistedState();
+  }
+  updateToggleBtnAria();
+}
+function toggleSidebar(){
+  var sb=document.getElementById('sidebar');
+  var main=document.querySelector('.main.main-content');
+  if(!sb)return;
+  if(isMobileNav()){
+    toggleSb();
+    return;
+  }
+  sb.classList.toggle('hidden');
+  if(main)main.classList.toggle('full');
+  try{
+    localStorage.setItem(LS_SIDEBAR_HIDDEN,sb.classList.contains('hidden')?'true':'false');
+  }catch(e){}
+  updateToggleBtnAria();
+}
+function toggleSb(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sb-overlay').classList.toggle('open');
+  updateToggleBtnAria();
+}
+function closeSb(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sb-overlay').classList.remove('open');
+  updateToggleBtnAria();
+}
 
 /* ════════ UTILS ════════ */
 function prazoI(s){
@@ -1452,9 +1947,19 @@ function refreshCrisisUi(){
   const pri=NOTS.filter(n=>n.prioridade).length;
   const on=(crit>=4)||(crit>=3&&pri>=1)||(crit>=2&&pri>=3)||(critPdf>=4)||(critPdf>=3&&pri>=1)||(critPdf>=2&&crit>=2);
   document.body.classList.toggle('modo-crise',!!on);
+  var inboxNav=document.querySelector('.nav-item--page[data-page=inbox]');
+  if(inboxNav){
+    var grav=NOTS.some(function(n){
+      if(n.status==='urgente'||n.status==='atrasada')return true;
+      if(n.nivelDenuncia==='critico')return true;
+      var g=n.gravidadePdf&&String(n.gravidadePdf.nivel||'').toUpperCase();
+      return g&&(g.indexOf('CRIT')>=0||g.indexOf('CRÍT')>=0);
+    });
+    inboxNav.classList.toggle('nav-item--pulse',grav);
+  }
 }
 function canAssignNotif(){
-  return CU && ['admin_master','admin','executivo','prefeito'].includes(CU.role);
+  return CU && ['admin_master','admin','executivo','prefeito','juridico'].includes(CU.role);
 }
 function fmtCountdown(iso){
   if(!iso||iso==='2099-12-31')return'—';
@@ -1483,6 +1988,12 @@ function responsavelInativo(n){
   return(Date.now()-best)/(864e5)>7;
 }
 function escHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function nivelDenunciaBadge(n){
+  const v=(n&&n.nivelDenuncia)||'normal';
+  if(v==='critico')return '<span class="nd-crit" title="Classificação automática (palavras-chave)">Crítico</span>';
+  if(v==='atencao')return '<span class="nd-att" title="Classificação automática (palavras-chave)">Atenção</span>';
+  return '<span class="nd-ok" title="Classificação automática">Normal</span>';
+}
 function gravBadgeClass(nivel){
   const u=String(nivel||'').toUpperCase();
   if(u.indexOf('CR')>=0)return'grav-CRIT';
@@ -1513,7 +2024,7 @@ async function patchNotifMeta(id,payload){
     if(ix>=0)NOTS[ix]=j;
     if(modalNotifId===id)openNotif(id,false);
     renderNots();renderStats();refreshCrisisUi();
-    if(CU&&(CU.exec||CU.proc))renderExecutivo();
+    if(CU&&(CU.exec||CU.proc||CU.isAuditor))renderExecutivo();
   }catch(e){toast('Erro','Falha de rede.','urg');}
 }
 function patchNotifResp(id,v){patchNotifMeta(id,{responsavelId:v===''?null:v});}
@@ -1570,6 +2081,8 @@ function renderStats(){
   });
   const bi=document.getElementById('badge-inbox');
   if(bi)bi.textContent=NOTS.filter(n=>n.status==='novo'||n.status==='urgente'||n.status==='atrasada').length;
+  const bau=document.getElementById('badge-audit');
+  if(bau)bau.textContent=NOTS.filter(n=>n.status==='urgente'||n.status==='atrasada'||n.prioridade).length;
   const sub=document.getElementById('inbox-sub');
   if(sub){
     const atr=NOTS.filter(n=>n.status==='atrasada').length;
@@ -1595,14 +2108,14 @@ function renderNots(){
   const orig=document.getElementById('sel-origem')?.value||'';
   let data=NOTS.filter(n=>{
     if(AF!=='todas'&&n.status!==AF)return false;
-    if(AS!=='todas'&&n.secretaria!==AS)return false;
-    if(ss&&n.secretaria!==ss)return false;
+    if(AS!=='todas'&&!matchesSecretariaPainelFilter(n,AS))return false;
+    if(ss&&!matchesSecretariaPainelFilter(n,ss))return false;
     if(su&&n.urgencia!==su)return false;
     if(resp==='__sem__'&&n.responsavelId)return false;
     if(resp&&resp!=='__sem__'&&n.responsavelId!==resp)return false;
     if(orig&&(n.monitoramentoOrigem||'MPMA')!==orig)return false;
     if(q){
-      const hay=[n.titulo,n.id,n.servidor,n.secretaria,n.responsavelNome||'',n.monitoramentoOrigem||'',n.descricao||'',(n.ia&&n.ia.resumo)||'',(n.ia&&n.ia.tema)||''].map(x=>String(x).toLowerCase()).join(' ');
+      const hay=[n.titulo,n.id,n.servidor,displaySecretariaPainel(n),n.secretaria,n.secretarioDetectado||'',(Array.isArray(n.mpmaSecretarias)?n.mpmaSecretarias.join(' '):''),n.responsavelNome||'',n.monitoramentoOrigem||'',n.descricao||'',(n.ia&&n.ia.resumo)||'',(n.ia&&n.ia.tema)||''].map(x=>String(x).toLowerCase()).join(' ');
       if(!hay.includes(q))return false;
     }
     return true;
@@ -1625,6 +2138,7 @@ function renderNots(){
     const ob=`<span class="orig-badge orig-${escAttr(mo)}">${escHtml(mo)}</span>`;
     const ri=n.classificacaoRiscoInstitucional;
     const riMini=ri&&ri.nivel?`<span class="grav-inline ${ri.nivel==='alto'?'grav-crit':ri.nivel==='medio'?'grav-warn':'grav-ok'}" title="Termos detectados no texto do documento (sem conclusão jurídica): ${escAttr((ri.termos||[]).join(', '))}">Termos ${ri.nivel}</span>`:'';
+    const ndMini=nivelDenunciaBadge(n);
     return`<div class="nc status-${n.status} ${semaforoRowClass(n)}" onclick="openNotif('${escAttr(n.id)}')">
       <div>
         <div class="nc-top">
@@ -1634,6 +2148,7 @@ function renderNots(){
           <span class="badge b-${n.status}">${slbl(n.status)}</span>
           ${gtxt}
           ${riMini}
+          ${ndMini}
           ${(n.viewers||[]).length?`<span class="vt">👁 ${(n.viewers||[]).slice(0,2).join(' · ')} vendo</span>`:''}
           ${nr>0?`<span class="nrt">⚠ ${nr} viu sem responder</span>`:''}
           ${ina?`<span class="inactive-warn">⚠ Resp. inativo</span>`:''}
@@ -1643,7 +2158,7 @@ function renderNots(){
         </div>
         <div class="nt">${escHtml(n.titulo)}</div>
         <div class="nm">
-          <span>📂 ${escHtml(n.secretaria)}</span>
+          <span>📂 ${escHtml(displaySecretariaPainel(n))}</span>
           <span title="Nomes citados no documento — não implicam envolvimento ou culpa">👤 ${escHtml(n.servidor)}</span>
           ${n.responsavelNome?`<span style="color:var(--blue)">🎯 ${escHtml(n.responsavelNome)}</span>`:''}
           <span>🕐 ${escHtml(n.recebido)}</span>
@@ -1750,13 +2265,17 @@ function buildMpmaExtracaoHtml(n){
   if(!x)return'';
   const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   const m=x.multa,p=x.prazo,r=x.riscoFinanceiro;
-  const tem=!!(x.documentoTipo||x.orgao||m||p||(r&&(r.calculado||r.motivo)));
+  const si=Array.isArray(x.secretariasInstitucionais)?x.secretariasInstitucionais:[];
+  const sd=Array.isArray(x.secretariosDetectados)?x.secretariosDetectados:[];
+  const tem=!!(x.documentoTipo||x.orgao||m||p||(r&&(r.calculado||r.motivo))||si.length||sd.length);
   if(!tem)return'';
   const pub=(x.prazo&&x.prazo.dataPublicacaoISO)||n.mpmaDataPublicacaoISO;
   return`<div class="ai-box" style="margin-bottom:14px;border-left:3px solid #1a3d78"><h4>📌 Extração do PDF (trechos e valores do texto)</h4><p style="font-size:11px;color:var(--muted);margin:0 0 8px;line-height:1.45;font-family:var(--f-body)">Dados obtidos por leitura automática do PDF — sem interpretação jurídica.</p><div class="ai-tags">
     ${pub?`<div class="aitag"><strong>Data publicação (no texto):</strong> ${fD(pub)}</div>`:''}
     ${x.documentoTipo?`<div class="aitag" style="grid-column:1/-1"><strong>Tipo de documento (no texto):</strong> ${esc(x.documentoTipo)}</div>`:''}
     ${x.orgao?`<div class="aitag" style="grid-column:1/-1"><strong>Órgão (no texto):</strong> ${esc(x.orgao)}</div>`:''}
+    ${si.length?`<div class="aitag" style="grid-column:1/-1"><strong>Secretarias (catálogo / texto):</strong> ${si.map(t=>esc(t)).join(' · ')}</div>`:''}
+    ${sd.length?`<div class="aitag" style="grid-column:1/-1"><strong>Menções “secretário … de …” (no texto):</strong> ${sd.slice(0,8).map(t=>esc(t)).join(' · ')}${sd.length>8?' …':''}</div>`:''}
     ${m?`<div class="aitag"><strong>Multa (no texto):</strong> ${esc(m.valorFormatado)}${m.tipoLabel?` <span style="color:var(--muted)">(${esc(m.tipoLabel)})</span>`:''}</div>`:''}
     ${p?`<div class="aitag"><strong>Prazo (no texto):</strong> ${esc(p.label||((p.dias!=null?p.dias+' dia(s)':'')+(p.diasUteis?' úteis':' corridos')))}</div>`:''}
     ${r&&r.calculado?`<div class="aitag" style="grid-column:1/-1"><strong>Valores referidos (cálculo sobre o texto):</strong> ${esc(r.valorFormatado)} <span style="color:var(--muted);font-size:11px">${esc(r.formula)}</span></div>`:''}
@@ -1790,7 +2309,7 @@ async function openNotif(id,autoPDF=false){
   modalNotifId=id;
   const n=NOTS.find(x=>x.id===id);if(!n)return;
   document.getElementById('m-title').textContent=n.titulo;
-  document.getElementById('m-sub').textContent=`${n.id} · ${n.secretaria} · Recebido: ${n.recebido}`;
+  document.getElementById('m-sub').textContent=`${n.id} · ${displaySecretariaPainel(n)} · Recebido: ${n.recebido}`;
   document.getElementById('m-viewers').innerHTML=(n.viewers||[]).length
     ?`👁 <strong>${(n.viewers||[]).join('</strong> e <strong>')}</strong> também visualizando — atualizações em tempo real`
     :'👁 Somente você visualizando agora · WebSocket ativo';
@@ -1845,7 +2364,9 @@ async function openNotif(id,autoPDF=false){
     ${modalLegal}
     ${autoBanner}
     <div class="ig">
-      <div><label>Secretaria</label><div class="v">📂 ${escHtml(n.secretaria)}</div></div>
+      <div><label>Secretaria</label><div class="v">📂 ${escHtml(displaySecretariaPainel(n))}</div></div>
+      ${n.secretarioDetectado?`<div><label>Secretário (trecho no texto)</label><div class="v" style="font-size:12.5px;line-height:1.45">${escHtml(n.secretarioDetectado)}</div></div>`:''}
+      ${(Array.isArray(n.mpmaSecretarias)&&n.mpmaSecretarias.length>1)?`<div><label>Secretarias detetadas</label><div class="v" style="font-size:12px;line-height:1.45">${n.mpmaSecretarias.map(s=>escHtml(s)).join(' · ')}</div></div>`:''}
       <div><label>Citados no documento (nomes no texto do PDF)</label><div class="v">👤 ${escHtml(n.servidor)}</div></div>
       <div><label>Status</label><div class="v"><span class="badge b-${n.status}">${slbl(n.status)}</span></div></div>
       <div><label>Urgência</label><div class="v">⚡ ${escHtml(n.urgencia)}</div></div>
@@ -2072,16 +2593,14 @@ function gerarOficio(id){
       <div class="oficio-numero">OFÍCIO Nº ${n.ofNr}</div>
       <p style="font-size:12.5px;margin-bottom:14px">Buriticupu (MA), ${hoje}.</p>
       <div style="font-size:12.5px;margin-bottom:16px">
-        <strong>Ao Ilustríssimo Senhor</strong><br>
-        Dr. Felipe Augusto Rotondo<br>
-        Promotor de Justiça — 1ª Promotoria de Justiça de Buriticupu<br>
+        <strong>Ao Ministério Público competente</strong><br>
         Ministério Público do Estado do Maranhão
       </div>
       <div class="oficio-body" style="font-size:12.5px">
         <strong>Assunto: Resposta à Notificação ${n.id} — ${n.titulo}</strong>
         <p style="margin-top:12px">Excelentíssimo Senhor Promotor,</p>
         <p style="margin-top:10px">A Procuradoria-Geral do Município de Buriticupu, em resposta à notificação recebida em ${n.recebido}, vem, respeitosamente, prestar os seguintes esclarecimentos e informar as providências adotadas:</p>
-        <p style="margin-top:10px">O Município tomou conhecimento do processo ${n.id} — <em>"${n.titulo}"</em> — e determinou à Secretaria de ${n.secretaria} a adoção imediata das medidas cabíveis, em estrita conformidade com a legislação vigente e os princípios constitucionais da legalidade, moralidade e eficiência (art. 37, caput, CF/88).</p>
+        <p style="margin-top:10px">O Município tomou conhecimento do processo ${n.id} — <em>"${n.titulo}"</em> — e determinou à Secretaria de ${displaySecretariaPainel(n)} a adoção imediata das medidas cabíveis, em estrita conformidade com a legislação vigente e os princípios constitucionais da legalidade, moralidade e eficiência (art. 37, caput, CF/88).</p>
         <p style="margin-top:10px">Informamos que as ações estão sendo desenvolvidas com a devida diligência. Documentação complementar será encaminhada oportunamente, na forma e no prazo estabelecidos por V. Exa.</p>
         <p style="margin-top:10px">Atenciosamente,</p>
       </div>
@@ -2119,7 +2638,7 @@ function renderExecutivo(){
   const grid=document.getElementById('sema-grid');
   if(grid){
     grid.innerHTML=secs.map(s=>{
-      const ns=NOTS.filter(n=>n.secretaria===s.key||n.secretaria.startsWith(s.key.split(' ')[0]));
+      const ns=NOTS.filter(n=>matchesSecretariaPainelFilter(n,s.key));
       const urg=ns.filter(n=>n.status==='urgente').length;
       const atr=ns.filter(n=>n.status==='atrasada').length;
       const anal=ns.filter(n=>n.status==='analise').length;
@@ -2142,7 +2661,7 @@ function renderExecutivo(){
       const pi=prazoI(n.prazo);
       return`<tr>
         <td class="mono" style="color:var(--blue)">${n.id}</td>
-        <td>${n.secretaria}</td>
+        <td>${displaySecretariaPainel(n)}</td>
         <td><span class="badge b-${n.status}">${slbl(n.status)}</span></td>
         <td style="color:var(--danger);font-weight:700;font-family:var(--f-body)">${fM(n.multa)}</td>
         <td class="${pi.c}">${pi.l}</td>
@@ -2161,6 +2680,19 @@ async function loadExecExtras(){
     .sort((a,b)=>a.d-b.d)
     .slice(0,10);
   const criticos=NOTS.filter(n=>n.status==='urgente'||n.status==='atrasada').sort((a,b)=>String(a.prazo).localeCompare(String(b.prazo))).slice(0,10);
+  let riscoKpi='<div style="color:var(--muted);font-size:12px;font-family:var(--f-body)">Indicadores de classificação automática indisponíveis.</div>';
+  try{
+    const rk=await apiFetch('/api/dashboard/kpis');
+    if(rk.ok){
+      const k=await rk.json();
+      const rp=k.riscoPorNivel||{};
+      riscoKpi='<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;font-family:var(--f-body)">'+
+        '<div><div style="font-size:22px;font-weight:700;color:#166534">'+(rp.normal||0)+'</div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Normal</div></div>'+
+        '<div><div style="font-size:22px;font-weight:700;color:#b45309">'+(rp.atencao||0)+'</div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Atenção</div></div>'+
+        '<div><div style="font-size:22px;font-weight:700;color:#991b1b">'+(rp.critico||0)+'</div><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Crítico</div></div></div>'+
+        '<p style="margin:10px 0 0;font-size:11px;color:var(--muted);line-height:1.5">Entradas recentes: <strong>'+(k.novosUltimos7Dias!=null?k.novosUltimos7Dias:'—')+'</strong> (7 dias) · <strong>'+(k.novosUltimos30Dias!=null?k.novosUltimos30Dias:'—')+'</strong> (30 dias)</p>';
+    }
+  }catch(e){}
   let rankHtml='<div style="color:var(--muted);font-size:12px;font-family:var(--f-body)">A carregar ranking…</div>';
   try{
     const r=await apiFetch('/api/relatorios/desempenho?periodo=semana');
@@ -2174,7 +2706,8 @@ async function loadExecExtras(){
   }catch(e){
     rankHtml='<div style="color:var(--muted);font-size:12px;font-family:var(--f-body)">Ranking indisponível.</div>';
   }
-  wrap.innerHTML='<div class="cc"><h4>Ranking (resposta / visualização)</h4>'+rankHtml+'</div>'+
+  wrap.innerHTML='<div class="cc"><h4>Classificação automática (risco)</h4>'+riscoKpi+'</div>'+
+  '<div class="cc"><h4>Ranking (resposta / visualização)</h4>'+rankHtml+'</div>'+
   '<div class="cc"><h4>Processos críticos</h4>'+(criticos.length?criticos.map(n=>'<div style="font-size:11.5px;padding:6px 0;border-bottom:1px solid var(--linen);font-family:var(--f-body)"><span class="mono" style="color:var(--blue)">'+n.id+'</span> · <span class="badge b-'+n.status+'">'+slbl(n.status)+'</span> · '+fD(n.prazo)+'</div>').join(''):'<div style="color:var(--muted);font-size:12px;font-family:var(--f-body)">Nenhum processo urgente ou atrasado.</div>')+'</div>'+
   '<div class="cc"><h4>Prazos (14 dias)</h4>'+(prazos.length?prazos.map(({n,d})=>'<div style="font-size:11.5px;padding:6px 0;border-bottom:1px solid var(--linen);cursor:pointer;font-family:var(--f-body)" onclick="sp(\'inbox\',null);openNotif(\''+n.id+'\')"><strong>'+fD(n.prazo)+'</strong> · '+(d===0?'HOJE':d+' d.')+' · '+n.id+'</div>').join(''):'<div style="color:var(--muted);font-size:12px;font-family:var(--f-body)">Sem prazos nesta janela.</div>')+'</div>';
 }
@@ -2211,11 +2744,33 @@ function renderExecCharts(){
 
 /* ════════ DASHBOARD ════════ */
 function renderCharts(){
+  const vis=NOTS.filter(n=>(n.monitoramentoOrigem||'MPMA')!=='DOM');
+  let rN=0,rA=0,rC=0;
+  vis.forEach(n=>{const v=n.nivelDenuncia||'normal';if(v==='critico')rC++;else if(v==='atencao')rA++;else rN++;});
+  if(__pmKpis&&__pmKpis.riscoPorNivel){
+    rN=__pmKpis.riscoPorNivel.normal||0;rA=__pmKpis.riscoPorNivel.atencao||0;rC=__pmKpis.riscoPorNivel.critico||0;
+  }
+  let secLabels=['Admin.','Saúde','Finanças','Gabinete'];
+  let secData=[NOTS.filter(n=>matchesSecretariaPainelFilter(n,'Administração')).length,NOTS.filter(n=>matchesSecretariaPainelFilter(n,'Saúde')).length,NOTS.filter(n=>matchesSecretariaPainelFilter(n,'Finanças')).length,NOTS.filter(n=>matchesSecretariaPainelFilter(n,'Gabinete')).length];
+  if(__pmKpis&&__pmKpis.rankingSecretarias&&__pmKpis.rankingSecretarias.length){
+    const top=__pmKpis.rankingSecretarias.slice(0,8);
+    secLabels=top.map(x=>{const s=String(x.secretaria||'—');return s.length>14?s.slice(0,12)+'…':s;});
+    secData=top.map(x=>x.total||0);
+  }
+  const mesPack=execChartLast6Months();
+  let mesLabels=mesPack.labels;
+  let mesData=mesPack.pct;
+  if(__pmKpis&&__pmKpis.serieMensal&&__pmKpis.serieMensal.length){
+    mesLabels=__pmKpis.serieMensal.map(x=>x.label);
+    const maxC=Math.max(1,...__pmKpis.serieMensal.map(x=>x.count||0),1);
+    mesData=__pmKpis.serieMensal.map(x=>Math.round(((x.count||0)/maxC)*100));
+  }
+  const secColors=secLabels.map(()=>'#0c1017');
   const defs=[
     {id:'cSt',type:'doughnut',labels:['Novas','Análise','Urgentes','Atrasadas','Respondidas'],data:[NOTS.filter(n=>n.status==='novo').length,NOTS.filter(n=>n.status==='analise').length,NOTS.filter(n=>n.status==='urgente').length,NOTS.filter(n=>n.status==='atrasada').length,NOTS.filter(n=>n.status==='respondido').length],colors:['#1a3d78','#c57b28','#9b2a1b','#991b1b','#175a36'],opts:{cutout:'62%',plugins:{legend:{position:'bottom'}}}},
-    {id:'cSec',type:'bar',labels:['Admin.','Saúde','Finanças','Gabinete'],data:[NOTS.filter(n=>n.secretaria==='Administração').length,NOTS.filter(n=>n.secretaria==='Saúde').length,NOTS.filter(n=>n.secretaria==='Finanças').length,NOTS.filter(n=>n.secretaria==='Gabinete').length],colors:['#0c1017','#0c1017','#0c1017','#0c1017'],opts:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:'#ece5d8'}},x:{grid:{display:false}}},borderRadius:2}},
-    {id:'cMes',type:'line',labels:['set/25','out/25','nov/25','dez/25','jan/26','fev/26'],data:[1,2,2,1,1,2],colors:['#9b2a1b'],opts:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{stepSize:1},grid:{color:'#ece5d8'}},x:{grid:{display:false}}},tension:.4,fill:true,pointRadius:4}},
-    {id:'cUrg',type:'polarArea',labels:['Alta','Média','Baixa'],data:[NOTS.filter(n=>n.urgencia==='Alta').length,NOTS.filter(n=>n.urgencia==='Média').length,NOTS.filter(n=>n.urgencia==='Baixa').length],colors:['rgba(155,42,27,.75)','rgba(197,123,40,.75)','rgba(23,90,54,.75)'],opts:{plugins:{legend:{position:'bottom'}},scales:{r:{display:false}}}},
+    {id:'cSec',type:'bar',labels:secLabels,data:secData,colors:secColors,opts:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:'#ece5d8'}},x:{grid:{display:false}}},borderRadius:2}},
+    {id:'cMes',type:'line',labels:mesLabels,data:mesData,colors:['#9b2a1b'],opts:{plugins:{legend:{display:false},tooltip:{callbacks:{label:function(ctx){return'Volume relativo: '+ctx.parsed.y+'%';}}}},scales:{y:{beginAtZero:true,max:100,ticks:{callback:v=>v+'%'},grid:{color:'#ece5d8'}},x:{grid:{display:false}}},tension:.4,fill:true,pointRadius:4}},
+    {id:'cUrg',type:'polarArea',labels:['Normal','Atenção','Crítico'],data:[rN,rA,rC],colors:['rgba(23,90,54,.75)','rgba(197,123,40,.75)','rgba(185,28,28,.78)'],opts:{plugins:{legend:{position:'bottom'}},scales:{r:{display:false}}}},
   ];
   defs.forEach(cfg=>{
     if(charts[cfg.id])charts[cfg.id].destroy();
@@ -2462,28 +3017,156 @@ function renderAudit(){
     </tr>`).join('');
 }
 
-/* ════════ LINKS / TOKENS ════════ */
+/* ════════ LINKS / TOKENS (API /api/access-tokens) ════════ */
+function copyPmAccessToken(btn){
+  const t=btn&&btn.getAttribute('data-token');
+  if(!t)return;
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(t).then(()=>toast('Token','Copiado para a área de transferência.','')).catch(()=>{window.prompt('Copie o token:',t);});
+  }else window.prompt('Copie o token:',t);
+}
+async function loadAccessTokens(){
+  const b=document.getElementById('links-body');
+  if(!b)return;
+  try{
+    const r=await apiFetch('/api/access-tokens');
+    if(!r.ok)throw new Error();
+    PM_ACCESS_TOKENS=await r.json();
+    renderLinks();
+  }catch(e){
+    PM_ACCESS_TOKENS=[];
+    b.innerHTML='<tr><td colspan="6" style="color:var(--muted);padding:14px">Não foi possível carregar os tokens. Confirme sessão e permissões (admin / executivo / prefeito).</td></tr>';
+  }
+}
 function renderLinks(){
   const b=document.getElementById('links-body');if(!b)return;
-  b.innerHTML=LINKS.map(l=>`
-    <tr>
-      <td><span class="${l.ativo?'tk':'tk-exp'}">${l.token}</span></td>
-      <td style="color:var(--blue);font-family:var(--f-mono);font-size:10px">${l.notif}</td>
-      <td>${l.dest}@buriticupu.ma.gov.br</td>
-      <td class="mono" style="color:var(--muted)">${l.gerado}</td>
-      <td class="mono" style="color:var(--muted)">${l.expira}</td>
-      <td style="font-size:11px">${l.acessado}</td>
-      <td><span class="badge ${l.ativo?'b-respondido':'b-urgente'}">${l.ativo?'Ativo':'Expirado'}</span></td>
-    </tr>`).join('');
+  if(!PM_ACCESS_TOKENS.length){
+    b.innerHTML='<tr><td colspan="6" style="color:var(--muted);padding:14px">Nenhum token gerado. Use <strong>+ Gerar Token</strong> (associa ao primeiro processo não respondido).</td></tr>';
+    return;
+  }
+  b.innerHTML=PM_ACCESS_TOKENS.map((l)=>{
+    const st=l.status||'—';
+    const bc=st==='Ativo'?'b-respondido':st==='Expirado'?'b-urgente':'b-gray';
+    return`<tr>
+      <td><code class="pm-token-full" title="${escAttr(l.token)}">${escHtml(l.token)}</code></td>
+      <td style="color:var(--blue);font-family:var(--f-mono);font-size:10px">${escHtml(l.notifId||'—')}</td>
+      <td>${escHtml(l.email||l.destinatario||'—')}</td>
+      <td class="mono" style="color:var(--muted);font-size:11px">${escHtml(fmtIsoPt(l.expiraEm))}</td>
+      <td><span class="badge ${bc}">${escHtml(st)}</span></td>
+      <td><button type="button" class="btn-ghost" style="padding:6px 12px" data-token="${escAttr(l.token)}" onclick="copyPmAccessToken(this)">Copiar token</button></td>
+    </tr>`;
+  }).join('');
 }
-function gerarToken(){
-  const n=NOTS.filter(n=>n.status!=='respondido')[0];
-  const tk='tk_'+Math.random().toString(36).substr(2,8).toUpperCase();
-  LINKS.unshift({token:tk,notif:n.id,dest:'servidor.designado',gerado:'Agora',expira:'Em 24h',acessado:'Não acessado',ativo:true});
-  renderLinks();toast('🔗 Token','Link seguro gerado e enviado ao destinatário.','');
+async function gerarToken(){
+  const email=prompt('E-mail do visitante (obrigatório):');
+  if(email===null)return;
+  const em=String(email||'').trim().toLowerCase();
+  if(!em||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){alert('Indique um e-mail válido.');return;}
+  const n=NOTS.filter((x)=>x.status!=='respondido')[0];
+  if(!n){alert('Não há processo em aberto (não respondido) para associar. Verifique a caixa de entrada.');return;}
+  try{
+    const r=await apiFetch('/api/access-tokens',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:em,notifId:n.id})});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok){alert(j.error||'Erro ao gerar token.');return;}
+    var base=(location.origin||'').replace(/\/$/,'');
+    var linkUrl=base+'/?token='+encodeURIComponent(j.token);
+    try{await navigator.clipboard.writeText(linkUrl);toast('Token','Link 24h: URL completa copiada para a área de transferência.','');}catch(e){toast('Token','Link 24h guardado. Use «Copiar URL» na lista.','');}
+    await loadAccessTokens();
+  }catch(e){alert('Erro de rede ao gerar token.');}
 }
 
 /* ════════ RELATÓRIOS ════════ */
+function pmStartMonday(d){
+  const x=new Date(d.getFullYear(),d.getMonth(),d.getDate());
+  const day=x.getDay();
+  x.setDate(x.getDate()-(day===0?6:day-1));
+  x.setHours(0,0,0,0);
+  return x;
+}
+function pmLabelSemana(weeksBack){
+  const now=new Date();
+  const mon=pmStartMonday(new Date(now.getFullYear(),now.getMonth(),now.getDate()-weeksBack*7));
+  const sun=new Date(mon.getFullYear(),mon.getMonth(),mon.getDate()+6);
+  return 'Semana — '+mon.toLocaleDateString('pt-BR')+' a '+sun.toLocaleDateString('pt-BR');
+}
+function pmLabelMes(monthsBack){
+  const d=new Date();
+  d.setMonth(d.getMonth()-monthsBack,1);
+  const t=d.toLocaleString('pt-BR',{month:'long',year:'numeric'});
+  return t.charAt(0).toUpperCase()+t.slice(1);
+}
+function pmTrimestreAtual(){
+  const d=new Date();
+  const q=Math.floor(d.getMonth()/3)+1;
+  return q+'º trimestre de '+d.getFullYear();
+}
+function buildRepPeriodoOptions(tab){
+  if(tab==='mensal')return[0,1,2,3,4,5].map(m=>'<option>'+pmLabelMes(m)+'</option>').join('');
+  if(tab==='produtividade'){
+    const meses=[0,1,2,3].map(m=>'<option>'+pmLabelMes(m)+'</option>').join('');
+    return meses+'<option>'+pmTrimestreAtual()+'</option>';
+  }
+  return[0,1,2,3,4,5,6,7].map(w=>'<option>'+pmLabelSemana(w)+'</option>').join('');
+}
+/** Datas do recorte para o PDF coincidirem com a opção selecionada (semanal / mensal / produtividade). */
+function isoDateLocal(d){
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function getExportRecorte(){
+  const aba=repTabName||'desempenho';
+  if(aba==='desempenho')return null;
+  const ps=document.getElementById('rep-periodo');
+  const idx=Math.max(0,ps&&typeof ps.selectedIndex==='number'?ps.selectedIndex:0);
+  const optText=String(ps&&ps.options[idx]?ps.options[idx].text:'').trim();
+  if(aba==='semanal'){
+    const mon=pmStartMonday(new Date(new Date().getFullYear(),new Date().getMonth(),new Date().getDate()-idx*7));
+    const sun=new Date(mon.getFullYear(),mon.getMonth(),mon.getDate()+6);
+    return {inicio:isoDateLocal(mon),fim:isoDateLocal(sun)};
+  }
+  if(aba==='mensal'){
+    const d=new Date();
+    d.setMonth(d.getMonth()-idx,1);
+    const start=new Date(d.getFullYear(),d.getMonth(),1);
+    const end=new Date(d.getFullYear(),d.getMonth()+1,0);
+    return {inicio:isoDateLocal(start),fim:isoDateLocal(end)};
+  }
+  if(aba==='produtividade'){
+    if(idx>=4||/trimestre/i.test(optText)){
+      const now=new Date();
+      const q=Math.floor(now.getMonth()/3);
+      const start=new Date(now.getFullYear(),q*3,1);
+      const end=new Date(now.getFullYear(),q*3+3,0);
+      return {inicio:isoDateLocal(start),fim:isoDateLocal(end)};
+    }
+    const d=new Date();
+    d.setMonth(d.getMonth()-idx,1);
+    const start=new Date(d.getFullYear(),d.getMonth(),1);
+    const end=new Date(d.getFullYear(),d.getMonth()+1,0);
+    return {inicio:isoDateLocal(start),fim:isoDateLocal(end)};
+  }
+  return null;
+}
+function parseRecebidoBRPainel(s){
+  const m=String(s||'').trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if(!m)return null;
+  const dd=parseInt(m[1],10),mm=parseInt(m[2],10),yy=parseInt(m[3],10);
+  const d=new Date(yy,mm-1,dd,12,0,0,0);
+  if(d.getFullYear()!==yy||d.getMonth()!==mm-1||d.getDate()!==dd)return null;
+  return d;
+}
+function notifInRecortePainel(n,ini,fim){
+  if(!ini||!fim)return true;
+  let d=parseRecebidoBRPainel(n.recebido);
+  if(!d&&/^\d{4}-\d{2}-\d{2}$/.test(String(n.prazo||''))){
+    const p=n.prazo.split('-');
+    d=new Date(parseInt(p[0],10),parseInt(p[1],10)-1,parseInt(p[2],10),12,0,0,0);
+  }
+  if(!d)return true;
+  const t0=new Date(ini+'T00:00:00').getTime();
+  const t1=new Date(fim+'T23:59:59.999').getTime();
+  const t=d.getTime();
+  return t>=t0&&t<=t1;
+}
 function setRepTab(el,tab){
   repTabName=tab;
   document.querySelectorAll('.rep-tab').forEach(t=>t.classList.remove('active'));
@@ -2502,11 +3185,7 @@ function setRepTab(el,tab){
     if(pd)pd.style.display='none';
     if(rs)rs.style.display='';
     if(rt)rt.style.display='';
-    if(ps){
-      if(tab==='mensal')ps.innerHTML='<option>Fevereiro 2026</option><option>Janeiro 2026</option><option>Dezembro 2025</option><option>Novembro 2025</option>';
-      else if(tab==='produtividade')ps.innerHTML='<option>Fevereiro 2026</option><option>Janeiro 2026</option><option>Dezembro 2025</option><option>3º Trimestre 2025</option>';
-      else ps.innerHTML='<option>Semana 08 — 17 a 23/02/2026</option><option>Semana 07 — 10 a 16/02/2026</option><option>Semana 06 — 03 a 09/02/2026</option>';
-    }
+    if(ps)ps.innerHTML=buildRepPeriodoOptions(tab);
   }
   renderRep();
 }
@@ -2516,8 +3195,17 @@ function renderRep(){
     renderRepDesempenho();
     return;
   }
-  const periodo=document.getElementById('rep-periodo')?.value||'—';
-  const all=NOTS;
+  const psOpt=document.getElementById('rep-periodo');
+  const periodo=(psOpt&&psOpt.selectedIndex>=0)?String(psOpt.options[psOpt.selectedIndex]?.text||'').trim()||'—':(document.getElementById('rep-periodo')?.value||'—');
+  const rss=document.getElementById('rep-sec')?.value||'';
+  const rst=document.getElementById('rep-status')?.value||'';
+  let all=NOTS;
+  if(rss)all=NOTS.filter(n=>matchesSecretariaPainelFilter(n,rss));
+  const rcPrev=getExportRecorte();
+  if(rcPrev)all=all.filter(n=>notifInRecortePainel(n,rcPrev.inicio,rcPrev.fim));
+  if(rst==='Urgentes')all=all.filter(n=>n.status==='urgente');
+  else if(rst==='Em Análise')all=all.filter(n=>n.status==='analise');
+  else if(rst==='Respondidas')all=all.filter(n=>n.status==='respondido');
   const cnt={novo:all.filter(n=>n.status==='novo').length,analise:all.filter(n=>n.status==='analise').length,urgente:all.filter(n=>n.status==='urgente').length,atrasada:all.filter(n=>n.status==='atrasada').length,respondido:all.filter(n=>n.status==='respondido').length};
   const nrTotal=all.reduce((s,n)=>s+(n.accessLog||[]).filter(a=>!a.respondeu&&!a.comentou&&(a.pdf||a.abriuDenuncia)).length,0);
   const tabName=repTabName;
@@ -2525,7 +3213,7 @@ function renderRep(){
 
   const hdr=`<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:18px">
     <div><div class="rph1">Relatório ${tabName==='semanal'?'Semanal':tabName==='mensal'?'Mensal':'de Produtividade'}</div>
-      <div class="rpsub">${periodo} · Procuradoria Municipal de Buriticupu — MA<br>Promotor: Dr. Felipe Augusto Rotondo · 1ª Promotoria de Justiça de Buriticupu</div>
+      <div class="rpsub">${periodo} · Procuradoria Municipal de Buriticupu — MA</div>
     </div>
     <div style="text-align:right;font-size:10.5px;color:var(--muted);font-family:var(--f-body)">Emitido: ${emitido}<br>Procurador Geral Municipal<br><strong>DOCUMENTO SIGILOSO</strong></div>
   </div>`;
@@ -2542,7 +3230,7 @@ function renderRep(){
     ${all.map(n=>`<tr>
       <td style="font-family:var(--f-mono);font-size:9.5px">${n.id}</td>
       <td style="font-size:11px">${n.titulo.slice(0,36)}…</td>
-      <td>${n.secretaria}</td>
+      <td>${displaySecretariaPainel(n)}</td>
       <td><span class="badge b-${n.status}">${slbl(n.status)}</span></td>
       <td>${n.urgencia}</td>
       <td style="font-family:var(--f-mono);font-size:10px">${fD(n.prazo)}</td>
@@ -2570,7 +3258,7 @@ function renderRep(){
         <div class="resp-bar"><div class="resp-bar-fill" style="width:${x.p}%;background:${x.p<50?'var(--danger)':x.p<70?'var(--warn)':'var(--success)'}"></div></div>`).join('')}
       <div class="rph3">Reenvios Automáticos (Motor IA)</div>
       <table class="rpt"><thead><tr><th>Processo</th><th>Etapa Atual</th><th>Tema IA</th><th>Reenvios</th><th>Escalado</th></tr></thead><tbody>
-        ${NOTS.map(n=>`<tr><td style="font-family:var(--f-mono);font-size:9.5px">${n.id}</td><td>Etapa ${n.reenvioEtapa}/3</td><td style="font-size:10.5px;color:var(--gold)">${(n.ia&&n.ia.tema)||'—'}</td><td>${n.reenvioEtapa}</td><td>${n.reenvioEtapa>=3?`<span style="color:var(--danger);font-weight:700">Sim</span>`:`<span style="color:var(--success)">Não</span>`}</td></tr>`).join('')}
+        ${all.map(n=>`<tr><td style="font-family:var(--f-mono);font-size:9.5px">${n.id}</td><td>Etapa ${n.reenvioEtapa}/3</td><td style="font-size:10.5px;color:var(--gold)">${(n.ia&&n.ia.tema)||'—'}</td><td>${n.reenvioEtapa}</td><td>${n.reenvioEtapa>=3?`<span style="color:var(--danger);font-weight:700">Sim</span>`:`<span style="color:var(--success)">Não</span>`}</td></tr>`).join('')}
       </tbody></table>
       ${nrAlert}${foot}`;
   } else {
@@ -2626,7 +3314,73 @@ async function renderRepDesempenho(){
     el.innerHTML='<div style="padding:20px;color:var(--danger);font-family:var(--f-body)">Não foi possível carregar o relatório. É necessário perfil executivo/admin e servidor ativo.</div>';
   }
 }
-function expPDF(){toast('📄 Exportação','Relatório exportado em PDF com timbre oficial.','');}
+async function expPDF(){
+  const aba=repTabName||'desempenho';
+  let periodo='semana';
+  if(aba==='desempenho'){
+    periodo=document.getElementById('rep-desempenho-periodo')?.value||'semana';
+  }
+  const sec=document.getElementById('rep-sec')?.value||'';
+  const st=document.getElementById('rep-status')?.value||'';
+  const ps=document.getElementById('rep-periodo');
+  let periodoLegenda='';
+  if(aba!=='desempenho'&&ps&&ps.style.display!=='none'&&ps.selectedIndex>=0){
+    periodoLegenda=String(ps.options[ps.selectedIndex]?.text||'').trim();
+  }
+  const t=getPmToken();
+  if(!t){toast('Sessão','Inicie sessão para exportar.','');return;}
+  const q=new URLSearchParams({aba,periodo});
+  if(sec)q.set('secretaria',sec);
+  if(st)q.set('status',st);
+  if(periodoLegenda)q.set('periodoLegenda',periodoLegenda);
+  const recorte=getExportRecorte();
+  if(recorte){
+    q.set('recorteInicio',recorte.inicio);
+    q.set('recorteFim',recorte.fim);
+  }
+  const u=apiUrl('/api/relatorios/exportar-pdf?'+q.toString());
+  try{
+    const r=await fetch(u,{method:'GET',headers:{Authorization:'Bearer '+t},credentials:'same-origin',cache:'no-store'});
+    if(r.status===401){clearSessionAuth();return;}
+    if(!r.ok){
+      let msg='Não foi possível gerar o PDF.';
+      try{
+        const j=await r.json();
+        if(j&&(j.message||j.error))msg=String(j.message||j.error);
+        else if(r.status===503)msg='LibreOffice não disponível ou erro na conversão. Instale o LibreOffice no servidor e reinicie o serviço.';
+      }catch(_){}
+      toast('Relatório PDF',msg,'urg');
+      return;
+    }
+    const ct=(r.headers.get('Content-Type')||'').toLowerCase();
+    if(ct&&!ct.includes('pdf')&&!ct.includes('octet-stream')){
+      toast('Relatório PDF','Resposta inesperada do servidor (não é PDF).','urg');
+      return;
+    }
+    const ab=await r.arrayBuffer();
+    const head=String.fromCharCode.apply(null,new Uint8Array(ab.slice(0,4)));
+    if(head!=='%PDF'){
+      let msg='O ficheiro recebido não é um PDF válido.';
+      try{
+        const txt=new TextDecoder().decode(ab.slice(0,500));
+        if(txt.trim().startsWith('{')&&txt.includes('error'))msg='O servidor devolveu erro em JSON em vez de PDF.';
+      }catch(_){}
+      toast('Relatório PDF',msg,'urg');
+      return;
+    }
+    const blob=new Blob([ab],{type:'application/pdf'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download='Relatorio_PMP_'+Date.now()+'.pdf';
+    document.body.appendChild(a);a.click();a.remove();
+    setTimeout(function(){try{URL.revokeObjectURL(url);}catch(_){}},4e3);
+    toast('PDF','Relatório transferido em PDF.','');
+    fetchMenuStatus();
+  }catch(e){
+    toast('Relatório PDF',String(e.message||e),'urg');
+  }
+}
 
 /* ════════ JURI IA ════════ */
 const JURI_SYS=`Você é JURI, Assistente de Inteligência Artificial Jurídica de Alto Nível. Possui doutorado e especialização em:
@@ -2727,10 +3481,39 @@ function juriQ(el){
   if(inp){inp.value=full;inp.focus();}
 }
 
+function fmtIsoPt(iso){
+  if(!iso)return'—';
+  try{return new Date(iso).toLocaleString('pt-BR');}catch(_){return String(iso).slice(0,16);}
+}
+function desativarUsuarioBtn(btn){
+  if(!btn||!btn.dataset)return;
+  desativarUsuario(btn.dataset.uid,btn.dataset.uname||'');
+}
+async function desativarUsuario(id,username){
+  if(!CU||!(CU.role==='admin_master'||CU.role==='admin')){alert('Sem permissão.');return;}
+  if(CU.id===id){alert('Não pode desativar a sua própria sessão.');return;}
+  if(!confirm('Desativar este utilizador? A conta deixa de poder iniciar sessão. Os dados não são apagados.'))return;
+  if(!confirm('Confirmação final: pretende mesmo desativar '+username+'?'))return;
+  const conf=prompt('Digite o username exatamente para confirmar:');
+  if(conf!==username){alert('Texto não coincide com o username. Operação cancelada.');return;}
+  const r=await apiFetch('/api/usuarios/'+encodeURIComponent(id),{method:'DELETE'});
+  const d=await r.json().catch(()=>({}));
+  if(r.ok){toast('Utilizador','Conta desativada.','');renderUsuarios();loadAssignableUsers();}
+  else alert(d.error||d.message||'Erro ao desativar.');
+}
+async function restaurarUsuario(id){
+  if(!CU||!(CU.role==='admin_master'||CU.role==='admin')){alert('Sem permissão.');return;}
+  if(!confirm('Restaurar este utilizador? Voltará a poder iniciar sessão.'))return;
+  const r=await apiFetch('/api/usuarios/restore/'+encodeURIComponent(id),{method:'PUT'});
+  const d=await r.json().catch(()=>({}));
+  if(r.ok){toast('Utilizador','Restaurado.','');renderUsuarios();loadAssignableUsers();}
+  else alert(d.error||d.message||'Erro ao restaurar.');
+}
 async function renderUsuarios(){
   const adm=document.getElementById('usuarios-admin-wrap');
   const denied=document.getElementById('usuarios-denied');
   const can=CU&&(CU.role==='admin_master'||CU.role==='admin'||CU.role==='prefeito');
+  const canDel=CU&&(CU.role==='admin_master'||CU.role==='admin');
   if(!can){
     if(adm)adm.style.display='none';
     if(denied)denied.style.display='block';
@@ -2739,31 +3522,56 @@ async function renderUsuarios(){
   const nuRole=document.getElementById('nu-role');
   if(nuRole){
     if(CU.role==='prefeito')nuRole.innerHTML='<option value="usuario">usuario</option><option value="executivo">executivo</option>';
-    else nuRole.innerHTML='<option value="usuario">usuario</option><option value="executivo">executivo</option><option value="prefeito">prefeito</option><option value="admin">admin</option><option value="admin_master">admin_master</option>';
+    else nuRole.innerHTML='<option value="usuario">usuario</option><option value="executivo">executivo</option><option value="juridico">juridico</option><option value="auditor">auditor</option><option value="prefeito">prefeito</option><option value="admin">admin</option><option value="admin_master">admin_master</option>';
   }
   if(adm)adm.style.display='block';
   if(denied)denied.style.display='none';
+  const thAcoes=document.getElementById('usuarios-th-acoes');
+  const inWrap=document.getElementById('usuarios-inativos-wrap');
+  const inTb=document.getElementById('usuarios-inativos-body');
+  if(thAcoes)thAcoes.style.display=canDel?'table-cell':'none';
+  if(inWrap)inWrap.style.display=canDel?'block':'none';
   const tb=document.getElementById('usuarios-body');
   if(!tb)return;
   try{
     const r=await apiFetch('/api/usuarios');
     if(!r.ok)throw new Error();
     const list=await r.json();
-    tb.innerHTML=list.map(u=>`<tr>
-      <td style="font-family:var(--f-mono);font-size:11px">${u.username}</td>
-      <td>${u.nome}</td>
-      <td><span class="badge b-gray">${u.role}</span></td>
+    tb.innerHTML=list.map(u=>{
+      const delBtn=canDel&&CU.id!==u.id&&(u.role!=='admin_master')&&(CU.role==='admin_master'||u.role!=='admin')
+        ?`<button type="button" class="btn-ghost" style="padding:4px 10px;color:var(--danger)" data-uid="${escAttr(u.id)}" data-uname="${escAttr(u.username)}" onclick="desativarUsuarioBtn(this)">Desativar</button>`
+        :'—';
+      return`<tr>
+      <td style="font-family:var(--f-mono);font-size:11px">${escHtml(u.username)}</td>
+      <td>${escHtml(u.nome)}</td>
+      <td><span class="badge b-gray">${escHtml(u.role)}</span></td>
+      <td><span class="badge b-novo">${u.ativo===false?'Inativo':'Ativo'}</span></td>
       <td style="font-size:11px">
-        <input type="text" id="wa-${u.id}" value="${String(u.whatsapp||'').replace(/"/g,'&quot;')}" placeholder="DDD+número" style="max-width:130px;padding:4px 8px;border:1px solid var(--linen);font-family:var(--f-body)">
-        <button type="button" class="btn-ghost" style="padding:4px 10px" onclick="saveUserWhatsapp('${u.id}')">Guardar WA</button>
+        <input type="text" id="wa-${escAttr(u.id)}" value="${String(u.whatsapp||'').replace(/"/g,'&quot;')}" placeholder="DDD+número" style="max-width:130px;padding:4px 8px;border:1px solid var(--linen);font-family:var(--f-body)">
+        <button type="button" class="btn-ghost" style="padding:4px 10px" onclick="saveUserWhatsapp('${escAttr(u.id)}')">Guardar WA</button>
       </td>
       <td style="font-size:11px">
-        <input type="password" placeholder="Nova senha" id="rp-${u.id}" style="max-width:130px;padding:4px 8px;border:1px solid var(--linen);font-family:var(--f-body)">
-        <button type="button" class="btn-ghost" style="padding:4px 10px" onclick="resetUserPass('${u.id}')">Salvar senha</button>
+        <input type="password" placeholder="Nova senha" id="rp-${escAttr(u.id)}" style="max-width:130px;padding:4px 8px;border:1px solid var(--linen);font-family:var(--f-body)">
+        <button type="button" class="btn-ghost" style="padding:4px 10px" onclick="resetUserPass('${escAttr(u.id)}')">Salvar senha</button>
       </td>
-    </tr>`).join('');
+      ${canDel?`<td style="font-size:11px;white-space:nowrap">${delBtn}</td>`:''}
+    </tr>`;
+    }).join('');
+    if(canDel&&inTb){
+      const ri=await apiFetch('/api/usuarios/inativos');
+      if(ri.ok){
+        const inv=await ri.json();
+        inTb.innerHTML=inv.length?inv.map(u=>`<tr>
+          <td style="font-family:var(--f-mono);font-size:11px">${escHtml(u.username)}</td>
+          <td>${escHtml(u.nome)}</td>
+          <td><span class="badge b-gray">${escHtml(u.role)}</span></td>
+          <td style="font-size:11px">${fmtIsoPt(u.desativadoEm)}</td>
+          <td><button type="button" class="btn-ghost" style="padding:4px 10px;color:var(--success)" onclick="restaurarUsuario('${escAttr(u.id)}')">Restaurar</button></td>
+        </tr>`).join(''):'<tr><td colspan="5" style="color:var(--muted)">Nenhum utilizador inativo.</td></tr>';
+      }else inTb.innerHTML='<tr><td colspan="5">Erro ao carregar inativos.</td></tr>';
+    }
   }catch(e){
-    tb.innerHTML='<tr><td colspan="5">Erro ao carregar usuários. Verifique o servidor.</td></tr>';
+    tb.innerHTML='<tr><td colspan="7">Erro ao carregar usuários. Verifique o servidor.</td></tr>';
   }
 }
 async function saveUserWhatsapp(id){
@@ -2813,9 +3621,20 @@ window.doLogin=doLogin;
   try{
     const r=await apiFetch('/api/me');
     if(!r.ok){
-      if(r.status===401)setPmToken('');
+      if(r.status===401){
+        try{
+          if(sessionStorage.getItem('pm_login_token')){
+            sessionStorage.removeItem('pm_login_token');
+            setPmToken('');
+            location.replace('/token-expirado.html');
+            return;
+          }
+        }catch(e){}
+        setPmToken('');
+      }
       return;
     }
+    try{sessionStorage.removeItem('pm_login_token');}catch(e){}
     CU=mapApiUser(await r.json());
     document.getElementById('u-av').textContent=CU.init;
     document.getElementById('u-av').style.background=CU.color;
@@ -2825,11 +3644,13 @@ window.doLogin=doLogin;
     document.getElementById('sign-cargo').value=CU.cargo;
     document.getElementById('login-screen').style.display='none';
     document.getElementById('app').style.display='block';
+    var tbw2=document.getElementById('topbar-bell-wrap');if(tbw2&&CU&&CU.role!=='visitante')tbw2.style.display='';
     const now=new Date();calY=now.getFullYear();calM=now.getMonth();
     await loadNotificacoes();
     await loadAssignableUsers();
     connectSocket();
     initApp();
+    startMenuStatusPolling();
     loadRecorrentes();
     const pendN=sessionStorage.getItem('pm_pending_notif');
     if(pendN){sessionStorage.removeItem('pm_pending_notif');setTimeout(()=>openNotif(pendN,false),650);}

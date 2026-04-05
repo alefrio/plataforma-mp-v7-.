@@ -125,9 +125,21 @@ async function sendWhatsAppCloud(novo, destinations) {
  * @param {object} novo - notificação criada (MPMA / denúncia)
  * @param {Array} [allUsers] - lista de utilizadores (users.json)
  */
+function isWhatsAppUrgentNotif(novo) {
+  if (process.env.NOTIFY_WHATSAPP_URGENT_ONLY === 'false') return true;
+  if (String(novo.urgencia || '') === 'Alta') return true;
+  if (novo.nivelDenuncia === 'critico') return true;
+  if (String(novo.status || '') === 'urgente' || String(novo.status || '') === 'atrasada') return true;
+  return false;
+}
+
 async function sendWhatsAppNewNotif(novo, allUsers) {
   if (process.env.NOTIFY_WHATSAPP_ENABLED === 'false') return;
   if ((novo.monitoramentoOrigem || 'MPMA') !== 'MPMA') return;
+  if (!isWhatsAppUrgentNotif(novo)) {
+    console.log('[notify] WhatsApp ignorado (apenas urgente/crítico):', novo.id || '');
+    return;
+  }
   const destinations = collectWhatsAppDestinations(allUsers);
   if (!destinations.length) {
     if (process.env.NOTIFY_WHATSAPP_STRICT === '1') {
@@ -188,9 +200,12 @@ async function sendEmailNewNotif(novo, usersWithEmail) {
   const list = (usersWithEmail || []).filter((u) => u && u.email && String(u.email).includes('@'));
   if (!list.length) return;
   const link = buildPlataformaNotifLink(novo);
-  const subject = `[PlataformaMP] Nova denúncia / menção — ${novo.id || ''}`;
+  const tag =
+    novo.nivelDenuncia === 'critico' ? '[CRÍTICO] ' : novo.nivelDenuncia === 'atencao' ? '[ATENÇÃO] ' : '';
+  const subject = `${tag}[PlataformaMP] Nova denúncia / menção — ${novo.id || ''}`;
   const html = `
     <p><strong>${novo.titulo || 'Notificação'}</strong></p>
+    <p>Classificação automática: <strong>${novo.nivelDenuncia || 'normal'}</strong></p>
     <p>ID: <code>${novo.id || ''}</code></p>
     <p><a href="${link}">Abrir na PlataformaMP</a></p>
     ${novo.pdfUrl ? `<p><a href="${novo.pdfUrl}">PDF do Diário Oficial (MPMA)</a></p>` : ''}
@@ -212,8 +227,43 @@ async function sendEmailNewNotif(novo, usersWithEmail) {
   }
 }
 
+const ROLES_EMAIL_RELATORIO = ['admin_master', 'admin', 'executivo', 'prefeito', 'juridico'];
+
+/**
+ * Envia PDF do relatório diário automático aos gestores com e-mail configurado.
+ */
+async function sendRelatorioDiarioEmail(allUsers, { buffer, fileName, legenda }) {
+  if (process.env.NOTIFY_EMAIL_ENABLED === 'false') return;
+  const tx = getMailer();
+  if (!tx) return;
+  const from = process.env.SMTP_FROM || process.env.SMTP_USER;
+  if (!from || !buffer) return;
+  const list = (allUsers || []).filter(
+    (u) => u && u.ativo !== false && ROLES_EMAIL_RELATORIO.includes(u.role) && u.email && String(u.email).includes('@')
+  );
+  if (!list.length) return;
+  const subject = `[PlataformaMP] Relatório diário automático — ${legenda || ''}`;
+  for (const u of list) {
+    try {
+      await tx.sendMail({
+        from,
+        to: u.email,
+        subject,
+        text: `Segue em anexo o relatório PDF gerado automaticamente (${fileName}).\n${legenda || ''}`,
+        html: `<p>Relatório diário da PlataformaMP.</p><p>${legenda || ''}</p>`,
+        attachments: [{ filename: fileName || 'relatorio.pdf', content: buffer, contentType: 'application/pdf' }],
+      });
+      console.log('[notify] Relatório diário enviado para', u.email);
+    } catch (e) {
+      console.error('[notify] Erro e-mail relatório diário:', u.email, e.message);
+    }
+  }
+}
+
 module.exports = {
   sendWhatsAppNewNotif,
   sendEmailNewNotif,
+  sendRelatorioDiarioEmail,
   buildPlataformaNotifLink,
+  isWhatsAppUrgentNotif,
 };

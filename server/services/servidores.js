@@ -9,7 +9,10 @@ const servidoresCrawler = require('./servidoresCrawler');
 const servidoresService = require('./servidoresService');
 
 const NOMINAL_URL = servidoresCrawler.NOMINAL_URL;
-const DATA_DIR = path.join(__dirname, '..', '..', 'data');
+const PROJECT_ROOT = path.join(__dirname, '..', '..');
+const DATA_DIR = path.join(PROJECT_ROOT, 'data');
+const MPMA_NOMES_CONFIG = path.join(PROJECT_ROOT, 'config', 'mpma-nomes-monitoramento.json');
+const MPMA_NOMES_DATA = path.join(DATA_DIR, 'mpma-nomes-monitoramento.json');
 const CACHE_FILE = path.join(DATA_DIR, 'servidores-nominal.json');
 /** Nomeações / exonerações inferidas a partir de PDFs do DOM (texto real) */
 const OVERLAY_DOM_FILE = path.join(DATA_DIR, 'secretarios-overlay-dom.json');
@@ -34,6 +37,54 @@ function ensureDataDir() {
  */
 function setLegacyMonitoredNames(names) {
   legacyNomes = Array.isArray(names) ? names.filter(Boolean).map(String) : [];
+}
+
+/**
+ * Nomes completos para cruzar com PDFs do MPMA (prioridade sobre Excel/nominal).
+ * 1) data/mpma-nomes-monitoramento.json (opcional, não versionado)
+ * 2) config/mpma-nomes-monitoramento.json (versionado — edite aqui os nomes alvo)
+ * 3) MPMA_NOMES_JSON no .env (array JSON)
+ */
+function loadMpmaNomesAlvoFromFiles() {
+  const readOne = (filePath, origemPadrao) => {
+    try {
+      if (!fs.existsSync(filePath)) return [];
+      const j = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      const arr = Array.isArray(j) ? j : Array.isArray(j?.nomes) ? j.nomes : [];
+      return arr
+        .filter((x) => x && String(x.nome || '').trim().length > 2)
+        .map((x) => ({
+          nome: String(x.nome).trim(),
+          cargo: String(x.cargo || '').trim(),
+          origem: String(x.origem || '').trim() || origemPadrao,
+        }));
+    } catch (e) {
+      console.warn('[servidores] mpma-nomes-monitoramento inválido:', filePath, e.message);
+      return [];
+    }
+  };
+  const fromData = readOne(MPMA_NOMES_DATA, 'Lista MPMA (data/mpma-nomes-monitoramento.json)');
+  const fromConfig = readOne(MPMA_NOMES_CONFIG, 'Lista MPMA (config/mpma-nomes-monitoramento.json)');
+  return dedupeByNome([...fromData, ...fromConfig]);
+}
+
+function parseMpmaNomesFromEnv() {
+  const raw = process.env.MPMA_NOMES_JSON;
+  if (!raw || !String(raw).trim()) return [];
+  try {
+    const arr = JSON.parse(raw);
+    if (!Array.isArray(arr)) return [];
+    return arr
+      .filter((x) => x && String(x.nome || '').trim().length > 2)
+      .map((x) => ({
+        nome: String(x.nome).trim(),
+        cargo: String(x.cargo || '').trim(),
+        origem: 'Lista MPMA (.env MPMA_NOMES_JSON)',
+      }));
+  } catch {
+    console.warn('[servidores] MPMA_NOMES_JSON inválido — ignorado.');
+    return [];
+  }
 }
 
 function parseLiderancaFromEnv() {
@@ -223,22 +274,38 @@ async function refreshServidoresNominal() {
 
 function buildListaCompleta() {
   servidoresService.ensureLoaded();
-  const base = dedupeByNome([
-    ...servidoresService.getServidoresExcel(),
-    ...(memoria || []),
-    ...parseLiderancaFromEnv(),
-    ...overlayDomRows,
-  ]);
+  const mpmaAlvo = dedupeByNome([...loadMpmaNomesAlvoFromFiles(), ...parseMpmaNomesFromEnv()]);
+  const apenasAlvo =
+    process.env.MPMA_APENAS_NOMES_ALVO === '1' || /^true$/i.test(String(process.env.MPMA_APENAS_NOMES_ALVO || ''));
+
   const legacyRows = legacyNomes.map((n) => ({
     nome: n,
     cargo: '',
     origem: 'Referência MPMA',
   }));
+
+  if (apenasAlvo && mpmaAlvo.length) {
+    return dedupeByNome([...mpmaAlvo, ...legacyRows]);
+  }
+  if (apenasAlvo && !mpmaAlvo.length) {
+    console.warn(
+      '[servidores] MPMA_APENAS_NOMES_ALVO ativo mas lista vazia — usando lista completa (config/data MPMA_NOMES_JSON).'
+    );
+  }
+
+  const base = dedupeByNome([
+    ...mpmaAlvo,
+    ...servidoresService.getServidoresExcel(),
+    ...(memoria || []),
+    ...parseLiderancaFromEnv(),
+    ...overlayDomRows,
+  ]);
   return dedupeByNome([...base, ...legacyRows]);
 }
 
 /**
- * Lista usada pelo monitor MPMA: Excel Sisponto + site nominal + liderança (.env) + DOM + nomes legados.
+ * Lista usada pelo monitor MPMA: primeiro nomes em config/data MPMA + Excel + nominal + liderança (.env) + DOM + legado.
+ * Variantes no texto (mpmaMonitor) batem com estes nomes completos.
  */
 function getListaMonitoramento() {
   if (!memoria.length) loadCacheFromDisk();

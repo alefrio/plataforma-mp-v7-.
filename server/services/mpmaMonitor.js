@@ -17,7 +17,8 @@ const MAX_HTML_PAGES = 80;
 
 /**
  * Liderança / secretarias — nomes oficiais + cargo para exibição e detecção com trecho no PDF.
- * Busca: sem acentos, case-insensitive; aceita nome completo ou parte significativa (sem partículas / primeiro+último).
+ * Na lista de monitoramento: deteção por variantes (nome completo, sem partículas, primeiro+último);
+ * na notificação grava-se sempre o nome completo vindo do cadastro (Excel/nominal/.env), não só o trecho do PDF.
  */
 const LIDERANCA_MPMA_MONITORADA = [
   { nomeCompleto: 'João Carlos Teixeira da Silva', cargo: 'Prefeito' },
@@ -62,14 +63,26 @@ function escapeRe(s) {
 }
 
 function nameMatches(nt, name) {
-  const nn = norm(name);
+  const raw = String(name || '').trim();
+  const nn = norm(raw);
   if (!nn.length) return false;
-  const oneWord = !String(name).includes(' ');
+  const oneWord = !raw.includes(' ');
   if (oneWord && nn.length <= 8) {
     const re = new RegExp(`(?:^|[^a-z0-9])${escapeRe(nn)}(?:[^a-z0-9]|$)`);
     return re.test(nt);
   }
-  return nt.includes(nn);
+  if (oneWord) {
+    return nt.includes(nn);
+  }
+  /** Nomes compostos: qualquer variante significativa no texto → considera menção; exibição continua com nome completo do cadastro. */
+  const variants = nameMatchVariantsFromDisplay(raw);
+  for (const v of variants) {
+    if (!v) continue;
+    const parts = v.split(/\s+/).filter(Boolean);
+    if (parts.length < 2 && v.length < 8) continue;
+    if (nt.includes(v)) return true;
+  }
+  return false;
 }
 
 /**
@@ -606,19 +619,34 @@ function isAllowedMpmaPdfUrl(pdfUrl) {
 }
 
 /**
- * Gate obrigatório: lista de monitoramento não vazia, texto suficiente, Buriticupu, ≥1 nome da lista (só entradas fornecidas).
+ * Gate: texto suficiente, Buriticupu, e pelo menos um sinal — nome na lista OU secretaria (catálogo) OU frase "secretário … de …".
+ * Lista vazia não impede validação se secretaria/secretário estiverem no texto (require lazy de mpmaService evita ciclo de carga).
  * @param {Array<{nome:string,cargo?:string,origem?:string}>} listaMonitoramento
  */
 function validateMpmaPdfContentForDenuncia(rawText, listaMonitoramento) {
-  if (!listaMonitoramento || !listaMonitoramento.length) return false;
   const compact = String(rawText || '')
     .replace(/\s+/g, ' ')
     .trim();
   if (compact.length < MIN_MPMA_PDF_TEXT_CHARS) return false;
   const nt = norm(rawText);
   if (!nt.includes('buriticupu')) return false;
-  const matchedLista = findMatchedNames(rawText, listaMonitoramento);
-  return matchedLista.length > 0;
+  let mpmaSvc;
+  try {
+    mpmaSvc = require('./mpmaService');
+  } catch {
+    mpmaSvc = null;
+  }
+  const secretariasNoTexto = mpmaSvc && mpmaSvc.encontrarSecretarias ? mpmaSvc.encontrarSecretarias(rawText) : [];
+  const secretariosNoTexto = mpmaSvc && mpmaSvc.detectarSecretario ? mpmaSvc.detectarSecretario(rawText) : [];
+  const matchedLista =
+    listaMonitoramento && listaMonitoramento.length
+      ? findMatchedNames(rawText, listaMonitoramento)
+      : [];
+  return (
+    matchedLista.length > 0 ||
+    secretariasNoTexto.length > 0 ||
+    secretariosNoTexto.length > 0
+  );
 }
 
 /** Assinatura do texto extraído (deteção de alterações / consistência com o PDF processado). */
@@ -903,6 +931,21 @@ function stableIdFromPdfUrl(pdfUrl) {
  * @param {Array<{nome:string,cargo?:string,origem?:string,setor?:string,departamento?:string,lotacao?:string}>} matchedPeople
  */
 function buildDiarioNotification(pdfUrl, matchedPeople, rawText, pdfBinarioSha256) {
+  let mpmaSvc;
+  try {
+    mpmaSvc = require('./mpmaService');
+  } catch {
+    mpmaSvc = null;
+  }
+  const secretariasInstit =
+    mpmaSvc && mpmaSvc.encontrarSecretarias ? mpmaSvc.encontrarSecretarias(rawText) : [];
+  const secretariosDetectadosList =
+    mpmaSvc && mpmaSvc.detectarSecretario ? mpmaSvc.detectarSecretario(rawText) : [];
+  const secretariasCatalogoNomes = secretariasInstit.map((s) => s.nome).filter(Boolean);
+  const secretarioDetectado =
+    secretariosDetectadosList.length > 0 ? secretariosDetectadosList.join(' | ') : '';
+  const dataDeteccaoContexto = new Date().toISOString();
+
   const pdfUrlCanon = normalizeMpmaPdfUrl(pdfUrl) || String(pdfUrl || '').trim();
   const file = path.basename(new URL(pdfUrlCanon).pathname) || 'documento.pdf';
   const id = stableIdFromPdfUrl(pdfUrlCanon);
@@ -938,7 +981,12 @@ function buildDiarioNotification(pdfUrl, matchedPeople, rawText, pdfBinarioSha25
   const orgaoMp = extractOrgaoMP(rawText);
   const riscoFin = computeRiscoFinanceiro(multaEx, prazoFull);
   const secFromPdf = extractSecretariaFromText(rawText);
-  const secretaria = secFromPdf || 'Não identificada no texto';
+  let secretaria = 'Não identificada no texto';
+  if (secretariasCatalogoNomes.length) {
+    secretaria = secretariasCatalogoNomes.join(' · ');
+  } else if (secFromPdf) {
+    secretaria = secFromPdf.match(/^secretaria/i) ? secFromPdf : `Secretaria: ${secFromPdf}`;
+  }
   const { urgencia, urg } = urgencyFromDays(days);
   const gravidadePdf = detectGravidadePdf(rawText);
   const classificacaoRiscoInstitucional = classifyRiscoInstitucionalText(rawText);
@@ -1001,6 +1049,10 @@ function buildDiarioNotification(pdfUrl, matchedPeople, rawText, pdfBinarioSha25
       lotacao: p.lotacao || null,
       origemLista: p.origem || null,
     })),
+    secretariasInstitucionais: secretariasCatalogoNomes,
+    secretariosDetectados: secretariosDetectadosList,
+    fragmentoSecretariaRegex: secFromPdf || null,
+    dataDeteccaoContextoISO: dataDeteccaoContexto,
   };
 
   const servidorLinha = uniq
@@ -1010,12 +1062,20 @@ function buildDiarioNotification(pdfUrl, matchedPeople, rawText, pdfBinarioSha25
       return bits.length ? `${p.nome} (${bits.join(' · ')})` : p.nome;
     })
     .join(' · ');
-  const servidor = servidorLinha + (uniq.length > 6 ? '…' : '');
+  let servidor = servidorLinha + (uniq.length > 6 ? '…' : '');
+  if (!servidor.trim()) {
+    if (secretarioDetectado) servidor = `Menção no texto: ${secretarioDetectado.slice(0, 280)}${secretarioDetectado.length > 280 ? '…' : ''}`;
+    else if (secretariasCatalogoNomes.length)
+      servidor = `Contexto: ${secretariasCatalogoNomes.slice(0, 4).join(' · ')}${secretariasCatalogoNomes.length > 4 ? '…' : ''}`;
+    else servidor = 'Sem nome da lista de monitoramento no trecho analisado';
+  }
 
   return {
     id,
     titulo,
     secretaria,
+    secretarioDetectado: secretarioDetectado || '',
+    mpmaSecretarias: [...secretariasCatalogoNomes],
     servidor,
     mencoesDetalhe: uniq.map((p) => ({
       nome: p.nome,
@@ -1036,6 +1096,7 @@ function buildDiarioNotification(pdfUrl, matchedPeople, rawText, pdfBinarioSha25
     descricao: resumo,
     ia: {
       sec: secretaria,
+      secretarioDetectado: secretarioDetectado || null,
       tema: titulo.slice(0, 120),
       resumo,
       urg,
