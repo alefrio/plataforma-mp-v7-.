@@ -30,8 +30,9 @@ const { runDouCrawler } = require('./services/douCrawler');
 const { runDoeCrawler } = require('./services/doeCrawler');
 const { runDomCrawler } = require('./services/domCrawler');
 const servidores = require('./services/servidores');
-const servidoresService = require('./services/servidoresService');
+const mpmaAlvosMonitor = require('./services/mpmaAlvosMonitor');
 const mpmaService = require('./services/mpmaService');
+const crawlerMPMA = require('./crawlerMPMA');
 servidores.setLegacyMonitoredNames(mpma.MONITORED_NAMES);
 const { analyzePdfText, mergeIaIntoNotification } = require('./pdf-ai');
 const { sendWhatsAppNewNotif, sendEmailNewNotif, sendRelatorioDiarioEmail } = require('./notify');
@@ -594,6 +595,12 @@ function buildDashboardKpis() {
     }
     serieMensal.push({ label, count: c });
   }
+  let detectoesCupula = [];
+  try {
+    detectoesCupula = mpmaAlvosMonitor.lerDeteccoes().slice(-80).reverse();
+  } catch {
+    detectoesCupula = [];
+  }
   return {
     totalCarteira: vis.length,
     riscoPorNivel: risco,
@@ -602,6 +609,8 @@ function buildDashboardKpis() {
     novosUltimos30Dias: novos30,
     serieSemanal,
     serieMensal,
+    detectoesMonitoramentoCupula: detectoesCupula,
+    detectoesCupulaUrgentes: detectoesCupula.filter((x) => x.urgente).length,
   };
 }
 
@@ -926,6 +935,17 @@ app.get('/api/notificacoes', authMiddleware, requireActiveUser, (req, res) => {
     return res.json(visivel);
   }
   res.json(visivel);
+});
+
+/** Log de detecções da lista fixa (cúpula) no texto MPMA — ficheiro data/mpma-notificacoes-alvos.json */
+app.get('/api/notificacoes-monitoramento', authMiddleware, requireActiveUser, (req, res) => {
+  if (req.user.visitante) return res.json([]);
+  try {
+    const itens = mpmaAlvosMonitor.lerDeteccoes().slice().reverse();
+    res.json({ ok: true, itens, total: itens.length });
+  } catch (e) {
+    res.status(500).json({ ok: false, error: e.message || 'Erro ao ler detecções' });
+  }
 });
 
 app.get(
@@ -1558,7 +1578,7 @@ async function runMpmaMonitor() {
   const listaMonitoramento = servidores.getListaMonitoramento();
   if (!listaMonitoramento.length) {
     console.warn(
-      '[MPMA] Lista de servidores vazia — PDFs só entram com menção a Buriticupu e secretaria/secretário no texto (catálogo mpmaService) até haver nominal/Excel.'
+      '[MPMA] Lista de monitoramento vazia — PDFs só entram com Buriticupu e secretaria/secretário no texto (catálogo mpmaService).'
     );
   }
   for (const pdfUrl of links) {
@@ -1583,6 +1603,26 @@ async function runMpmaMonitor() {
     }
     seen.add(canonicalUrl);
     saveSeenSet(seen);
+
+    const ntBur = mpma.norm(text).includes('buriticupu');
+    if (ntBur && text.length >= mpma.MIN_MPMA_PDF_TEXT_CHARS) {
+      try {
+        const deteccoes = await mpmaAlvosMonitor.verificarNotificacao(text);
+        const textoSha = mpma.sha256TextoPdf(text);
+        for (const r of deteccoes) {
+          mpmaAlvosMonitor.salvarNotificacao({
+            nome: r.nome,
+            urgente: r.urgente,
+            data: r.data,
+            pdfUrl: canonicalUrl,
+            textoSha256: textoSha,
+            termosUrgencia: r.termosUrgencia || [],
+          });
+        }
+      } catch (e) {
+        console.warn('[MPMA] Deteção lista fixa:', e.message);
+      }
+    }
 
     if (!mpma.validateMpmaPdfContentForDenuncia(text, listaMonitoramento)) {
       console.warn(
@@ -1689,7 +1729,7 @@ cron.schedule('*/10 * * * *', () => {
   runDiariosFederaisEstaduaisMonitor().catch((e) => console.error('[DOU/DOE cron]', e));
 });
 
-mpmaService.iniciarMonitoramento(() => runMpmaMonitor().catch((e) => console.error('[MPMA cron]', e)));
+crawlerMPMA.scheduleMpmaProductionMonitor(() => runMpmaMonitor());
 
 cron.schedule('*/30 * * * *', () => {
   tceCrawler.runTceMaBuriticupuCrawl().catch((e) => console.error('[TCE-MA cron]', e.message));
@@ -1900,7 +1940,6 @@ server.listen(PORT, HOST, () => {
     logAcessoExternoInstrucoes(PORT);
   }
   servidores.loadCacheFromDisk();
-  servidoresService.carregarServidores();
   servidores.refreshServidoresNominal().catch((e) => console.warn('[servidores] Carga inicial:', e.message));
   setTimeout(() => runMpmaMonitor().catch(console.error), 3000);
   setTimeout(() => runDomMunicipalMonitor().catch((e) => console.warn('[DOM] arranque:', e.message)), 12000);

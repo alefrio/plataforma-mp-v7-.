@@ -6,7 +6,8 @@
   "main": "server/index.js",
   "scripts": {
     "start": "node server/index.js",
-    "dev": "node server/index.js"
+    "dev": "node server/index.js",
+    "start:vps": "node server.js"
   },
   "engines": {
     "node": ">=18"
@@ -27,7 +28,6 @@
     "pdf-parse": "^1.1.1",
     "pizzip": "^3.1.7",
     "socket.io": "^4.8.1",
-    "twilio": "^5.4.2",
-    "xlsx": "^0.18.5"
+    "twilio": "^5.4.2"
   }
 }

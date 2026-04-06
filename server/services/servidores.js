@@ -6,7 +6,7 @@
 const fs = require('fs');
 const path = require('path');
 const servidoresCrawler = require('./servidoresCrawler');
-const servidoresService = require('./servidoresService');
+const mpmaAlvosMonitor = require('./mpmaAlvosMonitor');
 
 const NOMINAL_URL = servidoresCrawler.NOMINAL_URL;
 const PROJECT_ROOT = path.join(__dirname, '..', '..');
@@ -40,7 +40,7 @@ function setLegacyMonitoredNames(names) {
 }
 
 /**
- * Nomes completos para cruzar com PDFs do MPMA (prioridade sobre Excel/nominal).
+ * Nomes completos para cruzar com PDFs do MPMA (prioridade sobre lista nominal).
  * 1) data/mpma-nomes-monitoramento.json (opcional, não versionado)
  * 2) config/mpma-nomes-monitoramento.json (versionado — edite aqui os nomes alvo)
  * 3) MPMA_NOMES_JSON no .env (array JSON)
@@ -273,7 +273,7 @@ async function refreshServidoresNominal() {
 }
 
 function buildListaCompleta() {
-  servidoresService.ensureLoaded();
+  const listaFixaCupula = mpmaAlvosMonitor.getListaEntradasParaMpma();
   const mpmaAlvo = dedupeByNome([...loadMpmaNomesAlvoFromFiles(), ...parseMpmaNomesFromEnv()]);
   const apenasAlvo =
     process.env.MPMA_APENAS_NOMES_ALVO === '1' || /^true$/i.test(String(process.env.MPMA_APENAS_NOMES_ALVO || ''));
@@ -285,7 +285,7 @@ function buildListaCompleta() {
   }));
 
   if (apenasAlvo && mpmaAlvo.length) {
-    return dedupeByNome([...mpmaAlvo, ...legacyRows]);
+    return dedupeByNome([...listaFixaCupula, ...mpmaAlvo, ...legacyRows]);
   }
   if (apenasAlvo && !mpmaAlvo.length) {
     console.warn(
@@ -294,8 +294,8 @@ function buildListaCompleta() {
   }
 
   const base = dedupeByNome([
+    ...listaFixaCupula,
     ...mpmaAlvo,
-    ...servidoresService.getServidoresExcel(),
     ...(memoria || []),
     ...parseLiderancaFromEnv(),
     ...overlayDomRows,
@@ -304,17 +304,15 @@ function buildListaCompleta() {
 }
 
 /**
- * Lista usada pelo monitor MPMA: primeiro nomes em config/data MPMA + Excel + nominal + liderança (.env) + DOM + legado.
+ * Lista usada pelo monitor MPMA: lista fixa cúpula + config/data MPMA + nominal + liderança (.env) + DOM + legado.
  * Variantes no texto (mpmaMonitor) batem com estes nomes completos.
  */
 function getListaMonitoramento() {
   if (!memoria.length) loadCacheFromDisk();
-  servidoresService.ensureLoaded();
   return buildListaCompleta();
 }
 
 function getMeta() {
-  const ex = servidoresService.getExcelMeta();
   return {
     url: NOMINAL_URL,
     totalMemoria: memoria.length,
@@ -322,7 +320,8 @@ function getMeta() {
     atualizadoEm: ultimaAtualizacao,
     ultimoErro,
     totalMonitoramento: getListaMonitoramento().length,
-    excel: ex,
+    excel: null,
+    listaFixaCupula: mpmaAlvosMonitor.ALVOS_MONITORAMENTO.length,
   };
 }
 

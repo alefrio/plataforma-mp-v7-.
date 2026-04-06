@@ -339,6 +339,13 @@ body.modo-crise .sb-crise-flag{display:inline-block;}
 
 /* ── DASHBOARD / CHARTS ── */
 .kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-bottom:18px;}
+.dashboard-detectoes-wrap{margin-bottom:20px;border:1px solid var(--linen);border-radius:10px;padding:14px 16px;background:var(--cream);}
+.dashboard-detectoes-hd{font-size:14px;font-family:var(--f-display);margin-bottom:12px;color:var(--ink);}
+.dashboard-det-row{padding:10px 12px;border-radius:8px;background:#fff;border:1px solid var(--linen);margin-bottom:8px;font-family:var(--f-body);font-size:13px;}
+.dashboard-det-row--urgente{border-color:rgba(220,38,38,.45);background:linear-gradient(135deg,#fef2f2,#fff);box-shadow:0 0 0 1px rgba(220,38,38,.08);}
+.dashboard-det-badge{display:inline-block;margin-left:10px;font-size:10px;text-transform:uppercase;letter-spacing:.04em;padding:2px 8px;border-radius:4px;background:var(--danger);color:#fff;font-weight:700;vertical-align:middle;}
+.dashboard-detectoes-empty{font-size:13px;color:var(--muted);margin:0;font-family:var(--f-body);}
+.dashboard-det-row a{color:var(--link,#1a3d78);text-decoration:underline;font-size:11px;}
 .kp{background:#fff;border:1px solid var(--linen);padding:16px 18px;}
 .kp-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-family:var(--f-body);}
 .kp-val{font-family:var(--f-display);font-size:30px;font-weight:600;line-height:1;margin-top:4px;}
@@ -889,6 +896,10 @@ body.modo-crise .crisis-bar{display:block;}
           <div class="kp"><div class="kp-lbl">Taxa no Prazo</div><div class="kp-val" style="color:var(--danger)">58<span style="font-size:16px">%</span></div><div class="kp-sub">meta: ≥ 80%</div></div>
           <div class="kp"><div class="kp-lbl">Ações Judicializadas</div><div class="kp-val" style="color:var(--danger)">4</div><div class="kp-sub">pelo MPMA em 2026</div></div>
         </div>
+        <div class="dashboard-detectoes-wrap" id="dashboard-detectoes-wrap">
+          <div class="dashboard-detectoes-hd">Detecções automáticas — cúpula Buriticupu (Diário MPMA)</div>
+          <div id="dashboard-detectoes-cupula"><p class="dashboard-detectoes-empty">A carregar…</p></div>
+        </div>
         <div class="charts-grid">
           <div class="cc"><h4>Status dos Processos</h4><canvas id="cSt"></canvas></div>
           <div class="cc"><h4>Por Secretaria</h4><canvas id="cSec"></canvas></div>
@@ -1414,7 +1425,7 @@ function applyMenuStatusOk(d){
 }
 function loadDashboardKpis(){
   if(!CU)return Promise.resolve(null);
-  return apiFetch('/api/dashboard/kpis').then(function(r){return r.ok?r.json():null;}).then(function(d){__pmKpis=d;return d;}).catch(function(){return null;});
+  return apiFetch('/api/dashboard/kpis').then(function(r){return r.ok?r.json():null;}).then(function(d){__pmKpis=d;renderDashboardDetectoes(d);return d;}).catch(function(){var el=document.getElementById('dashboard-detectoes-cupula');if(el)el.innerHTML='<p class="dashboard-detectoes-empty">Não foi possível carregar o painel de detecções.</p>';return null;});
 }
 function renderBellPanel(){
   var p=document.getElementById('bell-panel');if(!p)return;
@@ -1988,6 +1999,20 @@ function responsavelInativo(n){
   return(Date.now()-best)/(864e5)>7;
 }
 function escHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function escAttr(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
+function renderDashboardDetectoes(kpis){
+  var el=document.getElementById('dashboard-detectoes-cupula');if(!el)return;
+  var arr=(kpis&&kpis.detectoesMonitoramentoCupula)||[];
+  if(!arr.length){el.innerHTML='<p class="dashboard-detectoes-empty">Nenhuma deteção no log da lista fixa. Quando um PDF do MPMA citar Buriticupu e um nome da cúpula, o registo aparece aqui.</p>';return;}
+  el.innerHTML=arr.slice(0,40).map(function(x){
+    var urg=x.urgente===true;
+    var cls=urg?'dashboard-det-row dashboard-det-row--urgente':'dashboard-det-row';
+    var pdf=x.pdfUrl?'<a href="'+escAttr(x.pdfUrl)+'" target="_blank" rel="noopener noreferrer">Abrir PDF</a>':'—';
+    var terms=(x.termosUrgencia&&x.termosUrgencia.length)?('<div style="font-size:11px;margin-top:6px;color:var(--muted)">Termos: '+x.termosUrgencia.map(function(t){return escHtml(t);}).join(', ')+'</div>'):'';
+    var d=x.data?new Date(x.data).toLocaleString('pt-BR'):'—';
+    return'<div class="'+cls+'"><div><strong>'+escHtml(x.nome||'')+'</strong>'+(urg?'<span class="dashboard-det-badge">Urgente</span>':'')+'</div><div style="font-size:11px;color:var(--muted);margin-top:4px">'+escHtml(d)+' · '+pdf+'</div>'+terms+'</div>';
+  }).join('');
+}
 function nivelDenunciaBadge(n){
   const v=(n&&n.nivelDenuncia)||'normal';
   if(v==='critico')return '<span class="nd-crit" title="Classificação automática (palavras-chave)">Crítico</span>';

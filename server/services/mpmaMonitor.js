@@ -1,6 +1,6 @@
 /**
  * Monitor do Diário Oficial MPMA — apenas PDFs reais de https://apps.mpma.mp.br/diario/
- * Regras: domínio *.mpma.mp.br, Buriticupu + ≥1 nome da lista (Excel Sisponto + nominal + .env + DOM + legado).
+ * Regras: domínio *.mpma.mp.br, Buriticupu + ≥1 nome da lista (cúpula fixa + nominal + .env + DOM + legado).
  * Trechos exibidos: só para nomes confirmados neste PDF; ±200 palavras, fora do cabeçalho; mesmo pdfUrl.
  * Sem mistura entre PDFs: URL canónico, hash do binário e hash do texto extraído.
  */
@@ -18,7 +18,7 @@ const MAX_HTML_PAGES = 80;
 /**
  * Liderança / secretarias — nomes oficiais + cargo para exibição e detecção com trecho no PDF.
  * Na lista de monitoramento: deteção por variantes (nome completo, sem partículas, primeiro+último);
- * na notificação grava-se sempre o nome completo vindo do cadastro (Excel/nominal/.env), não só o trecho do PDF.
+ * na notificação grava-se sempre o nome completo vindo do cadastro (lista fixa/nominal/.env), não só o trecho do PDF.
  */
 const LIDERANCA_MPMA_MONITORADA = [
   { nomeCompleto: 'João Carlos Teixeira da Silva', cargo: 'Prefeito' },

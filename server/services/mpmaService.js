@@ -428,7 +428,8 @@ async function rodarVarreduraDiagnostico(servidores, options = {}) {
 }
 
 /**
- * Produção: agenda callback (ex.: runMpmaMonitor) a cada 10 min.
+ * Produção: o agendamento a cada 10 min é feito por `server/crawlerMPMA.js` (scheduleMpmaProductionMonitor).
+ * Esta função mantém o modo diagnóstico com array e o modo legado por callback (testes / integrações antigas).
  * Modo array: `iniciarMonitoramento(servidores)` agenda só varredura diagnóstica (sem notificações) — evite em conjunto com runMpmaMonitor.
  */
 function iniciarMonitoramento(primeiro, segundo) {
