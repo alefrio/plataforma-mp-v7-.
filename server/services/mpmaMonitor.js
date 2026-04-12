@@ -5,6 +5,7 @@
  * Sem mistura entre PDFs: URL canónico, hash do binário e hash do texto extraído.
  */
 const axios = require('axios');
+const { axiosProxyOpts } = require('./mpmaHttpAgent');
 const cheerio = require('cheerio');
 const crypto = require('crypto');
 const pdfParse = require('pdf-parse');
@@ -14,6 +15,62 @@ const DIARIO_URL = 'https://apps.mpma.mp.br/diario/';
 
 /** Limite de páginas HTML do mesmo site a rastrear (evita loop infinito) */
 const MAX_HTML_PAGES = 80;
+
+const MPMA_HTML_TIMEOUT_MS = Math.max(
+  30000,
+  parseInt(process.env.MPMA_HTML_TIMEOUT_MS || '180000', 10) || 180000
+);
+const MPMA_PDF_TIMEOUT_MS = Math.max(
+  60000,
+  parseInt(process.env.MPMA_PDF_TIMEOUT_MS || '240000', 10) || 240000
+);
+const MPMA_HTML_RETRY = Math.min(5, Math.max(1, parseInt(process.env.MPMA_HTML_RETRY || '3', 10) || 3));
+
+function isRetryableHttpError(err) {
+  const code = err && err.code;
+  const msg = String((err && err.message) || '');
+  if (code === 'ECONNRESET' || code === 'ETIMEDOUT' || code === 'ENETUNREACH' || code === 'EAI_AGAIN')
+    return true;
+  if (code === 'ECONNABORTED') return true;
+  if (/timeout|timed out|socket|TLS|ECONNRESET|ENOTFOUND/i.test(msg)) return true;
+  return false;
+}
+
+/**
+ * GET HTML do diário com timeout configurável e reintentos (rede lenta / MPMA instável).
+ */
+async function fetchDiarioHtmlPage(pageUrl) {
+  const headers = {
+    'User-Agent': 'PlataformaMP/7.2 (monitor MPMA; +https://apps.mpma.mp.br/diario/)',
+    Accept: 'text/html,application/xhtml+xml;q=0.9,*/*;q=0.8',
+  };
+  let lastErr;
+  for (let attempt = 1; attempt <= MPMA_HTML_RETRY; attempt++) {
+    try {
+      const { data } = await axios.get(pageUrl, {
+        ...axiosProxyOpts(),
+        timeout: MPMA_HTML_TIMEOUT_MS,
+        headers,
+        maxRedirects: 5,
+        validateStatus: (s) => s >= 200 && s < 400,
+      });
+      return data;
+    } catch (e) {
+      lastErr = e;
+      const retry = attempt < MPMA_HTML_RETRY && isRetryableHttpError(e);
+      if (retry) {
+        const delayMs = Math.min(20000, 2500 * attempt);
+        console.warn(
+          `[MPMA] HTML ${pageUrl.slice(0, 72)}… tentativa ${attempt}/${MPMA_HTML_RETRY} — ${e.message || e.code || 'erro'}; nova tentativa em ${delayMs}ms`
+        );
+        await new Promise((r) => setTimeout(r, delayMs));
+      } else {
+        throw e;
+      }
+    }
+  }
+  throw lastErr;
+}
 
 /**
  * Liderança / secretarias — nomes oficiais + cargo para exibição e detecção com trecho no PDF.
@@ -410,13 +467,7 @@ async function fetchDiarioPdfLinks() {
 
     let html;
     try {
-      const { data } = await axios.get(pageUrl, {
-        timeout: 90000,
-        headers: { 'User-Agent': 'PlataformaMP/7.2 (monitor MPMA; +https://apps.mpma.mp.br/diario/)' },
-        maxRedirects: 5,
-        validateStatus: (s) => s >= 200 && s < 400,
-      });
-      html = data;
+      html = await fetchDiarioHtmlPage(pageUrl);
     } catch (e) {
       console.error('[MPMA] Falha ao obter HTML:', pageUrl, e.message);
       continue;
@@ -451,8 +502,9 @@ async function fetchDiarioPdfLinks() {
  */
 async function downloadAndParsePdf(url) {
   const { data } = await axios.get(url, {
+    ...axiosProxyOpts(),
     responseType: 'arraybuffer',
-    timeout: 180000,
+    timeout: MPMA_PDF_TIMEOUT_MS,
     headers: { 'User-Agent': 'PlataformaMP/7.2 (monitor MPMA)' },
     maxRedirects: 5,
   });

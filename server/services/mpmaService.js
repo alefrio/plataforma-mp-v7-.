@@ -5,6 +5,7 @@
 const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
+const { axiosProxyOpts } = require('./mpmaHttpAgent');
 const pdfParse = require('pdf-parse');
 const cron = require('node-cron');
 const pLimit = require('p-limit');
@@ -86,6 +87,7 @@ async function extrairTextoPDF(url) {
   if (!canon) return null;
   try {
     const res = await axios.get(canon, {
+      ...axiosProxyOpts(),
       responseType: 'arraybuffer',
       timeout: PDF_DOWNLOAD_TIMEOUT_MS,
       maxRedirects: 5,
